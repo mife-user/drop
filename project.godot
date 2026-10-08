@@ -19,6 +19,10 @@ config/features=PackedStringArray("4.8", "Forward Plus")
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/markdown_previewer/plugin.cfg")
+
 [gui]
 
 common/auto_focus_strategy=1
