@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://d1ph5pl763fuu"]
 
+[ext_resource type="PackedScene" uid="uid://cb2ufjcjsrb7j" path="res://resources/奶蛋/奶蛋.glb" id="1_o5qli"]
+
 [node name="Node3D" type="Node3D" unique_id=889120220]
+
+[node name="奶蛋" parent="." unique_id=1875330527 instance=ExtResource("1_o5qli")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7331462, 0, -0.025707483)
