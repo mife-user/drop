@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://vj7x8tac0anp"
-path="res://.godot/imported/场景.fbx-df7f2ec72b0031a28a817aeb39d9d30d.scn"
+path="res://.godot/imported/场景.fbx-736ba8790fa11ce216daad763f54f6ea.scn"
 
 [deps]
 
-source_file="res://scenes/场景.fbx"
-dest_files=["res://.godot/imported/场景.fbx-df7f2ec72b0031a28a817aeb39d9d30d.scn"]
+source_file="res://resources/场景.fbx"
+dest_files=["res://.godot/imported/场景.fbx-736ba8790fa11ce216daad763f54f6ea.scn"]
 
 [params]
 

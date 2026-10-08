@@ -1,8 +1,21 @@
 [gd_scene format=3 uid="uid://d1ph5pl763fuu"]
 
 [ext_resource type="PackedScene" uid="uid://cb2ufjcjsrb7j" path="res://resources/奶蛋/奶蛋.glb" id="1_o5qli"]
+[ext_resource type="PackedScene" uid="uid://vj7x8tac0anp" path="res://resources/场景.fbx" id="2_0wfyh"]
+
+[sub_resource type="Environment" id="Environment_0wfyh"]
 
 [node name="Node3D" type="Node3D" unique_id=889120220]
 
-[node name="奶蛋" parent="." unique_id=1875330527 instance=ExtResource("1_o5qli")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7331462, 0, -0.025707483)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1367691273]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1113043, 1.3276259, 6.556924)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155]
+environment = SubResource("Environment_0wfyh")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment" unique_id=1806757621]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11670303, 16.306068, -47.802208)
+
+[node name="场景" parent="." unique_id=800403422 instance=ExtResource("2_0wfyh")]
+
+[node name="奶蛋" parent="." unique_id=542863220 instance=ExtResource("1_o5qli")]
