@@ -43,12 +43,12 @@ materials/extract_path=""
 _subresources={
 "materials": {
 "材质": {
-"use_external/enabled": true,
+"use_external/enabled": false,
 "use_external/fallback_path": "res://resources/奶蛋/材质.tres",
 "use_external/path": "uid://cg3y2q7vkjj0e"
 },
 "材质.001": {
-"use_external/enabled": true,
+"use_external/enabled": false,
 "use_external/fallback_path": "res://resources/奶蛋/材质.001.tres",
 "use_external/path": "uid://dm0igth70c1f7"
 }

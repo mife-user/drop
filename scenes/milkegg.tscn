@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/milkegg.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://resources/奶蛋/奶蛋.glb" id="2_model"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.285
+height = 0.66
+
+[node name="奶蛋" type="CharacterBody3D"]
+visible = false
+floor_snap_length = 0.1
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 0.331, 0)
+shape = SubResource("CapsuleShape3D_body")
+disabled = true
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="模型" parent="Visual" instance=ExtResource("2_model")]
