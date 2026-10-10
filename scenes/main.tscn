@@ -9,11 +9,12 @@
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="7_tipki"]
 [ext_resource type="PackedScene" uid="uid://dm6o34u6waxn3" path="res://resources/人物.glb" id="8_85g3d"]
 [ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/milkegg_encounter.gd" id="9_encounter"]
+[ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
 
 [sub_resource type="Environment" id="Environment_0wfyh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
-size = Vector3(6.2552004, 2.203125, 5.5512953)
+size = Vector3(6.2552004, 2.682129, 5.5512953)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
 size = Vector3(0.562, 0.78, 0.413)
@@ -23,9 +24,6 @@ radius = 0.28
 height = 1.69
 
 [node name="Node3D" type="Node3D" unique_id=889120220]
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1367691273]
-transform = Transform3D(1, 0, 0, 0, 0.84194285, 0.53956664, 0, -0.53956664, 0.84194285, -1.797444, 2.9744728, 6.9282866)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155]
 environment = SubResource("Environment_0wfyh")
@@ -42,13 +40,14 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.5635729, -0.011224985)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
 shape = SubResource("BoxShape3D_pool_exclusion")
 debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
 
-[node name="MilkeggEncounter" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera")]
+[node name="MilkeggEncounter" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion")]
 script = ExtResource("9_encounter")
-camera = NodePath("../Camera3D")
+camera = NodePath("../主人公/Camera3D")
+pool_exclusion = NodePath("../场景/PoolExclusion/CollisionShape3D")
 
 [node name="奶蛋" parent="MilkeggEncounter" unique_id=542863220 instance=ExtResource("1_o5qli")]
 
@@ -98,16 +97,20 @@ shape = SubResource("BoxShape3D_hydrant")
 [node name="时钟" parent="." unique_id=584630157 instance=ExtResource("6_o6xl0")]
 transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, -4.7215667, 3.5920897, -5.114302)
 
-[node name="主人公" type="Node3D" parent="." unique_id=1733731217]
+[node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.853638, 0.28364658, 1.9434848)
+floor_snap_length = 0.3
+script = ExtResource("10_player")
+camera = NodePath("Camera3D")
 
 [node name="人物" parent="主人公" unique_id=1662065269 instance=ExtResource("8_85g3d")]
 
 [node name="水枪" parent="主人公/人物" unique_id=1294209234 instance=ExtResource("7_tipki")]
 transform = Transform3D(0.0486338, 0, -0.9988168, 0, 1, 0, 0.9988168, 0, 0.0486338, -0.27915835, 0.7193252, 0.29799223)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="主人公" unique_id=914503266]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="主人公/StaticBody3D" unique_id=2016124640]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="主人公" unique_id=2016124640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.845, 0)
 shape = SubResource("CapsuleShape3D_person")
+
+[node name="Camera3D" type="Camera3D" parent="主人公" unique_id=1367691273]
+transform = Transform3D(-1, 0, 0, 0, 0.9927476, 0.1202173, 0, 0.1202173, -0.9927476, -0.01376915, 1.503561, 0.16314888)
