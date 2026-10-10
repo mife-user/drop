@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-## 主人公移动控制：WASD 相对摄像机前后左右移动，空格跳跃。
+## 主人公移动控制：WASD 相对视线前后左右移动，空格跳跃，鼠标控制第一人称视角。
 ## 碰撞、阻挡、贴地交给物理引擎（move_and_slide），水平速度和重力由本脚本按物理公式计算，
 ## 所以起跳是标准抛体运动——初速 v = sqrt(2 * 重力 * 跳跃高度)，空中松手会保持水平惯性。
 ## 地面水平速度按"起步 / 刹车 / 变向"三档时间参数平滑过渡，不会瞬间启停。
@@ -10,6 +10,12 @@ extends CharacterBody3D
 ## 第一人称摄像机（挂在主人公眼睛位置上的子节点），W 表示朝视线前方走。
 ## 留空时会自动取当前场景的摄像机。
 @export var camera: Camera3D
+## 鼠标灵敏度（弧度/像素）；越大转得越快，转一整圈约需 2π / 该值 像素。
+@export_range(0.0002, 0.02, 0.0002) var mouse_sensitivity: float = 0.002
+## 上下视角限位（度），防止翻过头顶；也给"朝视线水平方向走"的计算留出余量。
+@export_range(30.0, 89.5, 0.5) var pitch_limit: float = 89.0
+## 进入场景时是否锁定鼠标；锁定后光标隐藏，Esc 释放、点击画面重新锁定。开发时可临时关掉。
+@export var capture_on_start: bool = true
 ## 地面最大移动速度（米/秒）。
 @export_range(0.5, 20.0, 0.1) var move_speed: float = 4.0
 ## 起步时间（秒）：从静止加速到全速要多久，决定角色的"重量感"。
@@ -34,12 +40,18 @@ extends CharacterBody3D
 
 var _coyote_left: float = 0.0        # 土狼时间剩余量
 var _jump_buffer_left: float = 0.0   # 跳跃缓冲剩余量
+var _pitch: float = 0.0              # 摄像机的俯仰角（弧度），负值表示低头
 
 
 func _ready() -> void:
 	# 没在检查器里指定摄像机时兜底，避免按 WASD 没反应。
 	if not is_instance_valid(camera):
 		camera = get_viewport().get_camera_3d()
+	# 沿用你在编辑器里摆好的初始俯仰角（略微低头），不重置朝向
+	if is_instance_valid(camera):
+		_pitch = camera.rotation.x
+	if capture_on_start:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 ## 固定用物理帧驱动：改速度和 move_and_slide 必须在同一帧内完成，否则会抖动。
@@ -54,6 +66,30 @@ func _physics_process(delta: float) -> void:
 	# 下一帧"前方"就被重新定义，形成正反馈——角色会原地疯狂打转。第一人称下身体只跟视线转。
 	# 实际位移与碰撞解算全部交给物理引擎
 	move_and_slide()
+
+
+## 第一人称视角：鼠标左右转身体（人物、水枪一起转），上下只抬摄像机，不碰碰撞体。
+## 放在 _unhandled_input 而不是 _physics_process：鼠标事件一帧可能来 0 次也可能来多次，
+## 这里逐事件处理、当帧生效，延迟最低；也不做平滑，鼠标和视角严格 1:1。
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		var motion := event as InputEventMouseMotion
+		# 鼠标右移 = 向右转。人物正面是 +Z（不是 Godot 惯例的 -Z），
+		# 所以"右边"是 -X 方向，右转对应 rotation.y 减小；写成 += 会左右颠倒。
+		rotation.y -= motion.relative.x * mouse_sensitivity
+		# 鼠标下移 = 低头。摄像机局部 rotation.x 为正时视线朝上，所以这里同样是减。
+		var limit: float = deg_to_rad(pitch_limit)
+		_pitch = clampf(_pitch - motion.relative.y * mouse_sensitivity, -limit, limit)
+		if is_instance_valid(camera):
+			camera.rotation.x = _pitch
+		return
+	# Esc 释放光标（不暂停游戏），点击画面重新锁定
+	if event.is_action_pressed("ui_cancel"):
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	elif event is InputEventMouseButton:
+		var click := event as InputEventMouseButton
+		if click.pressed and Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
 ## 把 WASD 输入转成世界坐标下的单位方向：以摄像机的水平朝向为"前"。
