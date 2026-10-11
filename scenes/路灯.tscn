@@ -6,6 +6,15 @@
 [sub_resource type="BoxMesh" id="BoxMesh_ml62v"]
 size = Vector3(0.20848083, 0.13293457, 1.0395508)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_ni2ya"]
+size = Vector3(0.48791504, 4.04895, 0.28588867)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ln2xq"]
+size = Vector3(0.43566895, 0.18054199, 1.4830322)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vdw86"]
+size = Vector3(0.43566895, 0.18054199, 1.4830322)
+
 [node name="Node3D" type="Node3D" unique_id=1028946778]
 
 [node name="路灯" parent="." unique_id=1553762969 instance=ExtResource("1_3bslu")]
@@ -41,3 +50,17 @@ light_energy = 5.0
 spot_range = 10.0
 spot_attenuation = 0.75
 spot_angle = 75.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="路灯" unique_id=985057506]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="路灯/StaticBody3D" unique_id=1944302258]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019104004, 2.0336304, 0.004272461)
+shape = SubResource("BoxShape3D_ni2ya")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="路灯/StaticBody3D" unique_id=1752859257]
+transform = Transform3D(1, 0, 0, 0, 0.9596481, 0.2812039, 0, -0.2812039, 0.9596481, 0.00033392012, 4.303576, 0.7042179)
+shape = SubResource("BoxShape3D_ln2xq")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="路灯/StaticBody3D" unique_id=482625482]
+transform = Transform3D(1, 0, 0, 0, 0.9612227, -0.2757732, 0, 0.2757732, 0.9612227, 0.0017455965, 4.2870216, -0.66974765)
+shape = SubResource("BoxShape3D_vdw86")
