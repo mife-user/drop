@@ -41,6 +41,12 @@ var elevation: float = 0.0
 ## 供 scripts/day_night.gd 读取以联动环境光与背景色，不要在检查器里手动改。
 var height: float = 1.0
 
+## 当前时刻（小时，0.0 ~ 24.0 的连续小数）：6.0 = 日出，12.0 = 正午，18.0 = 日落，0.0 = 午夜。
+## 供 scripts/时钟.gd 读取以拨动指针，不要在检查器里手动改。
+## 想改「开局是几点」就改本节点的 start_angle_deg，想改「一天多长」就改 angular_speed，
+## 这里会自动跟上 —— 所有需要「现在几点」的节点都读这一个值，不要各自再算一遍。
+var time_of_day: float = 12.0
+
 ## 当前角度（弧度）
 var _angle_rad: float = 0.0
 
@@ -61,6 +67,9 @@ func _process(delta: float) -> void:
 
 func _apply_orbit() -> void:
 	global_position = orbit_center + Vector3(cos(_angle_rad), sin(_angle_rad), 0.0) * orbit_radius
+	# 角度换算成钟点：0°（+X 地平线）当日出 6:00，90° 正午，180° 日落，270° 午夜。
+	# 一圈 360° 正好 24 小时，所以 15° = 一个游戏小时，fmod 负责把 24~30 点折回 0~6 点。
+	time_of_day = fmod(_angle_rad / TAU * 24.0 + 6.0, 24.0)
 	# 公转方向始终位于 XY 平面内，用 Vector3.BACK 作为 up 可避免与朝向平行导致的报错
 	if look_at_center and orbit_radius > 0.0:
 		look_at(orbit_center, Vector3.BACK)

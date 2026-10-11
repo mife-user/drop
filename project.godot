@@ -29,6 +29,28 @@ common/auto_focus_strategy=1
 
 [input]
 
+fire={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,
+"resource_local_to_scene": false,
+"resource_name": "",
+"device": -1,
+"window_id": 0,
+"alt_pressed": false,
+"shift_pressed": false,
+"ctrl_pressed": false,
+"meta_pressed": false,
+"button_mask": 0,
+"position": Vector2(0, 0),
+"global_position": Vector2(0, 0),
+"factor": 1.0,
+"button_index": 1,
+"canceled": false,
+"pressed": false,
+"double_click": false,
+"script": null
+)]
+}
 jump={
 "deadzone": 0.5,
 "events": [Object(InputEventKey,
@@ -138,6 +160,12 @@ move_right={
 [input_devices]
 
 joypads/ignore_joypad_on_unfocused_application=true
+
+[layer_names]
+
+3d_physics/layer_1="世界"
+3d_physics/layer_3="水"
+3d_physics/layer_4="吸水区"
 
 [physics]
 

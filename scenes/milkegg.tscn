@@ -1,22 +1,25 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://8sdjqcj4fuik"]
 
-[ext_resource type="Script" path="res://scripts/milkegg.gd" id="1_script"]
-[ext_resource type="PackedScene" path="res://resources/奶蛋/奶蛋.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://c5chj31hkim31" path="res://scripts/milkegg.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://cb2ufjcjsrb7j" path="res://resources/奶蛋/奶蛋.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bne26ofgtrk43" path="res://resources/蝴蝶结.glb" id="3_ifsyj"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
 radius = 0.285
 height = 0.66
 
-[node name="奶蛋" type="CharacterBody3D"]
+[node name="奶蛋" type="CharacterBody3D" unique_id=2008178465]
 visible = false
-floor_snap_length = 0.1
 script = ExtResource("1_script")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-position = Vector3(0, 0.331, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1947453300]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.331, 0)
 shape = SubResource("CapsuleShape3D_body")
 disabled = true
 
-[node name="Visual" type="Node3D" parent="."]
+[node name="Visual" type="Node3D" parent="." unique_id=663303930]
 
-[node name="模型" parent="Visual" instance=ExtResource("2_model")]
+[node name="模型" parent="Visual" unique_id=251219718 instance=ExtResource("2_model")]
+
+[node name="蝴蝶结" parent="." unique_id=1144891632 instance=ExtResource("3_ifsyj")]
+transform = Transform3D(0.046795502, -0.0572517, 0.06732325, -0.013642909, 0.07058576, 0.06950916, -0.087315805, -0.04171201, 0.025220176, 0.118979394, 0.62480515, 0.06738803)

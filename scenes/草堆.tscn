@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c8r583eoccqx7"]
+
+[ext_resource type="PackedScene" uid="uid://b44o7tarjxk2l" path="res://resources/草堆.glb" id="1_02osk"]
+
+[node name="草堆" unique_id=1364404615 instance=ExtResource("1_02osk")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)

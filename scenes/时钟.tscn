@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://dq3n8vb2wk7ha"]
+
+[ext_resource type="PackedScene" uid="uid://dxppdno0xasp3" path="res://resources/时钟.glb" id="1_clock"]
+[ext_resource type="PackedScene" uid="uid://m863axmwy7lt" path="res://resources/时针.glb" id="2_hour"]
+[ext_resource type="PackedScene" uid="uid://bsx87m8ca4s1s" path="res://resources/分针.glb" id="3_minute"]
+[ext_resource type="Script" uid="uid://cq7m2xk9v4bn1" path="res://scripts/时钟.gd" id="4_script"]
+
+[node name="钟" type="Node3D" unique_id=1054640637 node_paths=PackedStringArray("hour_hand", "minute_hand")]
+script = ExtResource("4_script")
+hour_hand = NodePath("时钟/时针")
+minute_hand = NodePath("时钟/分针")
+
+[node name="时钟" parent="." instance=ExtResource("1_clock")]
+
+[node name="时针" parent="时钟" instance=ExtResource("2_hour")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="分针" parent="时钟" instance=ExtResource("3_minute")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.021)
