@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://lfxle76y58ea"]
+
+[ext_resource type="PackedScene" uid="uid://bhvyx84apwmy7" path="res://resources/路灯.glb" id="1_3bslu"]
+[ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="2_ni2ya"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ml62v"]
+size = Vector3(0.20848083, 0.13293457, 1.0395508)
+
+[node name="Node3D" type="Node3D" unique_id=1028946778]
+
+[node name="路灯" parent="." unique_id=1553762969 instance=ExtResource("1_3bslu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.006784573, 1.4901161e-08, -0.0016122311)
+script = ExtResource("2_ni2ya")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="路灯" unique_id=576983912]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.019798756, 4.0584826, -0.87147844)
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="路灯" unique_id=1393462998]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0968523, 0.8223103)
+
+[node name="灯芯2" type="MeshInstance3D" parent="路灯" unique_id=217481204]
+transform = Transform3D(1, 0, 0, 0, 0.96032625, 0.278879, 0, -0.278879, 0.96032625, 0.012193814, 4.249639, 0.8175865)
+mesh = SubResource("BoxMesh_ml62v")
+
+[node name="灯芯" type="MeshInstance3D" parent="路灯" unique_id=826882961]
+transform = Transform3D(-0.99999297, 0.0010450352, -0.0035986062, 8.875169e-10, 0.96032625, 0.27887896, 0.0037472714, 0.27887702, -0.96031946, 0.012, 4.255, -0.818)
+mesh = SubResource("BoxMesh_ml62v")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="路灯" unique_id=1430898271]
+transform = Transform3D(1, 0, 0, 0, 0.4213198, 0.90691215, 0, -0.90691215, 0.4213198, -0.019798756, 4.230699, -0.87147844)
+light_color = Color(1, 0.9260749, 0.79595864, 1)
+light_energy = 5.0
+spot_range = 10.0
+spot_attenuation = 0.75
+spot_angle = 75.0
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="路灯" unique_id=932963838]
+transform = Transform3D(1, 0, 0, 0, -0.64497924, 0.7642001, 0, -0.7642001, -0.64497924, -0.03959751, 4.174311, 0.8261877)
+light_color = Color(1, 0.9255881, 0.7977378, 1)
+light_energy = 5.0
+spot_range = 10.0
+spot_attenuation = 0.75
+spot_angle = 75.0
