@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dgnn5wh35jn7q"]
+
+[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/吸水区.gd" id="1_sink"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sink"]
+size = Vector3(6.2552004, 1.3226776, 5.5512953)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_surface"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0.15686275, 0.54901963, 0.9019608, 0.60784316)
+metallic = 0.2
+roughness = 0.04
+rim_enabled = true
+rim = 0.5
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_surface"]
+material = SubResource("StandardMaterial3D_surface")
+size = Vector2(1, 1)
+
+[node name="吸水区" type="Area3D" unique_id=1097634554 node_paths=PackedStringArray("surface", "shape_node")]
+collision_layer = 8
+collision_mask = 4
+monitorable = false
+script = ExtResource("1_sink")
+surface = NodePath("水面")
+shape_node = NodePath("CollisionShape3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=214760503]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.67972565, 0)
+shape = SubResource("BoxShape3D_sink")
+
+[node name="水面" type="MeshInstance3D" parent="." unique_id=1984611305]
+mesh = SubResource("PlaneMesh_surface")
