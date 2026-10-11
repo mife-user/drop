@@ -1,10 +1,14 @@
 extends Node3D
 
 ## 奶蛋在镜头内随机活动约30秒，再沿安全路线走出镜头，完全离屏才隐藏。
-## 泳池禁区可通过 PoolExclusion/CollisionShape3D 在编辑器中调整。
+## 泳池禁区的范围改 场景/PoolExclusion/CollisionShape3D 的 shape，指向哪个节点改下面的 pool_exclusion。
 
 ## 用于判定可见范围的摄像机。
 @export var camera: Camera3D
+## 泳池禁区：奶蛋不会进入这块矩形区域，按水平投影判定，跳到水面上方也算进入。
+## 指向 场景/PoolExclusion 下的 CollisionShape3D；用节点引用而不是字符串路径，
+## 这样在编辑器里挪动或重命名节点时 Godot 会自动更新，不会出现"路径失效但没人发现"。
+@export var pool_exclusion: CollisionShape3D
 ## 完全走出镜头并消失后，等待多少秒再次随机出现。
 @export_range(0.1, 120.0, 0.1) var respawn_delay: float = 10.0
 ## 首次出现的最短等待时间（秒）。
@@ -34,7 +38,6 @@ extends Node3D
 
 @onready var _actor: CharacterBody3D = $奶蛋
 @onready var _timer: Timer = $AppearanceTimer
-@onready var _pool: CollisionShape3D = $PoolExclusion/CollisionShape3D
 
 var _rng := RandomNumberGenerator.new()
 var _spawn_due: bool = false
@@ -52,6 +55,9 @@ var _exit_path := PackedVector3Array()
 ## 随机定时器只提出出场请求；物理帧中检查场景后才真正出场。
 func _ready() -> void:
 	_rng.randomize()
+	# 禁区没指定时只报一次明确的错，而不是让每个物理帧都刷 "null value" 把日志淹掉
+	if not is_instance_valid(pool_exclusion):
+		push_error("MilkeggEncounter：pool_exclusion 未指定，泳池禁区判定已失效")
 	_actor.movement_guard = _movement_allowed
 	_actor.crossing_finished.connect(_on_leg_finished)
 	_query.shape = _clearance
@@ -200,8 +206,12 @@ func _choose_route() -> PackedVector3Array:
 
 ## 泳池按水平投影禁入：跳到水面上方也视为进入禁区。
 func is_in_pool(point: Vector3) -> bool:
-	var local: Vector3 = _pool.to_local(point)
-	var box := _pool.shape as BoxShape3D
+	if not is_instance_valid(pool_exclusion):
+		return false
+	var box: BoxShape3D = pool_exclusion.shape as BoxShape3D
+	if box == null:
+		return false
+	var local: Vector3 = pool_exclusion.to_local(point)
 	return absf(local.x) <= box.size.x * 0.5 + pool_margin and absf(local.z) <= box.size.z * 0.5 + pool_margin
 
 
