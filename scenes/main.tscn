@@ -19,16 +19,17 @@
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
 [ext_resource type="PackedScene" uid="uid://bfd7jevqukstk" path="res://resources/木碗.glb" id="21_yc10j"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
+
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
-size = Vector3(6.2552004, 2.682129, 5.5512953)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
-size = Vector3(0.562, 0.78, 0.413)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ladder_trigger"]
 size = Vector3(1, 1.7, 1.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
+size = Vector3(6.0259156, 2.4327393, 5.6104865)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
+size = Vector3(0.562, 0.78, 0.413)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_person"]
 radius = 0.28
@@ -80,7 +81,7 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, 0.018370628)
 shape = SubResource("BoxShape3D_pool_exclusion")
 debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
 
@@ -209,7 +210,9 @@ transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, 
 
 [node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.079946, 0.28364658, -7.120233)
-floor_max_angle = 0.9599311
+floor_stop_on_slope = false
+floor_block_on_wall = false
+floor_max_angle = 1.0471976
 floor_snap_length = 0.3
 script = ExtResource("10_player")
 camera = NodePath("Camera3D")
