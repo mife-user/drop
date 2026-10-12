@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="7_tipki"]
 [ext_resource type="PackedScene" uid="uid://dm6o34u6waxn3" path="res://resources/人物.glb" id="8_85g3d"]
 [ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/milkegg_encounter.gd" id="9_encounter"]
+[ext_resource type="PackedScene" uid="uid://ltjma8yc4edk" path="res://scenes/木碗.tscn" id="10_0ld40"]
 [ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
 [ext_resource type="Script" uid="uid://bfb61dybj85il" path="res://scripts/day_night.gd" id="11_daynight"]
 [ext_resource type="PackedScene" uid="uid://lfxle76y58ea" path="res://scenes/路灯.tscn" id="13_trceg"]
@@ -17,7 +18,6 @@
 [ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水块容器.gd" id="16_field"]
 [ext_resource type="PackedScene" uid="uid://dgnn5wh35jn7q" path="res://scenes/吸水区.tscn" id="17_sink"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
-[ext_resource type="PackedScene" uid="uid://bfd7jevqukstk" path="res://resources/木碗.glb" id="21_yc10j"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
@@ -160,14 +160,14 @@ shape = SubResource("BoxShape3D_hydrant")
 [node name="盆栽花" parent="场景" unique_id=1047683945 instance=ExtResource("18_0ld40")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6660633, 1.1444919, -7.7918906)
 
-[node name="木碗" parent="场景" unique_id=1846252498 instance=ExtResource("21_yc10j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45583153, -1.0672808e-06, -9.015736)
-
-[node name="OmniLight3D" type="OmniLight3D" parent="场景/木碗" unique_id=1405636707]
-omni_range = 0.438
-omni_attenuation = 1.255
-
 [node name="WorldCollision" parent="场景" unique_id=1133961331 instance=ExtResource("3_collision")]
+
+[node name="木碗" parent="场景" unique_id=1846252498 instance=ExtResource("10_0ld40")]
+transform = Transform3D(3.965, 0, 0, 0, 3.965, 0, 0, 0, 3.965, 0, 0, -9.021)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="场景/木碗" unique_id=667751734]
+omni_range = 0.658
+omni_attenuation = 2.985
 
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion")]
 script = ExtResource("9_encounter")
