@@ -9,7 +9,6 @@ radius = 0.285
 height = 0.66
 
 [node name="奶蛋" type="CharacterBody3D" unique_id=2008178465]
-visible = false
 script = ExtResource("1_script")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1947453300]
@@ -21,5 +20,5 @@ disabled = true
 
 [node name="模型" parent="Visual" unique_id=251219718 instance=ExtResource("2_model")]
 
-[node name="蝴蝶结" parent="." unique_id=1144891632 instance=ExtResource("3_ifsyj")]
+[node name="蝴蝶结" parent="Visual" unique_id=1144891632 instance=ExtResource("3_ifsyj")]
 transform = Transform3D(0.046795502, -0.0572517, 0.06732325, -0.013642909, 0.07058576, 0.06950916, -0.087315805, -0.04171201, 0.025220176, 0.118979394, 0.62480515, 0.06738803)

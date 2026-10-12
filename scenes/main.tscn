@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="7_tipki"]
 [ext_resource type="PackedScene" uid="uid://dm6o34u6waxn3" path="res://resources/人物.glb" id="8_85g3d"]
 [ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/milkegg_encounter.gd" id="9_encounter"]
+[ext_resource type="PackedScene" uid="uid://ltjma8yc4edk" path="res://scenes/木碗.tscn" id="10_0ld40"]
 [ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
 [ext_resource type="Script" uid="uid://bfb61dybj85il" path="res://scripts/day_night.gd" id="11_daynight"]
 [ext_resource type="PackedScene" uid="uid://lfxle76y58ea" path="res://scenes/路灯.tscn" id="13_trceg"]
@@ -17,19 +18,17 @@
 [ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水块容器.gd" id="16_field"]
 [ext_resource type="PackedScene" uid="uid://dgnn5wh35jn7q" path="res://scenes/吸水区.tscn" id="17_sink"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
-[ext_resource type="PackedScene" uid="uid://bfd7jevqukstk" path="res://resources/木碗.glb" id="21_yc10j"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
-
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ladder_trigger"]
-size = Vector3(1, 1.7, 1.1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.6104865)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
 size = Vector3(0.562, 0.78, 0.413)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ladder_trigger"]
+size = Vector3(1, 1.7, 1.1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_person"]
 radius = 0.28
@@ -165,29 +164,32 @@ shape = SubResource("BoxShape3D_hydrant")
 [node name="盆栽花" parent="场景" unique_id=1047683945 instance=ExtResource("18_0ld40")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6660633, 1.1444919, -7.7918906)
 
-[node name="木碗" parent="场景" unique_id=1846252498 instance=ExtResource("21_yc10j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45583153, -1.0672808e-06, -9.015736)
-
-[node name="OmniLight3D" type="OmniLight3D" parent="场景/木碗" unique_id=1405636707]
-omni_range = 0.438
-omni_attenuation = 1.255
-
 [node name="WorldCollision" parent="场景" unique_id=1133961331 instance=ExtResource("3_collision")]
 
-[node name="泳池梯子出口" type="Area3D" parent="场景" unique_id=1706107003 node_paths=PackedStringArray("player", "exit_point")]
+[node name="泳池梯子出口" type="Area3D" parent="场景" unique_id=1706107003 node_paths=PackedStringArray("player", "climb_point", "bank_point")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.85, 4.65)
 collision_layer = 0
 monitorable = false
 script = ExtResource("23_pool_exit")
 player = NodePath("../../主人公")
-exit_point = NodePath("岸上落点")
+climb_point = NodePath("贴梯点")
+bank_point = NodePath("踏出点")
 
 [node name="水下判定区" type="CollisionShape3D" parent="场景/泳池梯子出口" unique_id=717788942]
 shape = SubResource("BoxShape3D_ladder_trigger")
 
-[node name="岸上落点" type="Marker3D" parent="场景/泳池梯子出口" unique_id=1209496340]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.93, 1.6)
-gizmo_extents = 0.4
+[node name="贴梯点" type="Marker3D" parent="场景/泳池梯子出口" unique_id=504965932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 1.02, 0)
+
+[node name="踏出点" type="Marker3D" parent="场景/泳池梯子出口" unique_id=155282975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.04, 0)
+
+[node name="木碗" parent="场景" unique_id=1846252498 instance=ExtResource("10_0ld40")]
+transform = Transform3D(3.965, 0, 0, 0, 3.965, 0, 0, 0, 3.965, 0, 0, -9.021)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="场景/木碗" unique_id=667751734]
+omni_range = 0.658
+omni_attenuation = 2.985
 
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion")]
 script = ExtResource("9_encounter")

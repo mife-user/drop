@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ltjma8yc4edk"]
+
+[ext_resource type="PackedScene" uid="uid://bfd7jevqukstk" path="res://resources/木碗.glb" id="1_4gcjj"]
+
+[node name="木碗" unique_id=1846252498 instance=ExtResource("1_4gcjj")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
