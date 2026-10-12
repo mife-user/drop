@@ -57,6 +57,7 @@ lifetime = 3.0
 ignore_body = NodePath("../主人公")
 
 [node name="场景" parent="." unique_id=800403422 instance=ExtResource("2_0wfyh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.11413288, -0.008602142, -0.19628358)
 
 [node name="路灯总" type="Node3D" parent="场景" unique_id=584416347]
 
@@ -84,8 +85,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, 0.0
 shape = SubResource("BoxShape3D_pool_exclusion")
 debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
 
-[node name="吸水区" parent="场景" unique_id=880080188 instance=ExtResource("17_sink")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8686645, -0.32407093, 2.488775)
+[node name="吸水区" parent="场景/PoolExclusion" unique_id=880080188 instance=ExtResource("17_sink")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
 capacity = 9.7811
 
 [node name="草堆" type="Node3D" parent="场景" unique_id=1872029055]
@@ -191,6 +192,9 @@ transform = Transform3D(3.965, 0, 0, 0, 3.965, 0, 0, 0, 3.965, 0, 0, -9.021)
 omni_range = 0.658
 omni_attenuation = 2.985
 
+[node name="钟" parent="场景" unique_id=1054640637 instance=ExtResource("22_clock")]
+transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, -4.7215667, 3.5920897, -5.114302)
+
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion")]
 script = ExtResource("9_encounter")
 camera = NodePath("../主人公/Camera3D")
@@ -206,9 +210,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60.026043, 0, 0)
 shadow_enabled = true
 script = ExtResource("4_jyhfs")
 angular_speed = 11.6129
-
-[node name="钟" parent="." unique_id=1054640637 instance=ExtResource("22_clock")]
-transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, -4.7215667, 3.5920897, -5.114302)
 
 [node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.079946, 0.28364658, -7.120233)
@@ -240,7 +241,7 @@ script = ExtResource("14_gun")
 field = NodePath("../../水块容器")
 muzzle = NodePath("../人物/水枪/Muzzle")
 camera = NodePath("../Camera3D")
-blob_size = 1.24
+blob_size = 0.9700000000000001
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")

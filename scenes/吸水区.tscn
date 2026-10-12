@@ -16,7 +16,7 @@ as_normal_map = true
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s55e4"]
 transparency = 1
 depth_draw_mode = 1
-albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.39215687)
+albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.5882353)
 roughness = 0.0
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture2D_wx2l2")

@@ -12,7 +12,9 @@ class_name WaterSink
 ## 水面高度按「本节点的局部坐标」算，所以整块吸水区（连同碰撞盒）拖到哪儿，水位都跟着走。
 ##
 ## **水面的位置和大小全部由碰撞盒和水量算出来**（见 _resize_surface / _update_surface）：
-## 水平方向 = 碰撞盒的 X/Z，水体盒的高度 = 水位。网格自身多大都无所谓，会被缩放到正好贴合。
+## 水平方向 = 碰撞盒的尺寸（含 CollisionShape3D 节点自己的缩放），水体盒的高度 = 水位。
+## 网格自身多大都无所谓，会被缩放到正好贴合 —— 水池那种方容器用方网格，
+## 木碗那种圆容器用圆柱网格，只是换网格 + 把 surface_fit 改成 ROUND 的事。
 ## 所以「水面」节点在编辑器里的 transform 只是「满水长什么样」的预览，运行时会被覆盖 ——
 ## 要让水铺得更开或收窄，去改 CollisionShape3D，改水面节点本身没用。
 
@@ -43,6 +45,12 @@ enum SurfaceKind {
 	VOLUME,  ## 一个水体盒：底面钉在池底、顶面跟着水位长，水少时是薄薄一层、水多才涨高
 }
 @export var surface_kind: SurfaceKind = SurfaceKind.PLANE
+## 水面俯视轮廓的形状。容器是方的（水池）用 BOX，是圆的（碗、盆）用 ROUND。
+enum SurfaceFit {
+	BOX,    ## 方形：水面的 X/Z 分别适配碰撞盒的 X/Z，正好铺满
+	ROUND,  ## 圆形：X/Z 用同一个系数、按碰撞盒的内切圆铺，这样圆才不会被压成椭圆
+}
+@export var surface_fit: SurfaceFit = SurfaceFit.BOX
 
 ## 当前水量（立方米），和 capacity 同单位。
 var amount: float = 0.0
@@ -94,6 +102,21 @@ func _find_shape() -> CollisionShape3D:
 	return null
 
 
+## 碰撞盒在「本节点坐标系」里的实际大小 —— 也就是水面该铺多大。
+##
+## 关键是**乘上 CollisionShape3D 节点自己的缩放**：物理引擎算碰撞时就是这么算的，
+## 而 shape.size 只是盒子资源自己的尺寸，不含这一层。
+## 把碰撞盒节点缩小来适配小容器（木碗、花盆）时，漏掉它水面就会整整大出 1/缩放 倍 ——
+## 缩到 0.13 就是大 7.7 倍，几米宽的水面糊在小碗上。
+func _box_size() -> Vector3:
+	if _box == null or not is_instance_valid(shape_node):
+		return Vector3.ONE
+	return Vector3(
+			_box.size.x * absf(shape_node.scale.x),
+			_box.size.y * absf(shape_node.scale.y),
+			_box.size.z * absf(shape_node.scale.z))
+
+
 ## 水面网格的水平位置和大小跟随碰撞盒；改碰撞盒尺寸，水面自动跟着变。
 ## 网格自身多大都行：这里按「想要的米数 ÷ 网格原始尺寸」算出 scale。
 func _resize_surface() -> void:
@@ -101,11 +124,17 @@ func _resize_surface() -> void:
 		return
 	surface.position.x = shape_node.position.x
 	surface.position.z = shape_node.position.z
-	# 水平方向直接照搬碰撞盒的尺寸：碰撞盒多大，水面就多大。
+	var box: Vector3 = _box_size()
 	# 除以网格自身的尺寸，是为了「网格本来多大都行」—— 1×1 的平面、6 米的盒子、
-	# 以后换成水的 glb，都会被缩放到正好铺满碰撞盒的 X/Z。
+	# 碗用的圆柱，都会被缩放到正好贴合。
 	# scale.y 归 _update_surface 管（水体盒的高度），这里别动。
-	surface.scale = Vector3(_box.size.x / _mesh_size.x, surface.scale.y, _box.size.z / _mesh_size.z)
+	if surface_fit == SurfaceFit.ROUND:
+		# 圆形：X/Z 必须用同一个系数，分别适配的话圆会被压成椭圆。
+		# 直径取碰撞盒 X/Z 里小的那个 —— 内切圆，水面永远不超出判定范围。
+		var diameter: float = minf(box.x, box.z)
+		surface.scale = Vector3(diameter / _mesh_size.x, surface.scale.y, diameter / _mesh_size.z)
+	else:
+		surface.scale = Vector3(box.x / _mesh_size.x, surface.scale.y, box.z / _mesh_size.z)
 
 
 ## 按水量比例把水面从池底推到池口；一滴水都没有时整个隐藏。
@@ -120,8 +149,9 @@ func _update_surface() -> void:
 	var bottom: float = bottom_y
 	var top: float = top_y
 	if auto_fit_shape and is_instance_valid(shape_node) and _box != null:
-		bottom = shape_node.position.y - _box.size.y * 0.5
-		top = shape_node.position.y + _box.size.y * 0.5
+		var box: Vector3 = _box_size()
+		bottom = shape_node.position.y - box.y * 0.5
+		top = shape_node.position.y + box.y * 0.5
 	var level: float = lerpf(bottom, top, ratio)
 	# 网格原点不一定落在包围盒中心（BoxMesh / PlaneMesh 默认在，换成 glb 就可能不在），贴池底时要减掉
 	var center_y: float = _mesh_center.y * surface.scale.y
