@@ -23,6 +23,109 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.6104865)
 
+[sub_resource type="GDScript" id="GDScript_rw886"]
+script/source = "extends Area3D
+class_name WaterSink
+
+## 吸水区：任何「水」碰撞层的东西飘进来就被吸收掉，水量按水团的**体积（立方米）**累加。
+##
+## 这是通用件 —— 判定靠碰撞层，不靠「这是不是水池」。水池、消防栓、水带、花盆旁边
+## 都摆一个就能用，水团本身完全不知道它存在，所以以后在哪儿加、加几个都不用改水团的代码。
+##
+## 吸收之后要发生什么，默认是这里的水面往上涨；以后要接别的反应（音效、计数、开水闸……），
+## 连下面的 water_received / filled 信号即可，不用改这个脚本。
+##
+## 水面高度按「本节点的局部坐标」算，所以整块吸水区（连同碰撞盒）拖到哪儿，水位都跟着走。
+
+## 每吸收一团水发出一次；参数是这团水的体积（立方米）。
+signal water_received(amount: float)
+## 水量第一次到顶时发出一次；之后继续吸水不会再发。
+signal filled()
+
+## 装水量上限（立方米）。水团的水量按边长³ 算：一团边长 0.05 米的水是 0.000125 m³，
+## 想「射 200 发刚好填满」就填 0.025。
+## 这是**绝对容积**，不跟着水枪走 —— 水枪升级（射出的水更大）后，
+## 每发灌进来的水量真的变多，填满同样的容量需要的发数会自动变少。
+## 吸满之后继续吸水：水团照样消失，只是水面不再上涨。
+@export_range(0.0001, 100.0, 0.0001) var capacity: float = 0.025
+## 表现水面的网格；水量为 0 时自动隐藏，第一次接到水才出现。
+@export var surface: MeshInstance3D
+## 决定水面大小和升降范围的碰撞盒；留空时自动取本节点下第一个 CollisionShape3D。
+@export var shape_node: CollisionShape3D
+## 勾选后水面自动贴合碰撞盒的顶面和底面，改碰撞盒尺寸就行，不用手填高度。
+@export var auto_fit_shape: bool = true
+## 水面起始高度（本节点局部 Y）；取消上面勾选后才生效。
+@export var bottom_y: float = 0.0
+## 水面加满时的高度（本节点局部 Y）；取消上面勾选后才生效。
+@export var top_y: float = 1.0
+
+## 当前水量（立方米），和 capacity 同单位。
+var amount: float = 0.0
+
+var _box: BoxShape3D
+
+
+func _ready() -> void:
+	area_entered.connect(_on_area_entered)
+	if not is_instance_valid(shape_node):
+		shape_node = _find_shape()
+	if is_instance_valid(shape_node):
+		_box = shape_node.shape as BoxShape3D
+		if _box == null:
+			push_warning(\"吸水区：碰撞盒不是 BoxShape3D，水面大小和高度范围只能自己调\")
+	_resize_surface()
+	_update_surface()
+
+
+## 有一团水进来了：收下它的体积。已经被别的吸水区收走的水团会返回 0，不会重复计。
+func _on_area_entered(area: Area3D) -> void:
+	var blob: WaterBlob = area as WaterBlob
+	if blob == null:
+		return
+	var cubic: float = blob.absorb()
+	if cubic <= 0.0:
+		return
+	var full_before: bool = amount >= capacity
+	amount = minf(amount + cubic, capacity)
+	water_received.emit(cubic)
+	if not full_before and amount >= capacity:
+		filled.emit()
+	_update_surface()
+
+
+## 没手动指定碰撞盒时，取本节点下第一个 CollisionShape3D。
+func _find_shape() -> CollisionShape3D:
+	for child in get_children():
+		if child is CollisionShape3D:
+			return child
+	return null
+
+
+## 水面网格的大小和水平位置跟随碰撞盒；改碰撞盒尺寸，水面自动跟着变。
+func _resize_surface() -> void:
+	if not is_instance_valid(surface) or not is_instance_valid(shape_node) or _box == null:
+		return
+	surface.position = Vector3(shape_node.position.x, surface.position.y, shape_node.position.z)
+	# 水面网格是 1×1 的 PlaneMesh，按碰撞盒的 X/Z 缩放即可铺满整个池口
+	surface.scale = Vector3(_box.size.x, 1.0, _box.size.z)
+
+
+## 按水量比例把水面从池底推到池口；一滴水都没有时整个隐藏。
+func _update_surface() -> void:
+	if not is_instance_valid(surface):
+		return
+	var ratio: float = clampf(amount / maxf(capacity, 0.0001), 0.0, 1.0)
+	surface.visible = ratio > 0.0
+	if not surface.visible:
+		return
+	var bottom: float = bottom_y
+	var top: float = top_y
+	if auto_fit_shape and is_instance_valid(shape_node) and _box != null:
+		bottom = shape_node.position.y - _box.size.y * 0.5
+		top = shape_node.position.y + _box.size.y * 0.5
+	surface.position.y = lerpf(bottom, top, ratio)
+"
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
 size = Vector3(0.562, 0.78, 0.413)
 
@@ -82,6 +185,7 @@ debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
 
 [node name="吸水区" parent="场景" unique_id=880080188 instance=ExtResource("17_sink")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8686645, -0.32407093, 2.488775)
+script = SubResource("GDScript_rw886")
 capacity = 9.7811
 
 [node name="草堆" type="Node3D" parent="场景" unique_id=1872029055]
