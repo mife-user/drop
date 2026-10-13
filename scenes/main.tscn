@@ -12,23 +12,83 @@
 [ext_resource type="PackedScene" uid="uid://ltjma8yc4edk" path="res://scenes/木碗.tscn" id="10_0ld40"]
 [ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
 [ext_resource type="Script" uid="uid://bfb61dybj85il" path="res://scripts/day_night.gd" id="11_daynight"]
+[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/吸水区.gd" id="12_jscy8"]
+[ext_resource type="Script" uid="uid://ckcs27n5fcp7u" path="res://scripts/水面.gd" id="13_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://lfxle76y58ea" path="res://scenes/路灯.tscn" id="13_trceg"]
 [ext_resource type="Script" uid="uid://ciengu2qtaaec" path="res://scripts/水枪.gd" id="14_gun"]
 [ext_resource type="PackedScene" path="res://scenes/水块.tscn" id="15_blob"]
 [ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水块容器.gd" id="16_field"]
-[ext_resource type="PackedScene" uid="uid://dgnn5wh35jn7q" path="res://scenes/吸水区.tscn" id="17_sink"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
-size = Vector3(6.0259156, 2.4327393, 5.6104865)
+size = Vector3(6.0259156, 2.4327393, 5.9381275)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yc10j"]
+size = Vector3(5.815387, 1.3226776, 5.4978156)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_3o8g1"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wx2l2"]
+noise = SubResource("FastNoiseLite_3o8g1")
+seamless = true
+as_normal_map = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s55e4"]
+transparency = 1
+depth_draw_mode = 1
+albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.8117647)
+roughness = 0.0
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_wx2l2")
+refraction_enabled = true
+refraction_texture = SubResource("NoiseTexture2D_wx2l2")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+uv1_triplanar_sharpness = 0.4756823
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_s55e4"]
+material = SubResource("StandardMaterial3D_s55e4")
+size = Vector3(6.311968, 1, 5.5394897)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hydrant"]
 size = Vector3(0.562, 0.78, 0.413)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ladder_trigger"]
 size = Vector3(1, 1.7, 1.1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_01bhw"]
+height = 1.4888916
+radius = 2.8989258
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jscy8"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_pm3ni"]
+noise = SubResource("FastNoiseLite_jscy8")
+seamless = true
+as_normal_map = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y6deb"]
+transparency = 1
+depth_draw_mode = 1
+albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.80784315)
+roughness = 0.0
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_pm3ni")
+refraction_enabled = true
+refraction_texture = SubResource("NoiseTexture2D_pm3ni")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+uv1_triplanar_sharpness = 0.4756823
+uv1_world_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_phbvy"]
+material = SubResource("StandardMaterial3D_y6deb")
+top_radius = 0.028320313
+bottom_radius = 0.028320313
+height = 0.001
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_person"]
 radius = 0.28
@@ -81,13 +141,31 @@ monitoring = false
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, 0.018370628)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, -0.0011246204)
 shape = SubResource("BoxShape3D_pool_exclusion")
 debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
 
-[node name="吸水区" parent="场景/PoolExclusion" unique_id=880080188 instance=ExtResource("17_sink")]
+[node name="吸水区" type="Area3D" parent="场景/PoolExclusion" unique_id=880080188 node_paths=PackedStringArray("surface", "shape_node")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
+collision_layer = 8
+collision_mask = 4
+monitorable = false
+script = ExtResource("12_jscy8")
 capacity = 9.7811
+surface = NodePath("水面")
+shape_node = NodePath("CollisionShape3D")
+surface_kind = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion/吸水区" unique_id=214760503]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.22990632, -0.67972565, 0.0294137)
+shape = SubResource("BoxShape3D_yc10j")
+debug_color = Color(0.18294686, 0.51271874, 1, 0.77254903)
+
+[node name="水面" type="MeshInstance3D" parent="场景/PoolExclusion/吸水区" unique_id=75791470]
+transform = Transform3D(0.991006, 0, 0, 0, 1.3226776, 0, 0, 0, 1.0021315, 0, -0.67972565, 0)
+mesh = SubResource("BoxMesh_s55e4")
+script = ExtResource("13_pm3ni")
+flow_speed = Vector2(0.05, 0.02)
 
 [node name="草堆" type="Node3D" parent="场景" unique_id=1872029055]
 
@@ -188,6 +266,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 1.04, 0)
 [node name="木碗" parent="场景" unique_id=1846252498 instance=ExtResource("10_0ld40")]
 transform = Transform3D(3.965, 0, 0, 0, 3.965, 0, 0, 0, 3.965, 0, 0, -9.021)
 
+[node name="吸水区" type="Area3D" parent="场景/木碗" unique_id=1097634554 node_paths=PackedStringArray("surface", "shape_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01840479, -0.018748684, 0.0014121116)
+collision_layer = 8
+collision_mask = 4
+monitorable = false
+script = ExtResource("12_jscy8")
+surface = NodePath("水面")
+shape_node = NodePath("CollisionShape3D")
+top_y = 0.5
+surface_kind = 1
+surface_fit = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/木碗/吸水区" unique_id=585536067]
+transform = Transform3D(0.030001111, 0, 0, 0, 0.030001111, 0, 0, 0, 0.030001111, 0.017141394, 0.12851691, 0.00012988225)
+shape = SubResource("CylinderShape3D_01bhw")
+
+[node name="水面" type="MeshInstance3D" parent="场景/木碗/吸水区" unique_id=987334987]
+transform = Transform3D(0.9911059, 0, 0, 0, 1.3226818, 0, 0, 0, 1.0021356, 0.001606036, 0.14141896, -0.0054945946)
+mesh = SubResource("CylinderMesh_phbvy")
+script = ExtResource("13_pm3ni")
+flow_speed = Vector2(0.05, 0.02)
+
 [node name="OmniLight3D" type="OmniLight3D" parent="场景/木碗" unique_id=667751734]
 omni_range = 0.658
 omni_attenuation = 2.985
@@ -241,7 +341,7 @@ script = ExtResource("14_gun")
 field = NodePath("../../水块容器")
 muzzle = NodePath("../人物/水枪/Muzzle")
 camera = NodePath("../Camera3D")
-blob_size = 0.9700000000000001
+blob_size = 0.16999999999999998
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")

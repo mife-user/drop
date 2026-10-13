@@ -15,6 +15,8 @@ class_name WaterSink
 ## 水平方向 = 碰撞盒的尺寸（含 CollisionShape3D 节点自己的缩放），水体盒的高度 = 水位。
 ## 网格自身多大都无所谓，会被缩放到正好贴合 —— 水池那种方容器用方网格，
 ## 木碗那种圆容器用圆柱网格，只是换网格 + 把 surface_fit 改成 ROUND 的事。
+## 碰撞盒的形状：BoxShape3D / CylinderShape3D / SphereShape3D / CapsuleShape3D 都认
+##（见 _shape_extents），换别的形状要回来加一条分支，否则会打印警告并退回手填高度。
 ## 所以「水面」节点在编辑器里的 transform 只是「满水长什么样」的预览，运行时会被覆盖 ——
 ## 要让水铺得更开或收窄，去改 CollisionShape3D，改水面节点本身没用。
 
@@ -55,7 +57,7 @@ enum SurfaceFit {
 ## 当前水量（立方米），和 capacity 同单位。
 var amount: float = 0.0
 
-var _box: BoxShape3D
+var _shape: Shape3D
 var _mesh_size: Vector3 = Vector3.ONE     # 水面网格自身的尺寸（米），用来把「想要的米数」换算成 scale
 var _mesh_center: Vector3 = Vector3.ZERO  # 网格原点相对自身包围盒中心的偏移（米），贴池底时要减掉
 
@@ -65,17 +67,18 @@ func _ready() -> void:
 	if not is_instance_valid(shape_node):
 		shape_node = _find_shape()
 	if is_instance_valid(shape_node):
-		_box = shape_node.shape as BoxShape3D
-		if _box == null:
-			push_warning("吸水区：碰撞盒不是 BoxShape3D，水面大小和高度范围只能自己调")
+		_shape = shape_node.shape
+		if _shape == null:
+			push_warning("吸水区：碰撞盒没挂 shape，水面大小和高度范围只能自己调")
+		elif _shape_extents(_shape) == Vector3.ZERO:
+			push_warning("吸水区：认不出 %s 这种碰撞形状，水面大小和高度范围只能自己调（手填 bottom_y / top_y）" % _shape.get_class())
 	# 量一次水面网格自身的包围盒：脚本是按「米」摆水面的，换算成 scale 得先知道网格本来多大。
 	# 1×1 的平面和 6×5.5 的盒子都能量，以后换成别的模型也不用改代码。
 	if is_instance_valid(surface) and surface.mesh != null:
 		var bounds: AABB = surface.mesh.get_aabb()
 		_mesh_size = Vector3(maxf(bounds.size.x, 0.0001), maxf(bounds.size.y, 0.0001), maxf(bounds.size.z, 0.0001))
 		_mesh_center = bounds.get_center()
-	_resize_surface()
-	_update_surface()
+	_update_surface()   # 里面会先按碰撞盒贴合一次，再按当前水量摆水位
 
 
 ## 有一团水进来了：收下它的体积。已经被别的吸水区收走的水团会返回 0，不会重复计。
@@ -102,29 +105,60 @@ func _find_shape() -> CollisionShape3D:
 	return null
 
 
+## 把碰撞形状翻译成「形状自己坐标系里的外接尺寸」，也就是一个方盒该多大。
+##
+## 物理引擎只认形状本身，而水面要的是一个方盒范围，所以得按类型各算各的：
+## 池子用方盒，木碗 / 花盆用圆柱 —— 换成圆柱网格只是换网格 + 把 surface_fit 改成 ROUND 的事，
+## 碰撞盒用什么形状都行。返回 Vector3.ZERO 表示这种形状还不认识（水面退回手填的 bottom_y / top_y）。
+##
+## 圆柱取的是外接方盒（直径 × 高）：横向正好把圆柱框住，配上 surface_fit = ROUND 再取内切圆，
+## 得到的就是半径本身，水面对得上碗口。
+func _shape_extents(s: Shape3D) -> Vector3:
+	if s is BoxShape3D:
+		return (s as BoxShape3D).size
+	if s is CylinderShape3D:
+		var cyl := s as CylinderShape3D
+		return Vector3(cyl.radius * 2.0, cyl.height, cyl.radius * 2.0)
+	if s is SphereShape3D:
+		var d: float = (s as SphereShape3D).radius * 2.0
+		return Vector3(d, d, d)
+	if s is CapsuleShape3D:
+		var cap := s as CapsuleShape3D
+		# Godot 4 的 CapsuleShape3D.height 已经把两头的半球算进去了，别再各加一个半径
+		return Vector3(cap.radius * 2.0, cap.height, cap.radius * 2.0)
+	return Vector3.ZERO
+
+
 ## 碰撞盒在「本节点坐标系」里的实际大小 —— 也就是水面该铺多大。
 ##
 ## 关键是**乘上 CollisionShape3D 节点自己的缩放**：物理引擎算碰撞时就是这么算的，
-## 而 shape.size 只是盒子资源自己的尺寸，不含这一层。
+## 而 shape 的 size / radius 只是形状资源自己的尺寸，不含这一层。
 ## 把碰撞盒节点缩小来适配小容器（木碗、花盆）时，漏掉它水面就会整整大出 1/缩放 倍 ——
 ## 缩到 0.13 就是大 7.7 倍，几米宽的水面糊在小碗上。
-func _box_size() -> Vector3:
-	if _box == null or not is_instance_valid(shape_node):
-		return Vector3.ONE
+##
+## 返回 Vector3.ZERO 表示「没用」—— 没挂碰撞盒，或形状不认识，调用方要退回手填高度。
+func _container_size() -> Vector3:
+	if _shape == null or not is_instance_valid(shape_node):
+		return Vector3.ZERO
+	var ext: Vector3 = _shape_extents(_shape)
+	if ext == Vector3.ZERO:
+		return Vector3.ZERO
 	return Vector3(
-			_box.size.x * absf(shape_node.scale.x),
-			_box.size.y * absf(shape_node.scale.y),
-			_box.size.z * absf(shape_node.scale.z))
+			ext.x * absf(shape_node.scale.x),
+			ext.y * absf(shape_node.scale.y),
+			ext.z * absf(shape_node.scale.z))
 
 
 ## 水面网格的水平位置和大小跟随碰撞盒；改碰撞盒尺寸，水面自动跟着变。
 ## 网格自身多大都行：这里按「想要的米数 ÷ 网格原始尺寸」算出 scale。
 func _resize_surface() -> void:
-	if not is_instance_valid(surface) or not is_instance_valid(shape_node) or _box == null:
+	if not is_instance_valid(surface):
+		return
+	var box: Vector3 = _container_size()
+	if box == Vector3.ZERO:
 		return
 	surface.position.x = shape_node.position.x
 	surface.position.z = shape_node.position.z
-	var box: Vector3 = _box_size()
 	# 除以网格自身的尺寸，是为了「网格本来多大都行」—— 1×1 的平面、6 米的盒子、
 	# 碗用的圆柱，都会被缩放到正好贴合。
 	# scale.y 归 _update_surface 管（水体盒的高度），这里别动。
@@ -142,16 +176,20 @@ func _resize_surface() -> void:
 func _update_surface() -> void:
 	if not is_instance_valid(surface):
 		return
+	# 每次都重新贴合一遍碰撞盒：这样运行中在检查器里改碰撞盒尺寸（远程场景树），
+	# 下一团水进来时水面就跟着变了，不用重启。改尺寸的开销就是几次乘法。
+	_resize_surface()
 	var ratio: float = clampf(amount / maxf(capacity, 0.0001), 0.0, 1.0)
 	surface.visible = ratio > 0.0
 	if not surface.visible:
 		return
 	var bottom: float = bottom_y
 	var top: float = top_y
-	if auto_fit_shape and is_instance_valid(shape_node) and _box != null:
-		var box: Vector3 = _box_size()
-		bottom = shape_node.position.y - box.y * 0.5
-		top = shape_node.position.y + box.y * 0.5
+	if auto_fit_shape:
+		var box: Vector3 = _container_size()
+		if box != Vector3.ZERO:
+			bottom = shape_node.position.y - box.y * 0.5
+			top = shape_node.position.y + box.y * 0.5
 	var level: float = lerpf(bottom, top, ratio)
 	# 网格原点不一定落在包围盒中心（BoxMesh / PlaneMesh 默认在，换成 glb 就可能不在），贴池底时要减掉
 	var center_y: float = _mesh_center.y * surface.scale.y
