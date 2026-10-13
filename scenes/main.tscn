@@ -25,6 +25,7 @@
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
 [ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水量灯.gd" id="24_waterlight"]
 [ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水量字幕.gd" id="25_zimu"]
+[ext_resource type="PackedScene" path="res://scenes/开始界面.tscn" id="26_menu"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
@@ -370,6 +371,7 @@ floor_max_angle = 1.0471976
 floor_snap_length = 0.3
 script = ExtResource("10_player")
 camera = NodePath("Camera3D")
+capture_on_start = false
 
 [node name="人物" parent="主人公" unique_id=1662065269 instance=ExtResource("8_85g3d")]
 
@@ -403,3 +405,8 @@ night_ambient_energy = 0.5
 [node name="界面" type="CanvasLayer" parent="." unique_id=1405358798]
 
 [node name="Money" parent="界面" unique_id=45251491 instance=ExtResource("1_y6deb")]
+
+[node name="开始界面" parent="." instance=ExtResource("26_menu") node_paths=PackedStringArray("player", "player_camera", "hud")]
+player = NodePath("../主人公")
+player_camera = NodePath("../主人公/Camera3D")
+hud = NodePath("../界面")

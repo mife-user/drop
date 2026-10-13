@@ -1,0 +1,223 @@
+[gd_scene format=3 uid="uid://c66iqhguwlyqi"]
+
+[ext_resource type="Script" uid="uid://bperujmqvrw44" path="res://scripts/开始界面.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://c2ldlfy121tew" path="res://scripts/菜单按钮.gd" id="2_btn"]
+
+[sub_resource type="Gradient" id="Gradient_curtain"]
+offsets = PackedFloat32Array(0, 0.42, 1)
+colors = PackedColorArray(0, 0, 0, 0.9, 0, 0, 0, 0.42, 0, 0, 0, 0.02)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_curtain"]
+gradient = SubResource("Gradient_curtain")
+width = 512
+height = 8
+
+[sub_resource type="SystemFont" id="SystemFont_title"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+font_weight = 700
+subpixel_positioning = 0
+
+[sub_resource type="SystemFont" id="SystemFont_ui"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
+[sub_resource type="FontVariation" id="FontVariation_sub"]
+base_font = SubResource("SystemFont_ui")
+spacing_glyph = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_normal"]
+content_margin_left = 24.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pressed"]
+content_margin_left = 24.0
+bg_color = Color(0.372549, 0.827451, 0.952941, 0.14)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
+content_margin_left = 24.0
+bg_color = Color(1, 1, 1, 0.06)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+content_margin_left = 24.0
+
+[node name="开始界面" type="Node" unique_id=1165798844 node_paths=PackedStringArray("god_camera", "ui_layer", "curtain", "title_block", "button_block", "start_button", "quit_button")]
+script = ExtResource("1_menu")
+god_camera = NodePath("上帝相机")
+ui_layer = NodePath("界面")
+curtain = NodePath("界面/幕布")
+title_block = NodePath("界面/标题块")
+button_block = NodePath("界面/按钮组")
+start_button = NodePath("界面/按钮组/开始游戏")
+quit_button = NodePath("界面/按钮组/退出游戏")
+
+[node name="上帝相机" type="Camera3D" parent="." unique_id=298528038]
+transform = Transform3D(-1, 0, 0, 0, 0.48215547, 0.876693, 0, 0.876693, -0.48215547, 11.421119, 34.63442, -17.695728)
+current = true
+fov = 55.0
+
+[node name="界面" type="CanvasLayer" parent="." unique_id=1183920422]
+layer = 10
+
+[node name="幕布" type="Control" parent="界面" unique_id=695397866]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="压暗" type="ColorRect" parent="界面/幕布" unique_id=1853243287]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.3)
+
+[node name="渐隐" type="TextureRect" parent="界面/幕布" unique_id=1424020392]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_curtain")
+expand_mode = 1
+
+[node name="标题块" type="VBoxContainer" parent="界面" unique_id=837680837]
+offset_left = 72.0
+offset_top = 44.0
+offset_right = 480.0
+offset_bottom = 300.0
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="标题" type="Label" parent="界面/标题块" unique_id=666049897]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 5
+theme_override_fonts/font = SubResource("SystemFont_title")
+theme_override_font_sizes/font_size = 120
+text = "滴"
+
+[node name="标题线" type="ColorRect" parent="界面/标题块" unique_id=879056764]
+custom_minimum_size = Vector2(56, 4)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+color = Color(0.372549, 0.827451, 0.952941, 1)
+
+[node name="间隔" type="Control" parent="界面/标题块" unique_id=2000212658]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="副标题" type="Label" parent="界面/标题块" unique_id=2119616188]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.55)
+theme_override_fonts/font = SubResource("FontVariation_sub")
+theme_override_font_sizes/font_size = 18
+text = "DROP · 涌现"
+
+[node name="按钮组" type="VBoxContainer" parent="界面" unique_id=1234143916]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 72.0
+offset_top = -20.0
+offset_right = 480.0
+offset_bottom = 240.0
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="开始游戏" type="Button" parent="界面/按钮组" unique_id=1095412214]
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.72)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxEmpty_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "开始游戏"
+alignment = 0
+script = ExtResource("2_btn")
+indicator = NodePath("指示条")
+
+[node name="指示条" type="ColorRect" parent="界面/按钮组/开始游戏" unique_id=70571032]
+layout_mode = 0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.0
+offset_top = -12.0
+offset_right = 18.0
+offset_bottom = 12.0
+scale = Vector2(1, 1e-05)
+pivot_offset = Vector2(2, 12)
+mouse_filter = 2
+color = Color(0.372549, 0.827451, 0.952941, 1)
+
+[node name="退出游戏" type="Button" parent="界面/按钮组" unique_id=76571493]
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.72)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 34
+theme_override_styles/normal = SubResource("StyleBoxEmpty_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "退出游戏"
+alignment = 0
+script = ExtResource("2_btn")
+indicator = NodePath("指示条")
+
+[node name="指示条" type="ColorRect" parent="界面/按钮组/退出游戏" unique_id=1253847886]
+layout_mode = 0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.0
+offset_top = -12.0
+offset_right = 18.0
+offset_bottom = 12.0
+scale = Vector2(1, 1e-05)
+pivot_offset = Vector2(2, 12)
+mouse_filter = 2
+color = Color(0.372549, 0.827451, 0.952941, 1)
+
+[node name="间隔2" type="Control" parent="界面/按钮组" unique_id=1598079099]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="提示" type="Label" parent="界面/按钮组" unique_id=1963161166]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.32)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 15
+text = "↑ ↓ 选择 · Enter 确认"
