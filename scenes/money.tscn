@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://bk480175ewuco"]
+
+[ext_resource type="Script" uid="uid://dl66c7d2qrwg3" path="res://scripts/money.gd" id="1_money"]
+[ext_resource type="Texture2D" uid="uid://dpy5foaipftkj" path="res://resources/绿钞玩偶.png" id="2_doll"]
+
+[node name="Money" type="HBoxContainer" unique_id=45251491]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 72.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="Money" type="TextureRect" parent="." unique_id=908220226]
+custom_minimum_size = Vector2(108, 56)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_doll")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Money2" type="Label" parent="." unique_id=53292539]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 40
+text = "x 0"
+vertical_alignment = 1
+script = ExtResource("1_money")

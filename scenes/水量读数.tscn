@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/水量读数.gd" id="1_readout"]
+
+[node name="水量读数" type="Label3D"]
+billboard = 1
+font_size = 64
+pixel_size = 0.005
+outline_size = 16
+outline_modulate = Color(0, 0, 0, 1)
+text = "0.000 / 0.000 m³"
+script = ExtResource("1_readout")

@@ -2,6 +2,13 @@ extends Node3D
 
 ## 奶蛋在镜头内随机活动约30秒，再沿安全路线走出镜头，完全离屏才隐藏。
 ## 泳池禁区的范围改 场景/PoolExclusion/CollisionShape3D 的 shape，指向哪个节点改下面的 pool_exclusion。
+##
+## 出场分两种模式，由 gate_sink 决定：
+##   留空 —— 不要门槛，等 first_delay 之后出场，之后一直循环
+##          （出场 → 漫游 → 离场 → 等 respawn_delay → 再出场）。
+##   填了 —— **一次性启动**：容器装满之前奶蛋根本不出现；装满的瞬间从 spawn_marker 冒出来，
+##          这一颗走完（完全离屏）后就永久停工，不会有第二颗。
+## 主场景用的是后者：把木碗射满，奶蛋从碗里蹦出来，一辈子只出现这一只。
 
 ## 用于判定可见范围的摄像机。
 @export var camera: Camera3D
@@ -9,6 +16,15 @@ extends Node3D
 ## 指向 场景/PoolExclusion 下的 CollisionShape3D；用节点引用而不是字符串路径，
 ## 这样在编辑器里挪动或重命名节点时 Godot 会自动更新，不会出现"路径失效但没人发现"。
 @export var pool_exclusion: CollisionShape3D
+## 出场门槛：这个容器**装满之后**才允许奶蛋出现，且只出现这一颗（一次性启动）。
+## 留空 = 不要门槛，一直按老规矩循环出场。
+## 拖「场景/木碗/吸水区」过来即可 —— 这里只认 WaterSink 的 filled 信号，
+## 不认识木碗、也不管水是谁倒的，以后换成水池、花盆当门槛，直接换这个引用就行。
+@export var gate_sink: WaterSink
+## 奶蛋从哪个点出生。填了之后第一段路也从这里起跳，留空 = 沿用原来的全屏随机选点。
+## 拖「场景/木碗/出生点」过来即可；位置随时可以在编辑器里拖着调 ——
+## 出场时会落到它**正下方**的地面上，所以只有横向位置有意义，高度不用管。
+@export var spawn_marker: Node3D
 ## 完全走出镜头并消失后，等待多少秒再次随机出现。
 @export_range(0.1, 120.0, 0.1) var respawn_delay: float = 10.0
 ## 首次出现的最短等待时间（秒）。
@@ -50,6 +66,9 @@ var exiting: bool = false
 var _need_route: bool = false
 var _route_retry_left: float = 0.0
 var _exit_path := PackedVector3Array()
+var _gated: bool = false      # 配了门槛：要等容器装满才出场
+var _unlocked: bool = false   # 门槛已经满足，可以出场了
+var _spawn_wait: float = 0.0  # 出生点一直不合格的累计时间，用来限流那条警告
 
 
 ## 随机定时器只提出出场请求；物理帧中检查场景后才真正出场。
@@ -64,7 +83,15 @@ func _ready() -> void:
 	_query.exclude = [_actor.get_rid()]
 	_query.collision_mask = _actor.collision_mask
 	_timer.timeout.connect(func() -> void: _spawn_due = true)
-	_timer.start(_random_delay(first_delay_min, first_delay_max))
+	if not is_instance_valid(gate_sink):
+		_timer.start(_random_delay(first_delay_min, first_delay_max))
+		return
+	# 有门槛：装满之前连计时器都不启动 —— 所以碗空着的时候奶蛋绝对不会出现，不靠每帧判断。
+	_gated = true
+	gate_sink.filled.connect(_on_gate_filled)
+	# 场景一加载门槛就已经是满的（编辑器里预填、或者读档）也要认，不能只等信号
+	if gate_sink.amount >= gate_sink.capacity:
+		_on_gate_filled()
 
 
 ## 未退场时不启用第二只；每次出场都按摄像机当前视野重新选路线。
@@ -81,19 +108,36 @@ func _physics_process(delta: float) -> void:
 			_actor.deactivate()
 			# 冷却从真正离屏时开始，移动和寻找出口期间不累计等待时间。
 			_spawn_due = false
-			_timer.start(maxf(0.1, respawn_delay))
+			# 有门槛时故意不重启计时器：装满只算一次性启动，这一颗走完就不会有下一颗了
+			if not _gated:
+				_timer.start(maxf(0.1, respawn_delay))
 			return
 		if _need_route and _route_retry_left <= 0.0:
 			_assign_next_leg()
 		return
 	if not _spawn_due:
 		return
-	_spawn_due = false
 	if not is_instance_valid(camera):
 		camera = get_viewport().get_camera_3d()
 	if not is_instance_valid(camera):
+		_spawn_due = false
 		_timer.start(retry_delay)
 		return
+	# 出生点得先能安全站住（在镜头里、脚下是平地、身体和跳跃的高度都不穿东西），
+	# 不然一出来就会被 movement_guard 当场取消。这里每帧只做几次视锥判断，
+	# 比重新找一遍路线便宜得多，所以不消耗 _spawn_due，也不占用 retry_delay。
+	if is_instance_valid(spawn_marker) and not _spawn_point_clear():
+		# 大部分时候只是玩家正背对木碗，安静等它转回来就行；
+		# 只有「脚下压根没有地面」（marker 被拖到泳池里 / 屋顶上 / 地图外）才算配置错误，要出声 ——
+		# 每 5 秒报一次，免得奶蛋死活不出来还查不出原因。
+		_spawn_wait += delta
+		if _spawn_wait >= 5.0:
+			_spawn_wait = 0.0
+			if not _ground_at(spawn_marker.global_position).is_finite():
+				push_warning("MilkeggEncounter：出生点「%s」脚下找不到平地，奶蛋永远出不来" % spawn_marker.name)
+		return
+	_spawn_wait = 0.0
+	_spawn_due = false
 	_space = get_world_3d().direct_space_state
 	# 检测完整弹跳所占的空间，不只检查起点和终点。
 	_clearance.radius = 0.33
@@ -115,13 +159,39 @@ func _physics_process(delta: float) -> void:
 	_timer.stop()
 
 
+## 门槛容器第一次装满：解锁，下一物理帧就出场。
+## 只认信号，不看水是谁倒的、也不管之后还剩多少 —— 装满就是一次性启动。
+func _on_gate_filled() -> void:
+	if _unlocked:
+		return
+	_unlocked = true
+	_spawn_due = true
+
+
+## 出生点这会儿能不能安全地站住：在镜头里、脚下是平地、身体和跳跃高度都不穿东西。
+## 用的就是选路时那一套判定，所以出生点合格 = 第一段路线一定走得通，不会一出来就被守卫取消。
+func _spawn_point_clear() -> bool:
+	var point: Vector3 = _ground_at(spawn_marker.global_position)
+	return point.is_finite() and _point_safe(point)
+
+
 func _random_delay(minimum: float, maximum: float) -> float:
 	return _rng.randf_range(maxf(0.1, minf(minimum, maximum)), maxf(0.1, maxf(minimum, maximum)))
 
 
-## 随机位置覆盖整个可见地面；在多条可行路线中按区域均衡抽取。
+## 第一段路线。摆了出生点就固定从它起跳（奶蛋从容器里冒出来），
+## 否则沿用原来「全屏随机取两个安全点」的做法。
 ## 找不到安全穿行路线时推迟出场，绝不退回到不安全的位置。
 func _choose_route() -> PackedVector3Array:
+	if is_instance_valid(spawn_marker):
+		# 出生点先贴到地面上：路线上的每个采样点都要踩得实，安全检查才过得去
+		var start: Vector3 = _ground_at(spawn_marker.global_position)
+		if not start.is_finite():
+			return PackedVector3Array()
+		var destination: Vector3 = _choose_roam_target(start)
+		if not destination.is_finite():
+			return PackedVector3Array()
+		return PackedVector3Array([start, destination])
 	var points: Array[Vector3] = []
 	var screen_points: Array[Vector2] = []
 	var viewport_size: Vector2 = camera.get_viewport().get_visible_rect().size

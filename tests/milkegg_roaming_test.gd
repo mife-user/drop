@@ -12,8 +12,13 @@ func _run() -> void:
 	var args: PackedStringArray = OS.get_cmdline_user_args()
 	root.size = Vector2i(int(args[0]), int(args[1])) if args.size() >= 2 else Vector2i(1152, 648)
 	var scene: Node = load("res://scenes/main.tscn").instantiate()
+	var manager: Node = scene.get_node("奶神")
+	# 主场景现在把出场锁在木碗上（射满碗才出一次，而且只出这一颗）。
+	# 这个测试专门验证「随机选路 + 反复出场」那套逻辑，所以在入树之前把门槛和出生点都摘掉，
+	# 回到没配门槛时的循环行为 —— instantiate 之后、add_child 之前改，_ready 还没跑，来得及。
+	manager.gate_sink = null
+	manager.spawn_marker = null
 	root.add_child(scene)
-	var manager: Node = scene.get_node("MilkeggEncounter")
 	var actor: CharacterBody3D = manager.get_node("奶蛋")
 	manager.get("_rng").seed = int(args[2]) if args.size() >= 3 else 81234
 	actor.crossing_finished.connect(func(reached: bool) -> void:
