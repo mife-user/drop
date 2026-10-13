@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://c8r583eoccqx7" path="res://scenes/草堆.tscn" id="7_dp3eg"]
 [ext_resource type="PackedScene" path="res://scenes/水量读数.tscn" id="7_og1vs"]
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="7_tipki"]
-[ext_resource type="PackedScene" uid="uid://dm6o34u6waxn3" path="res://resources/人物.glb" id="8_85g3d"]
 [ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/milkegg_encounter.gd" id="9_encounter"]
 [ext_resource type="PackedScene" uid="uid://ltjma8yc4edk" path="res://scenes/木碗.tscn" id="10_0ld40"]
 [ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
@@ -21,11 +20,12 @@
 [ext_resource type="PackedScene" path="res://scenes/水块.tscn" id="15_blob"]
 [ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水块容器.gd" id="16_field"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
+[ext_resource type="PackedScene" uid="uid://cavm1650y8qe3" path="res://scenes/人物.tscn" id="22_2wyq8"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
 [ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水量灯.gd" id="24_waterlight"]
 [ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水量字幕.gd" id="25_zimu"]
-[ext_resource type="PackedScene" path="res://scenes/开始界面.tscn" id="26_menu"]
+[ext_resource type="PackedScene" uid="uid://c66iqhguwlyqi" path="res://scenes/开始界面.tscn" id="26_menu"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
@@ -373,14 +373,6 @@ script = ExtResource("10_player")
 camera = NodePath("Camera3D")
 capture_on_start = false
 
-[node name="人物" parent="主人公" unique_id=1662065269 instance=ExtResource("8_85g3d")]
-
-[node name="水枪" parent="主人公/人物" unique_id=1294209234 instance=ExtResource("7_tipki")]
-transform = Transform3D(0.0486338, 0, -0.9988168, 0, 1, 0, 0.9988168, 0, 0.0486338, -0.27915835, 0.7193252, 0.29799223)
-
-[node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1057127873]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="主人公" unique_id=2016124640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.845, 0)
 shape = SubResource("CapsuleShape3D_person")
@@ -396,6 +388,14 @@ muzzle = NodePath("../人物/水枪/Muzzle")
 camera = NodePath("../Camera3D")
 blob_size = 0.16999999999999998
 
+[node name="人物" parent="主人公" unique_id=2068944398 instance=ExtResource("22_2wyq8")]
+
+[node name="水枪" parent="主人公/人物" unique_id=1937551107 instance=ExtResource("7_tipki")]
+transform = Transform3D(0.0486338, 0, -0.9988168, 0, 1, 0, 0.9988168, 0, 0.0486338, -0.2791586, 0.7193252, 0.29799223)
+
+[node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1686800199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")
 script = ExtResource("11_daynight")
@@ -406,7 +406,7 @@ night_ambient_energy = 0.5
 
 [node name="Money" parent="界面" unique_id=45251491 instance=ExtResource("1_y6deb")]
 
-[node name="开始界面" parent="." instance=ExtResource("26_menu") node_paths=PackedStringArray("player", "player_camera", "hud")]
+[node name="开始界面" parent="." unique_id=1160799467 node_paths=PackedStringArray("player", "player_camera", "hud") instance=ExtResource("26_menu")]
 player = NodePath("../主人公")
 player_camera = NodePath("../主人公/Camera3D")
 hud = NodePath("../界面")

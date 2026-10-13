@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cavm1650y8qe3"]
+
+[ext_resource type="PackedScene" uid="uid://dn6dpnlf4absk" path="res://resources/人物/人物.fbx" id="1_isq7a"]
+
+[node name="人物" unique_id=2068944398 instance=ExtResource("1_isq7a")]
+
+[node name="Skeleton3D" parent="骨架" parent_id_path=PackedInt32Array(1983792403) index="0" unique_id=456849209]
+bones/1/position = Vector3(0, 0.0067832507, 8.4703295e-22)
+bones/1/rotation = Quaternion(0, 1.1920927e-07, 0, 1)
+bones/2/position = Vector3(-4.2351647e-22, 0.0054706233, 0)
+bones/2/rotation = Quaternion(0, 1.8189894e-14, 0, 1)
+bones/4/position = Vector3(0.0016077752, 0.004542979, -0.00012813426)
+bones/4/rotation = Quaternion(1.4755624e-07, -1.6462492e-07, -0.71611047, 0.697987)
+bones/4/scale = Vector3(1.0000001, 0.99999994, 1)
+bones/5/position = Vector3(2.3096354e-09, 0.0014757337, -6.178057e-11)
+bones/5/rotation = Quaternion(-5.4749137e-08, 8.233913e-09, 0.012815161, 0.99991786)
+bones/5/scale = Vector3(0.99999976, 0.9999999, 1)
+bones/7/position = Vector3(-0.0015674693, 0.0046702335, 0.00020605772)
+bones/7/rotation = Quaternion(0.052330673, -0.1362039, 0.7192448, 0.6792621)
+bones/7/scale = Vector3(1, 1, 0.99999994)
+bones/8/position = Vector3(8.9135166e-10, 0.00157359, 1.6979948e-10)
+bones/8/rotation = Quaternion(0.025596045, 0.10862965, -0.025773996, 0.9934184)
+bones/8/scale = Vector3(1, 1, 1)
+bones/10/position = Vector3(0.0011152849, 0.0067524835, -0.0001281342)
+bones/10/rotation = Quaternion(-7.54979e-08, 0, 1, 0)
+bones/11/position = Vector3(1.7347235e-18, 0.002245953, -1.1920929e-11)
+bones/13/position = Vector3(-0.0012091217, 0.0066540316, 8.4703295e-22)
+bones/13/rotation = Quaternion(4.371139e-08, 0, 1, 0)
+bones/14/position = Vector3(4.3368087e-19, 0.0021321157, 5.9604643e-12)
+bones/14/rotation = Quaternion(0, -6.617445e-24, 0, 1)
