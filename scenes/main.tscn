@@ -26,6 +26,8 @@
 [ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水量灯.gd" id="24_waterlight"]
 [ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水量字幕.gd" id="25_zimu"]
 [ext_resource type="PackedScene" uid="uid://c66iqhguwlyqi" path="res://scenes/开始界面.tscn" id="26_menu"]
+[ext_resource type="PackedScene" uid="uid://cvl1o6t36qqu1" path="res://scenes/水枪升级.tscn" id="27_upgrade"]
+[ext_resource type="PackedScene" path="res://scenes/交互准星.tscn" id="28_cross"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
@@ -396,6 +398,15 @@ transform = Transform3D(0.0486338, 0, -0.9988168, 0, 1, 0, 0.9988168, 0, 0.04863
 [node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1686800199]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
 
+[node name="水枪升级" parent="." unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun", "field", "crosshair", "panel", "body") instance=ExtResource("27_upgrade")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1.9994831, 1.1682342, -7.836715)
+wallet = NodePath("../界面/Money/Money2")
+gun = NodePath("../主人公/水枪发射器")
+field = NodePath("../水块容器")
+crosshair = NodePath("../界面/交互准星")
+panel = NodePath("面板")
+body = NodePath("实体")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")
 script = ExtResource("11_daynight")
@@ -405,6 +416,9 @@ night_ambient_energy = 0.5
 [node name="界面" type="CanvasLayer" parent="." unique_id=1405358798]
 
 [node name="Money" parent="界面" unique_id=45251491 instance=ExtResource("1_y6deb")]
+
+[node name="交互准星" parent="界面" unique_id=895977667 instance=ExtResource("28_cross")]
+layout_mode = 3
 
 [node name="开始界面" parent="." unique_id=1160799467 node_paths=PackedStringArray("player", "player_camera", "hud") instance=ExtResource("26_menu")]
 player = NodePath("../主人公")

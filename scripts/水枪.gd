@@ -30,6 +30,9 @@ const FIRE_ACTION: StringName = &"fire"
 ## 水量按边长的立方（立方米）算，所以**把它调大 —— 或者以后做升级系统在运行时抬高它 ——
 ## 每发灌进水池的水量会真的变多，填满同样容积需要的发数会自动变少**。
 @export_range(0.05, 2.0, 0.01) var blob_size: float = 0.35
+## 能不能开火。升级面板打开时由升级台临时关掉 —— 否则玩家在看面板时按到左键会顺手
+## 滋出一发水。平时保持勾选；取消勾选 = 这把枪彻底不喷水（调场景时用得上）。
+@export var can_fire: bool = true
 
 var _cooldown: float = 0.0
 
@@ -42,8 +45,10 @@ func _physics_process(delta: float) -> void:
 	_fire()
 
 
-## 按住开火键且鼠标处于锁定状态才算开火。
+## 按住开火键、鼠标处于锁定状态、且没被临时关掉，才算开火。
 func _is_firing() -> bool:
+	if not can_fire:
+		return false
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
 	if InputMap.has_action(FIRE_ACTION):
