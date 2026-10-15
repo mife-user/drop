@@ -6,38 +6,19 @@
 font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
 subpixel_positioning = 0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dot"]
-bg_color = Color(1, 1, 1, 0.75)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arm"]
+bg_color = Color(1, 1, 1, 0.85)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0, 0, 0, 0.55)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+border_color = Color(0, 0, 0, 0.5)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_key"]
-content_margin_left = 12.0
-content_margin_top = 5.0
-content_margin_right = 12.0
-content_margin_bottom = 5.0
-bg_color = Color(0.043137256, 0.07058824, 0.09803922, 0.75)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.372549, 0.827451, 0.952941, 0.95)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 6
-shadow_offset = Vector2(0, 2)
-
-[node name="交互准星" type="Control" node_paths=PackedStringArray("dot", "keycap", "hint")]
+[node name="交互准星" type="Control" node_paths=PackedStringArray("hint")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -45,53 +26,49 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_cross")
-dot = NodePath("圆点")
-keycap = NodePath("键帽")
 hint = NodePath("提示")
 
-[node name="圆点" type="Panel" parent="."]
+[node name="十字" type="Control" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -3.0
-offset_top = -3.0
-offset_right = 3.0
-offset_bottom = 3.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dot")
 
-[node name="键帽" type="Panel" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -20.0
-offset_right = 24.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="上" type="Panel" parent="十字"]
+offset_left = -1.0
+offset_top = -13.0
+offset_right = 1.0
+offset_bottom = -4.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_key")
+theme_override_styles/panel = SubResource("StyleBoxFlat_arm")
 
-[node name="E" type="Label" parent="键帽"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="下" type="Panel" parent="十字"]
+offset_left = -1.0
+offset_top = 4.0
+offset_right = 1.0
+offset_bottom = 13.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.372549, 0.827451, 0.952941, 1)
-theme_override_fonts/font = SubResource("SystemFont_ui")
-theme_override_font_sizes/font_size = 20
-text = "E"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_arm")
+
+[node name="左" type="Panel" parent="十字"]
+offset_left = -13.0
+offset_top = -1.0
+offset_right = -4.0
+offset_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_arm")
+
+[node name="右" type="Panel" parent="十字"]
+offset_left = 4.0
+offset_top = -1.0
+offset_right = 13.0
+offset_bottom = 1.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_arm")
 
 [node name="提示" type="Label" parent="."]
 anchors_preset = 8
@@ -100,9 +77,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -400.0
-offset_top = 32.0
+offset_top = 26.0
 offset_right = 400.0
-offset_bottom = 68.0
+offset_bottom = 58.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -111,6 +88,6 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 0.85)
 theme_override_constants/outline_size = 6
 theme_override_fonts/font = SubResource("SystemFont_ui")
 theme_override_font_sizes/font_size = 22
-text = "升级水枪"
+text = "按 E 升级水枪"
 horizontal_alignment = 1
 vertical_alignment = 1

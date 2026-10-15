@@ -2,4 +2,19 @@
 
 [ext_resource type="PackedScene" uid="uid://dn6dpnlf4absk" path="res://resources/人物/人物.fbx" id="1_isq7a"]
 
+[sub_resource type="Animation" id="Animation_isq7a"]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_8fik7"]
+_data = {
+&"走": SubResource("Animation_isq7a")
+}
+
 [node name="人物" unique_id=1587635478 instance=ExtResource("1_isq7a")]
+
+[node name="Skeleton3D" parent="骨架" parent_id_path=PackedInt32Array(38762593) index="0" unique_id=304396775]
+bones/9/rotation = Quaternion(0.048197325, 0.24473767, 0.91421324, 0.31936607)
+bones/9/scale = Vector3(1, 1.0000002, 0.9999999)
+bones/10/rotation = Quaternion(0.24027489, 0.2041234, 0.26430196, 0.9114528)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1" unique_id=999889261]
+"libraries/人物" = SubResource("AnimationLibrary_8fik7")

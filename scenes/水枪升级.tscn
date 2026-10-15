@@ -2,15 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/水枪升级.gd" id="1_station"]
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="2_gun"]
-[ext_resource type="Script" path="res://scripts/升级面板.gd" id="3_panel"]
-[ext_resource type="PackedScene" path="res://scenes/升级行.tscn" id="4_row"]
+[ext_resource type="Script" path="res://scripts/交互面板.gd" id="3_panel"]
+[ext_resource type="PackedScene" path="res://scenes/交互选项行.tscn" id="4_row"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
-size = Vector3(0.72, 0.24, 0.72)
-
-[sub_resource type="SystemFont" id="SystemFont_panel"]
-font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
-subpixel_positioning = 0
+size = Vector3(0.35, 0.58, 0.62)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_back"]
 transparency = 1
@@ -20,7 +16,11 @@ no_depth_test = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_back"]
 material = SubResource("StandardMaterial3D_back")
-size = Vector2(0.9, 0.5)
+size = Vector2(1.2, 0.56)
+
+[sub_resource type="SystemFont" id="SystemFont_panel"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_line"]
 transparency = 1
@@ -30,13 +30,20 @@ no_depth_test = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_line"]
 material = SubResource("StandardMaterial3D_line")
-size = Vector2(0.82, 0.006)
+size = Vector2(1.08, 0.006)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_close"]
+size = Vector3(0.16, 0.12, 0.06)
 
 [node name="水枪升级" type="Node3D"]
 script = ExtResource("1_station")
+prompt_text = "按 E 升级水枪"
+text_blocked = "邮币不足"
+text_done = "已经升到头了"
+text_success = "升级成功"
 
 [node name="水枪" parent="." instance=ExtResource("2_gun")]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.085, 0)
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, 0, 0.085, 0)
 
 [node name="实体" type="StaticBody3D" parent="."]
 collision_layer = 17
@@ -45,59 +52,72 @@ collision_layer = 17
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.07)
 shape = SubResource("BoxShape3D_body")
 
-[node name="面板" type="Node3D" parent="." node_paths=PackedStringArray("money_label", "message_label", "size_row", "speed_row")]
-transform = Transform3D(0, 0, 1, 0.34202015, 0.9396926, 0, -0.9396926, 0.34202015, 0, 0, 0.62, 0)
+[node name="面板" type="Node3D" parent="." node_paths=PackedStringArray("title_label", "footer_label", "message_label", "close_label", "close_area")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.62, 0)
 script = ExtResource("3_panel")
-speed_row = NodePath("速度行")
-size_row = NodePath("大小行")
-money_label = NodePath("邮币")
+title_label = NodePath("标题")
+footer_label = NodePath("底部")
 message_label = NodePath("提示")
+close_label = NodePath("关闭")
+close_area = NodePath("关闭区")
 
 [node name="底板" type="MeshInstance3D" parent="面板"]
 mesh = SubResource("QuadMesh_back")
 
 [node name="标题" type="Label3D" parent="面板"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.185, 0.006)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, 0.006)
 pixel_size = 0.00125
-font = SubResource("SystemFont_panel")
-font_size = 56
-width = 720.0
-outline_size = 12
-outline_modulate = Color(0, 0, 0, 0.85)
 no_depth_test = true
 render_priority = 2
+outline_modulate = Color(0, 0, 0, 0.85)
 text = "升级水枪"
+font = SubResource("SystemFont_panel")
+font_size = 48
 
 [node name="标题线" type="MeshInstance3D" parent="面板"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0.004)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.165, 0.004)
 mesh = SubResource("QuadMesh_line")
 
 [node name="速度行" parent="面板" instance=ExtResource("4_row")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0)
 
 [node name="大小行" parent="面板" instance=ExtResource("4_row")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.035, 0)
 
 [node name="提示" type="Label3D" parent="面板"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.115, 0.006)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0.006)
 pixel_size = 0.00125
-font = SubResource("SystemFont_panel")
-font_size = 48
-width = 720.0
-outline_size = 12
-outline_modulate = Color(0, 0, 0, 0.85)
 no_depth_test = true
 render_priority = 2
+outline_modulate = Color(0, 0, 0, 0.85)
 text = "邮币不足"
-
-[node name="邮币" type="Label3D" parent="面板"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.19, 0.006)
-pixel_size = 0.00125
 font = SubResource("SystemFont_panel")
-font_size = 48
-width = 720.0
-outline_size = 12
-outline_modulate = Color(0, 0, 0, 0.85)
+font_size = 40
+
+[node name="底部" type="Label3D" parent="面板"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.245, 0.006)
+pixel_size = 0.00125
 no_depth_test = true
 render_priority = 2
+outline_modulate = Color(0, 0, 0, 0.85)
 text = "邮币 x 0"
+font = SubResource("SystemFont_panel")
+font_size = 40
+
+[node name="关闭" type="Label3D" parent="面板"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.215, 0.006)
+pixel_size = 0.00125
+no_depth_test = true
+render_priority = 2
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "×"
+font = SubResource("SystemFont_panel")
+font_size = 56
+
+[node name="关闭区" type="Area3D" parent="面板"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.215, 0)
+collision_layer = 16
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="面板/关闭区"]
+shape = SubResource("BoxShape3D_close")

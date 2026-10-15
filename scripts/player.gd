@@ -1,10 +1,15 @@
 extends CharacterBody3D
+class_name Player
 
 ## 主人公移动控制：WASD 相对视线前后左右移动，空格跳跃，鼠标控制第一人称视角。
 ## 碰撞、阻挡、贴地交给物理引擎（move_and_slide），水平速度和重力由本脚本按物理公式计算，
 ## 所以起跳是标准抛体运动——初速 v = sqrt(2 * 重力 * 跳跃高度)，空中松手会保持水平惯性。
 ## 地面水平速度按"起步 / 刹车 / 变向"三档时间参数平滑过渡，不会瞬间启停。
 ## 所有手感数值都是 @export，可直接在检查器里调，不用改代码。
+##
+## 另外对外提供两个「临时锁」给交互菜单用（见 交互台.gd）：
+## set_move_lock() 不许走也不许跳，lock_look() / unlock_look() 把视角限制在一个锥形里。
+## 锁的是"玩家能不能动"，不是"脚本跑不跑"，所以重力、贴地照常工作。
 
 
 ## 第一人称摄像机（挂在主人公眼睛位置上的子节点），W 表示朝视线前方走。
@@ -41,6 +46,11 @@ extends CharacterBody3D
 var _coyote_left: float = 0.0        # 土狼时间剩余量
 var _jump_buffer_left: float = 0.0   # 跳跃缓冲剩余量
 var _pitch: float = 0.0              # 摄像机的俯仰角（弧度），负值表示低头
+var _move_locked: bool = false       # 临时锁：不许走也不许跳（交互菜单开着时为 true）
+var _look_locked: bool = false       # 临时锁：视角被限制在一个锥形里
+var _lock_yaw: float = 0.0           # 视线锁的中心偏航角（弧度）
+var _lock_pitch: float = 0.0         # 视线锁的中心俯仰角（弧度）
+var _lock_range: float = 0.0         # 允许偏离中心多少（弧度）
 
 
 func _ready() -> void:
@@ -54,9 +64,45 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
+## 锁住走动和跳跃（松开后立刻恢复，速度按原本的刹车曲线平滑停下）。
+## 视角不受影响 —— 那是 lock_look() 的事。
+func set_move_lock(locked: bool) -> void:
+	_move_locked = locked
+	if locked:
+		_jump_buffer_left = 0.0
+
+
+## 把视角锁在一个朝 direction 的锥形里：只能在那个方向附近 ±range_degrees 度内转。
+## direction 传全局方向（比如"摄像机 → 菜单面板"），会自动换算成偏航角和俯仰角。
+func lock_look(direction: Vector3, range_degrees: float) -> void:
+	var dir: Vector3 = direction.normalized()
+	if dir.is_zero_approx():
+		return
+	# 视线对准 dir 时，偏航角是 atan2(-x, -z)（推导：人物转 θ 后，视线方向的水平分量
+	# 正比于 (-sinθ, -cosθ)），俯仰角就是 dir 的仰角（正数 = 抬头）。
+	_lock_yaw = atan2(-dir.x, -dir.z)
+	# **再减掉摄像机相对人物自己的偏航**。摄像机虽然是人物的子节点，但不是"朝人物的 -Z 看"：
+	# 项目里为了跟人物正面（+Z）对齐，它在场景里被转了 180°。不减这个偏移的话，
+	# 锁出来的方向整整差 180° —— 表现就是按 E 之后视角被甩到菜单的反面去。
+	# 偏移直接读摄像机自己的 rotation.y，不写死 180°，以后谁改了摄像机朝向也不会再错。
+	if is_instance_valid(camera):
+		_lock_yaw -= camera.rotation.y
+	_lock_pitch = asin(clampf(dir.y, -1.0, 1.0))
+	_lock_range = deg_to_rad(maxf(range_degrees, 0.0))
+	_look_locked = true
+
+
+## 解开视角锁。
+func unlock_look() -> void:
+	_look_locked = false
+
+
 ## 固定用物理帧驱动：改速度和 move_and_slide 必须在同一帧内完成，否则会抖动。
 func _physics_process(delta: float) -> void:
-	var input: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	# 菜单开着时按"没输入"处理：不是不跑物理（重力、贴地照常），而是玩家推不动他
+	var input: Vector2 = Vector2.ZERO
+	if not _move_locked:
+		input = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction: Vector3 = _world_direction(input)
 	_update_jump_timers(delta)
 	_try_jump()
@@ -80,6 +126,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		# 鼠标下移 = 低头。摄像机局部 rotation.x 为正时视线朝上，所以这里同样是减。
 		var limit: float = deg_to_rad(pitch_limit)
 		_pitch = clampf(_pitch - motion.relative.y * mouse_sensitivity, -limit, limit)
+		if _look_locked:
+			# 视角锁：只允许在以锁定方向为中心的锥形里转。
+			# 用 wrapf 取最短角差，这样绕着圈转身也不会在 ±180° 处翻掉。
+			rotation.y = _lock_yaw + clampf(wrapf(rotation.y - _lock_yaw, -PI, PI), -_lock_range, _lock_range)
+			_pitch = clampf(_pitch, _lock_pitch - _lock_range, _lock_pitch + _lock_range)
 		if is_instance_valid(camera):
 			camera.rotation.x = _pitch
 		return
@@ -111,8 +162,9 @@ func _world_direction(input: Vector2) -> Vector3:
 
 
 ## 两个跳跃计时器：土狼时间（离地后的宽限）与跳跃缓冲（提前按下的按键）。
+## 被锁住时不再接受新的跳跃输入（已经在缓冲里的那一下由 set_move_lock 清掉）。
 func _update_jump_timers(delta: float) -> void:
-	if Input.is_action_just_pressed("jump"):
+	if Input.is_action_just_pressed("jump") and not _move_locked:
 		_jump_buffer_left = jump_buffer_time
 	else:
 		_jump_buffer_left = maxf(0.0, _jump_buffer_left - delta)

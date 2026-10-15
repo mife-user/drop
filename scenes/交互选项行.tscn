@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/升级行.gd" id="1_row"]
+[ext_resource type="Script" path="res://scripts/交互选项行.gd" id="1_row"]
 
 [sub_resource type="SystemFont" id="SystemFont_row"]
 font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
@@ -15,12 +15,12 @@ render_priority = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_hl"]
 material = SubResource("StandardMaterial3D_hl")
-size = Vector2(0.82, 0.075)
+size = Vector2(1.08, 0.09)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_area"]
-size = Vector3(0.82, 0.09, 0.06)
+size = Vector3(1.08, 0.11, 0.06)
 
-[node name="升级行" type="Node3D" node_paths=PackedStringArray("text_label", "price_label", "highlight", "select_area")]
+[node name="交互选项行" type="Node3D" node_paths=PackedStringArray("text_label", "price_label", "highlight", "select_area")]
 script = ExtResource("1_row")
 text_label = NodePath("说明")
 price_label = NodePath("价格")
@@ -34,28 +34,22 @@ mesh = SubResource("QuadMesh_hl")
 [node name="说明" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.005)
 pixel_size = 0.00125
-font = SubResource("SystemFont_row")
-font_size = 48
-width = 656.0
-outline_size = 12
-outline_modulate = Color(0, 0, 0, 0.85)
 no_depth_test = true
 render_priority = 2
-text = "升级项目"
-horizontal_alignment = 0
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "说明"
+font = SubResource("SystemFont_row")
+font_size = 40
 
 [node name="价格" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.005)
 pixel_size = 0.00125
-font = SubResource("SystemFont_row")
-font_size = 48
-width = 656.0
-outline_size = 12
-outline_modulate = Color(0, 0, 0, 0.85)
 no_depth_test = true
 render_priority = 2
+outline_modulate = Color(0, 0, 0, 0.85)
 text = "3 枚"
-horizontal_alignment = 2
+font = SubResource("SystemFont_row")
+font_size = 40
 
 [node name="选中区" type="Area3D" parent="."]
 collision_layer = 16

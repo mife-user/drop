@@ -33,7 +33,7 @@
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_yc10j"]
-size = Vector3(5.815387, 1.3226776, 5.4978156)
+size = Vector3(5.815, 1.1323242, 5.498)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_3o8g1"]
 
@@ -178,7 +178,7 @@ shape_node = NodePath("CollisionShape3D")
 surface_kind = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion/吸水区" unique_id=214760503]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.22990632, -0.67972565, 0.0294137)
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.22990632, -0.71506155, 0.0294137)
 shape = SubResource("BoxShape3D_yc10j")
 debug_color = Color(0.18294686, 0.51271874, 1, 0.77254903)
 
@@ -380,7 +380,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.845, 0)
 shape = SubResource("CapsuleShape3D_person")
 
 [node name="Camera3D" type="Camera3D" parent="主人公" unique_id=1367691273]
-transform = Transform3D(-1, 0, 0, 0, 0.9927476, 0.1202173, 0, 0.1202173, -0.9927476, -0.01376915, 1.5187681, 0.16747522)
+transform = Transform3D(-1, 0, 0, 0, 0.9927476, 0.1202173, 0, 0.1202173, -0.9927476, -0.01376915, 1.5170367, 0.18177319)
 current = true
 
 [node name="水枪发射器" type="Node3D" parent="主人公" unique_id=324127771 node_paths=PackedStringArray("field", "muzzle", "camera")]
@@ -393,17 +393,18 @@ blob_size = 0.16999999999999998
 [node name="人物" parent="主人公" unique_id=2068944398 instance=ExtResource("22_2wyq8")]
 
 [node name="水枪" parent="主人公/人物" unique_id=1937551107 instance=ExtResource("7_tipki")]
-transform = Transform3D(0.0486338, 0, -0.9988168, 0, 1, 0, 0.9988168, 0, 0.0486338, -0.2791586, 0.7193252, 0.29799223)
+transform = Transform3D(0.12222744, -0.011219006, -0.99243873, 0.2300314, 0.97302884, 0.017330775, 0.96547717, -0.23041037, 0.12151155, -0.26614034, 0.84343183, 0.56535447)
 
 [node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1686800199]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
 
-[node name="水枪升级" parent="." unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun", "field", "crosshair", "panel", "body") instance=ExtResource("27_upgrade")]
+[node name="水枪升级" parent="." unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun", "field", "crosshair", "player", "panel", "body") instance=ExtResource("27_upgrade")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1.9994831, 1.1682342, -7.836715)
 wallet = NodePath("../界面/Money/Money2")
 gun = NodePath("../主人公/水枪发射器")
 field = NodePath("../水块容器")
 crosshair = NodePath("../界面/交互准星")
+player = NodePath("../主人公")
 panel = NodePath("面板")
 body = NodePath("实体")
 

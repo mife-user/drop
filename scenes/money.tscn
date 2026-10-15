@@ -34,3 +34,4 @@ theme_override_font_sizes/font_size = 40
 text = "x 0"
 vertical_alignment = 1
 script = ExtResource("1_money")
+starting_money = 100
