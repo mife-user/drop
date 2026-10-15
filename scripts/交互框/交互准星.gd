@@ -7,8 +7,13 @@ class_name InteractCrosshair
 ## 在十字**下方**显示一行字 —— 字不在正中心，所以永远不会挡住瞄准点，
 ## 也不会挡住菜单里的选项。
 ##
-## 谁想改这句话就调 set_hint()。文字没变时什么都不做，所以放在 _physics_process 里
+## 谁想改这句话就调 set_hint()（第二个参数传 `self`，表示这行字归你）。文字没变时什么都不做，所以放在 _physics_process 里
 ## 每帧调也没关系，不会每帧重播动画。
+##
+## **一行字同一时刻只认一个主**：场景里可能摆着好几台交互台座，它们每帧都会来写一次
+## （没瞄到目标的那台写空字符串，意思是「擦掉」）。所以调用时要说明「这行字归谁」，
+## 不是主人的「擦掉」一律忽略 —— 否则排在场景树后面那台会把正在瞄着的那台的提示每帧抹一次，
+## 字就永远显示不出来（两台都显示不出来，因为正序写、反序擦，来回拉锯）。
 ##
 ## 这是 HUD，必须挂在 CanvasLayer 下面（挂 3D 根节点上会跟着相机跑、还会被场景挡住）；
 ## 十字和那行字的位置都在场景里摆，脚本不挪它们。
@@ -23,6 +28,7 @@ const GROUP: StringName = &"interact_crosshair"
 @export_range(0.0, 1.0, 0.01) var fade_time: float = 0.1
 
 var _hint_text: String = ""
+var _owner: Object = null   # 这行字现在归谁；null = 没主，谁都能写、也都能擦
 var _tween: Tween
 
 
@@ -42,9 +48,20 @@ func _ready() -> void:
 
 
 ## 准星下面那行字。传空字符串 = 不显示。
-func set_hint(text: String) -> void:
+## source = 「这行字归谁」，台座传 self。不传 = 强行写、强行擦（谁都拦不住），留给不认主的调用方用。
+func set_hint(text: String, source: Object = null) -> void:
+	# 认主这一段必须放在「文字没变就直接返回」**前面**：
+	# 两台写着同一句话时，提前返回会让主人换不了手，接着被前一台的「擦掉」抹掉，又开始闪。
+	if text.is_empty():
+		# 空字符串 = 「擦掉」。别人正用着这行字时不作数 ——
+		# 没瞄到目标的台座也在每帧喊擦掉，不拦的话提示根本显示不出来。
+		if is_instance_valid(_owner) and source != null and _owner != source:
+			return
+		_owner = null
+	else:
+		_owner = source
 	if text == _hint_text:
-		return
+		return   # 主人换了、话没换：认得下来就够了，动画不用重播
 	_hint_text = text
 	if not is_instance_valid(hint):
 		return

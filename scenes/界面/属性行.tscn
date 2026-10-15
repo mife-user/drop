@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/界面/属性行.gd" id="1_row"]
+
+[sub_resource type="SystemFont" id="SystemFont_ui"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
+[node name="属性行" type="HBoxContainer" node_paths=PackedStringArray("key_label", "value_label")]
+mouse_filter = 2
+theme_override_constants/separation = 18
+script = ExtResource("1_row")
+key_label = NodePath("名称")
+value_label = NodePath("值")
+
+[node name="名称" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.6)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 18
+text = "属性名"
+
+[node name="值" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 20
+text = "0.00"
+horizontal_alignment = 2

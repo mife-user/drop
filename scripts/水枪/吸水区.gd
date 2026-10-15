@@ -25,6 +25,13 @@ signal water_received(amount: float)
 ## 水量第一次到顶时发出一次；之后继续吸水不会再发。
 signal filled()
 
+## 吸水区自己登记的组名 —— 谁要「全场的容器」，就 get_nodes_in_group(WaterSink.GROUP_WATER_SINK) 捞。
+##
+## 「我是个吸水区」是容器自己的**身份**，由它自己声明，所以这一行写在吸水区里；
+## 和 水块.gd 的 add_to_group("water")、player.gd 的 "player" 是同一个写法。
+## 别的玩法（装满之后弹字幕、给邮币）仍然是去连下面的信号，**不要往这个脚本里塞**。
+const GROUP_WATER_SINK: StringName = &"water_sink"
+
 ## 装水量上限（立方米）。水团的水量按边长³ 算：一团边长 0.05 米的水是 0.000125 m³，
 ## 想「射 200 发刚好填满」就填 0.025。
 ## 这是**绝对容积**，不跟着水枪走 —— 水枪升级（射出的水更大）后，
@@ -60,6 +67,15 @@ var amount: float = 0.0
 var _shape: Shape3D
 var _mesh_size: Vector3 = Vector3.ONE     # 水面网格自身的尺寸（米），用来把「想要的米数」换算成 scale
 var _mesh_center: Vector3 = Vector3.ZERO  # 网格原点相对自身包围盒中心的偏移（米），贴池底时要减掉
+
+
+## 进树就把自己登记进「吸水区」组，别人按这个组来找容器。
+##
+## **写在 _enter_tree 而不是 _ready**：所有节点的 _enter_tree 都跑完，才会有第一个 _ready
+##（交互台.gd 找玩家/准星用的也是这条），所以按组捞的脚本（水量换币）不管挂在场景树哪一层、
+## 谁的 _ready 先跑，都一定捞得到。写进 _ready 就变成依赖兄弟顺序 —— 现在能跑纯属巧合，节点一挪就悄悄失效。
+func _enter_tree() -> void:
+	add_to_group(GROUP_WATER_SINK)
 
 
 func _ready() -> void:

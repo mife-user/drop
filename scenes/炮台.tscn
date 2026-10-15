@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://d0vfoq3bpf5bm"]
+
+[ext_resource type="PackedScene" uid="uid://dg1htavwp7tle" path="res://scenes/交互模板/交互台.tscn" id="1_d8k33"]
+[ext_resource type="PackedScene" uid="uid://dxj1jmo302bwp" path="res://resources/炮台.glb" id="2_d8k33"]
+[ext_resource type="Script" uid="uid://cuv3ueohdb6ls" path="res://scripts/水枪/炮台.gd" id="3_station"]
+[ext_resource type="PackedScene" path="res://scenes/炮台发射器.tscn" id="4_turret"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body_turret"]
+size = Vector3(0.5, 0.56, 0.82)
+
+[node name="交互台" unique_id=891097886 instance=ExtResource("1_d8k33")]
+script = ExtResource("3_station")
+title_text = "炮台"
+prompt_text = "按 E 购买炮台"
+text_blocked = "邮币不足"
+text_done = "已经升到头了"
+text_success = "升级成功"
+turret_scene = ExtResource("4_turret")
+
+[node name="炮台" parent="模型" parent_id_path=PackedInt32Array(1222929621) index="0" unique_id=1225297741 instance=ExtResource("2_d8k33")]
+transform = Transform3D(-0.65, 0, -5.6824803e-08, 0, 0.65, 0, 5.6824803e-08, 0, -0.65, 0, 0, 0)
+
+[node name="CollisionShape3D" parent="实体" parent_id_path=PackedInt32Array(41037221) index="0" unique_id=711439714]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0.11)
+shape = SubResource("BoxShape3D_body_turret")
+
+[node name="面板" parent="." index="2" unique_id=1744293324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6274389, 0.29017258)

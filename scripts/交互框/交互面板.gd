@@ -33,6 +33,16 @@ const HIT_CLOSE: int = -2
 @export var close_label: Label3D
 ## × 的选中区（Area3D）。
 @export var close_area: Area3D
+## 底板（那块深色半透明的背景板）。行数变了它会自己伸缩，别在代码里另存一份尺寸。
+@export var back: MeshInstance3D
+
+@export_group("排版")
+## 提示那行离最后一行多远（米）。
+@export_range(0.0, 1.0, 0.005) var message_gap: float = 0.115
+## 底部那行（邮币）离最后一行多远（米）。
+@export_range(0.0, 1.0, 0.005) var footer_gap: float = 0.21
+## 底板下沿离底部那行留多少（米）。
+@export_range(0.0, 0.5, 0.005) var back_bottom_margin: float = 0.045
 ## 勾上 = 每帧转向玩家；取消 = 固定成场景里摆好的朝向。
 @export var face_player: bool = true
 ## 临时提示停留多久（秒）才开始淡出。
@@ -53,6 +63,8 @@ var _row_count: int = 0
 var _message_tween: Tween
 var _close_base_color: Color = Color.WHITE
 var _close_layer_when_on: int = 0
+var _back_base_height: float = 1.0   # 场景里那块底板的原始高度，伸缩时按它换算
+var _back_top: float = 0.0           # 底板顶边的高度（场景里钉死的，不随行数变）
 
 
 func _ready() -> void:
@@ -63,6 +75,11 @@ func _ready() -> void:
 		_close_base_color = close_label.modulate
 	if is_instance_valid(close_area):
 		_close_layer_when_on = close_area.collision_layer
+	if is_instance_valid(back):
+		_back_base_height = (back.mesh as QuadMesh).size.y if back.mesh is QuadMesh else 1.0
+		_back_top = back.position.y + _back_base_height * 0.5   # 底板顶边钉死在场景里摆的位置
+	_row_count = _rows.size()   # 单独打开这个场景看时，把摆出来的行都显示出来
+	_layout()
 	close()
 
 
@@ -72,15 +89,17 @@ func _physics_process(_delta: float) -> void:
 	_face_camera()
 
 
+## 菜单现在是展开着的吗。
 func is_open() -> bool:
 	return _open
 
 
-## 这次要用几行。场景里多摆的行会被藏起来，也不参与命中判定。
+## 这次要用几行。场景里多摆的行会被藏起来、也不参与命中判定，底板跟着伸缩到刚好包住。
 func set_row_count(count: int) -> void:
 	_row_count = clampi(count, 0, _rows.size())
 	for index: int in _rows.size():
 		_rows[index].visible = index < _row_count
+	_layout()
 
 
 ## 展开菜单：显示自己，并把所有「选中区」打开，让准星能扫到。
@@ -161,6 +180,32 @@ func show_message(text: String, ok: bool) -> void:
 	_message_tween.tween_interval(message_time)
 	_message_tween.tween_property(message_label, "modulate:a", 0.0, maxf(message_fade, 0.01))
 	_message_tween.tween_callback(message_label.hide)
+
+
+## 按实际显示的行数，把「提示」「底部」「底板」排好。
+##
+## **行本身的位置不动** —— 那几行是你在编辑器里摆的，想怎么放怎么放（间距不一样也行）；
+## 这里只跟着最后一行往下排下面那两行字，再把底板伸缩到刚好包住它们。
+## 所以 1 行的贩卖机、3 行的合成台共用同一个面板场景，谁都不用手调：
+## 台座说自己有几行（row_count），多余的自动藏，底板自动缩。
+func _layout() -> void:
+	if _row_count <= 0:
+		return
+	var last_y: float = _rows[_row_count - 1].position.y
+	var message_y: float = last_y - message_gap
+	var footer_y: float = last_y - footer_gap
+	if is_instance_valid(message_label):
+		message_label.position.y = message_y
+	if is_instance_valid(footer_label):
+		footer_label.position.y = footer_y
+	if not is_instance_valid(back):
+		return
+	# 底板顶边钉死在场景里摆好的位置，只往下长：高度用缩放做，中心跟着挪到中线上。
+	# 缩放不会改到 QuadMesh 这个子资源本身，所以多个面板实例之间不会互相串。
+	var bottom: float = footer_y - back_bottom_margin
+	var height: float = maxf(_back_top - bottom, 0.05)
+	back.scale.y = height / maxf(_back_base_height, 0.001)
+	back.position.y = (_back_top + bottom) * 0.5
 
 
 ## 把面板转到正对摄像机。位置不动，只改朝向。

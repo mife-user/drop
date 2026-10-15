@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dg1htavwp7tle"]
+
+[ext_resource type="Script" uid="uid://dndennk2knbww" path="res://scripts/交互框/交互台.gd" id="1_station"]
+[ext_resource type="PackedScene" path="res://scenes/交互模板/交互面板.tscn" id="2_panel"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(0.8, 0.8, 0.8)
+
+[node name="交互台" type="Node3D" unique_id=891097886]
+script = ExtResource("1_station")
+title_text = "菜单标题"
+
+[node name="模型" type="Node3D" parent="." unique_id=1222929621]
+
+[node name="实体" type="StaticBody3D" parent="." unique_id=41037221]
+collision_layer = 17
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="实体" unique_id=711439714]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="面板" parent="." unique_id=1744293324 instance=ExtResource("2_panel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)

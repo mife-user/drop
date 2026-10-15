@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://c4b5r735ib8rs"]
+
+[ext_resource type="PackedScene" uid="uid://cpbj5ip2784yq" path="res://resources/消防栓.glb" id="1_rcicv"]
+[ext_resource type="Script" path="res://scripts/水枪/消防栓.gd" id="2_hydrant"]
+[ext_resource type="PackedScene" path="res://scenes/交互模板/交互面板.tscn" id="3_panel"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(0.62, 0.8, 0.5)
+
+[node name="消防栓" type="Node3D" unique_id=186927498]
+script = ExtResource("2_hydrant")
+title_text = "消防栓"
+prompt_text = "长按 E 接水 · 点按 E 升级"
+text_blocked = "邮币不足"
+text_done = "已经升到头了"
+text_success = "升级成功"
+hold_enabled = true
+
+[node name="模型" parent="." instance=ExtResource("1_rcicv")]
+
+[node name="实体" type="StaticBody3D" parent="."]
+collision_layer = 17
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="实体"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="面板" parent="." instance=ExtResource("3_panel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)

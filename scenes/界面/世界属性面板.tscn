@@ -1,0 +1,139 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/界面/世界属性面板.gd" id="1_panel"]
+[ext_resource type="PackedScene" path="res://scenes/界面/属性行.tscn" id="2_row"]
+
+[sub_resource type="SystemFont" id="SystemFont_ui"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
+[sub_resource type="FontVariation" id="FontVariation_title"]
+base_font = SubResource("SystemFont_ui")
+spacing_glyph = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back"]
+content_margin_left = 22.0
+content_margin_top = 18.0
+content_margin_right = 22.0
+content_margin_bottom = 18.0
+bg_color = Color(0.043137256, 0.07058824, 0.09803922, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.372549, 0.827451, 0.952941, 0.35)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]
+content_margin_left = 14.0
+content_margin_top = 12.0
+content_margin_right = 14.0
+content_margin_bottom = 12.0
+bg_color = Color(0.372549, 0.827451, 0.952941, 0.07)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.372549, 0.827451, 0.952941, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="世界属性面板" type="Control" node_paths=PackedStringArray("blob_size_row", "rate_row", "time_row")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_panel")
+blob_size_row = NodePath("面板/内容/水枪框/水枪列/水块大小行")
+rate_row = NodePath("面板/内容/水枪框/水枪列/频率行")
+time_row = NodePath("面板/内容/时间行")
+
+[node name="面板" type="PanelContainer" parent="."]
+offset_left = 48.0
+offset_top = 48.0
+offset_right = 348.0
+offset_bottom = 360.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_back")
+
+[node name="内容" type="VBoxContainer" parent="面板"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="标题" type="Label" parent="面板/内容"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.95)
+theme_override_fonts/font = SubResource("FontVariation_title")
+theme_override_font_sizes/font_size = 24
+text = "世界属性"
+
+[node name="标题线" type="ColorRect" parent="面板/内容"]
+custom_minimum_size = Vector2(48, 3)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+color = Color(0.372549, 0.827451, 0.952941, 1)
+
+[node name="间隔" type="Control" parent="面板/内容"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="水枪框" type="PanelContainer" parent="面板/内容"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="水枪列" type="VBoxContainer" parent="面板/内容/水枪框"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="水枪标题" type="Label" parent="面板/内容/水枪框/水枪列"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.372549, 0.827451, 0.952941, 0.85)
+theme_override_fonts/font = SubResource("FontVariation_title")
+theme_override_font_sizes/font_size = 16
+text = "水枪"
+
+[node name="水块大小行" parent="面板/内容/水枪框/水枪列" instance=ExtResource("2_row")]
+layout_mode = 2
+
+[node name="名称" parent="面板/内容/水枪框/水枪列/水块大小行"]
+text = "水块大小"
+
+[node name="频率行" parent="面板/内容/水枪框/水枪列" instance=ExtResource("2_row")]
+layout_mode = 2
+
+[node name="名称" parent="面板/内容/水枪框/水枪列/频率行"]
+text = "频率"
+
+[node name="时间行" parent="面板/内容" instance=ExtResource("2_row")]
+layout_mode = 2
+
+[node name="名称" parent="面板/内容/时间行"]
+text = "时间"
+
+[node name="分隔" type="ColorRect" parent="面板/内容"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.372549, 0.827451, 0.952941, 0.18)
+
+[node name="提示" type="Label" parent="面板/内容"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.372549, 0.827451, 0.952941, 0.72)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 14
+text = "再按 Tab 关闭"
+horizontal_alignment = 2

@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/水枪/炮台发射器.gd" id="1_turret"]
+[ext_resource type="PackedScene" path="res://resources/炮台.glb" id="2_model"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(0.44, 0.54, 0.62)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.372549, 0.827451, 0.952941, 0.75)
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+material = SubResource("StandardMaterial3D_ring")
+inner_radius = 0.32
+outer_radius = 0.45
+rings = 32
+ring_segments = 6
+
+[node name="炮台发射器" type="Node3D" node_paths=PackedStringArray("model", "body", "shadow", "muzzle", "readout")]
+script = ExtResource("1_turret")
+model = NodePath("模型")
+body = NodePath("实体")
+shadow = NodePath("投影")
+muzzle = NodePath("枪口")
+readout = NodePath("读数")
+
+[node name="模型" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0, 0, 0)
+
+[node name="枪口" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.43, -0.5)
+
+[node name="实体" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="实体"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27, -0.1)
+shape = SubResource("BoxShape3D_body")
+
+[node name="读数" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+pixel_size = 0.0006
+billboard = 1
+no_depth_test = true
+text = "10.000 / 10.000 m³"
+font_size = 64
+
+[node name="投影" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, -0.1)
+mesh = SubResource("TorusMesh_ring")
