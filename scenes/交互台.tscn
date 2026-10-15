@@ -1,11 +1,8 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dg1htavwp7tle"]
 
-[ext_resource type="Script" path="res://scripts/交互台.gd" id="1_station"]
-[ext_resource type="Script" path="res://scripts/交互面板.gd" id="2_panel"]
-[ext_resource type="PackedScene" path="res://scenes/交互选项行.tscn" id="3_row"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
-size = Vector3(0.8, 0.8, 0.8)
+[ext_resource type="Script" uid="uid://dndennk2knbww" path="res://scripts/交互框/交互台.gd" id="1_station"]
+[ext_resource type="Script" uid="uid://dwi3faf3fxu8s" path="res://scripts/交互框/交互面板.gd" id="2_panel"]
+[ext_resource type="PackedScene" uid="uid://ks6c7s80v61t" path="res://scenes/交互选项行.tscn" id="3_row"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dummy"]
 albedo_color = Color(0.45, 0.47, 0.52, 1)
@@ -15,11 +12,14 @@ roughness = 0.9
 material = SubResource("StandardMaterial3D_dummy")
 size = Vector3(0.5, 0.5, 0.5)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(0.8, 0.8, 0.8)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_back"]
 transparency = 1
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.043137256, 0.07058824, 0.09803922, 0.72)
-no_depth_test = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_back"]
 material = SubResource("StandardMaterial3D_back")
@@ -31,9 +31,9 @@ subpixel_positioning = 0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_line"]
 transparency = 1
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.372549, 0.827451, 0.952941, 0.85)
-no_depth_test = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_line"]
 material = SubResource("StandardMaterial3D_line")
@@ -42,21 +42,21 @@ size = Vector2(1.08, 0.006)
 [sub_resource type="BoxShape3D" id="BoxShape3D_close"]
 size = Vector3(0.16, 0.12, 0.06)
 
-[node name="交互台" type="Node3D"]
+[node name="交互台" type="Node3D" unique_id=891097886]
 script = ExtResource("1_station")
 
-[node name="模型" type="MeshInstance3D" parent="."]
+[node name="模型" type="MeshInstance3D" parent="." unique_id=1222929621]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("BoxMesh_dummy")
 
-[node name="实体" type="StaticBody3D" parent="."]
+[node name="实体" type="StaticBody3D" parent="." unique_id=41037221]
 collision_layer = 17
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="实体"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="实体" unique_id=711439714]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 shape = SubResource("BoxShape3D_body")
 
-[node name="面板" type="Node3D" parent="." node_paths=PackedStringArray("title_label", "footer_label", "message_label", "close_label", "close_area")]
+[node name="面板" type="Node3D" parent="." unique_id=1744293324 node_paths=PackedStringArray("title_label", "footer_label", "message_label", "close_label", "close_area")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
 script = ExtResource("2_panel")
 title_label = NodePath("标题")
@@ -65,10 +65,10 @@ message_label = NodePath("提示")
 close_label = NodePath("关闭")
 close_area = NodePath("关闭区")
 
-[node name="底板" type="MeshInstance3D" parent="面板"]
+[node name="底板" type="MeshInstance3D" parent="面板" unique_id=377483888]
 mesh = SubResource("QuadMesh_back")
 
-[node name="标题" type="Label3D" parent="面板"]
+[node name="标题" type="Label3D" parent="面板" unique_id=1254980437]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.21, 0.006)
 pixel_size = 0.00125
 no_depth_test = true
@@ -78,17 +78,17 @@ text = "菜单标题"
 font = SubResource("SystemFont_panel")
 font_size = 48
 
-[node name="标题线" type="MeshInstance3D" parent="面板"]
+[node name="标题线" type="MeshInstance3D" parent="面板" unique_id=719046225]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.165, 0.004)
 mesh = SubResource("QuadMesh_line")
 
-[node name="第一行" parent="面板" instance=ExtResource("3_row")]
+[node name="第一行" parent="面板" unique_id=988751134 instance=ExtResource("3_row")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0)
 
-[node name="第二行" parent="面板" instance=ExtResource("3_row")]
+[node name="第二行" parent="面板" unique_id=1824621439 instance=ExtResource("3_row")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.035, 0)
 
-[node name="提示" type="Label3D" parent="面板"]
+[node name="提示" type="Label3D" parent="面板" unique_id=1187493214]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0.006)
 pixel_size = 0.00125
 no_depth_test = true
@@ -98,7 +98,7 @@ text = "提示"
 font = SubResource("SystemFont_panel")
 font_size = 40
 
-[node name="底部" type="Label3D" parent="面板"]
+[node name="底部" type="Label3D" parent="面板" unique_id=1444397459]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.245, 0.006)
 pixel_size = 0.00125
 no_depth_test = true
@@ -108,7 +108,7 @@ text = "底部信息"
 font = SubResource("SystemFont_panel")
 font_size = 40
 
-[node name="关闭" type="Label3D" parent="面板"]
+[node name="关闭" type="Label3D" parent="面板" unique_id=1220035235]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.215, 0.006)
 pixel_size = 0.00125
 no_depth_test = true
@@ -118,10 +118,10 @@ text = "×"
 font = SubResource("SystemFont_panel")
 font_size = 56
 
-[node name="关闭区" type="Area3D" parent="面板"]
+[node name="关闭区" type="Area3D" parent="面板" unique_id=469566158]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.215, 0)
 collision_layer = 16
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="面板/关闭区"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="面板/关闭区" unique_id=274963513]
 shape = SubResource("BoxShape3D_close")

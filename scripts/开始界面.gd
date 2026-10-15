@@ -15,8 +15,9 @@ extends Node
 @export var ui_layer: CanvasLayer
 ## 幕布（压暗 + 渐变两层），退场时整块淡出。
 @export var curtain: Control
-## 标题块 / 按钮组：入场时错开滑入。
+## 标题块（入场时和按钮组错开滑入）。
 @export var title_block: Control
+## 按钮组（入场时和标题块错开滑入）。
 @export var button_block: Control
 ## 主人公（在 main.tscn 里）。菜单期间会被冻住——否则按 WASD 能把人推走，
 ## 点空白处还会被 player.gd 抢走鼠标，菜单就点不动了。
@@ -25,8 +26,9 @@ extends Node
 @export var player_camera: Camera3D
 ## 菜单期间要藏起来的 HUD（main.tscn 的「界面」CanvasLayer）。
 @export var hud: CanvasLayer
-## 两个按钮，连信号用。
+## 「开始游戏」按钮，连信号用。
 @export var start_button: Button
+## 「退出游戏」按钮，连信号用。
 @export var quit_button: Button
 
 ## 入场时标题块与按钮组之间的间隔（秒），做「依次出现」的层次感。

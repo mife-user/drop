@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/水量读数.gd" id="1_readout"]
+[ext_resource type="Script" uid="uid://b2a672hpq06q4" path="res://scripts/水/水量读数.gd" id="1_readout"]
 
 [node name="水量读数" type="Label3D"]
 billboard = 1

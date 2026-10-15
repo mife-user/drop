@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dgnn5wh35jn7q"]
 
-[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/吸水区.gd" id="1_sink"]
-[ext_resource type="Script" uid="uid://ckcs27n5fcp7u" path="res://scripts/水面.gd" id="2_flow"]
+[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/水枪/吸水区.gd" id="1_sink"]
+[ext_resource type="Script" uid="uid://ckcs27n5fcp7u" path="res://scripts/水/水面.gd" id="2_flow"]
 [ext_resource type="PackedScene" path="res://scenes/水量读数.tscn" id="3_3o8g1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sink"]

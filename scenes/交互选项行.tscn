@@ -1,37 +1,37 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ks6c7s80v61t"]
 
-[ext_resource type="Script" path="res://scripts/交互选项行.gd" id="1_row"]
-
-[sub_resource type="SystemFont" id="SystemFont_row"]
-font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
-subpixel_positioning = 0
+[ext_resource type="Script" uid="uid://cj0agbqcvksui" path="res://scripts/交互框/交互选项行.gd" id="1_row"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hl"]
+render_priority = 1
 transparency = 1
+no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.372549, 0.827451, 0.952941, 0.18)
-no_depth_test = true
-render_priority = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_hl"]
 material = SubResource("StandardMaterial3D_hl")
 size = Vector2(1.08, 0.09)
 
+[sub_resource type="SystemFont" id="SystemFont_row"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_area"]
 size = Vector3(1.08, 0.11, 0.06)
 
-[node name="交互选项行" type="Node3D" node_paths=PackedStringArray("text_label", "price_label", "highlight", "select_area")]
+[node name="交互选项行" type="Node3D" unique_id=120649325 node_paths=PackedStringArray("text_label", "price_label", "highlight", "select_area")]
 script = ExtResource("1_row")
 text_label = NodePath("说明")
 price_label = NodePath("价格")
 highlight = NodePath("高亮")
 select_area = NodePath("选中区")
 
-[node name="高亮" type="MeshInstance3D" parent="."]
+[node name="高亮" type="MeshInstance3D" parent="." unique_id=25573032]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.002)
 mesh = SubResource("QuadMesh_hl")
 
-[node name="说明" type="Label3D" parent="."]
+[node name="说明" type="Label3D" parent="." unique_id=1262835306]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.005)
 pixel_size = 0.00125
 no_depth_test = true
@@ -41,7 +41,7 @@ text = "说明"
 font = SubResource("SystemFont_row")
 font_size = 40
 
-[node name="价格" type="Label3D" parent="."]
+[node name="价格" type="Label3D" parent="." unique_id=393560247]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.005)
 pixel_size = 0.00125
 no_depth_test = true
@@ -51,9 +51,9 @@ text = "3 枚"
 font = SubResource("SystemFont_row")
 font_size = 40
 
-[node name="选中区" type="Area3D" parent="."]
+[node name="选中区" type="Area3D" parent="." unique_id=1627275460]
 collision_layer = 16
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="选中区"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="选中区" unique_id=470552029]
 shape = SubResource("BoxShape3D_area")

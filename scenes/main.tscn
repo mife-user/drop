@@ -9,22 +9,22 @@
 [ext_resource type="PackedScene" uid="uid://c8r583eoccqx7" path="res://scenes/草堆.tscn" id="7_dp3eg"]
 [ext_resource type="PackedScene" path="res://scenes/水量读数.tscn" id="7_og1vs"]
 [ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="7_tipki"]
-[ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/milkegg_encounter.gd" id="9_encounter"]
+[ext_resource type="Script" uid="uid://ch1yv60c11i5s" path="res://scripts/奶蛋/milkegg_encounter.gd" id="9_encounter"]
 [ext_resource type="PackedScene" uid="uid://ltjma8yc4edk" path="res://scenes/木碗.tscn" id="10_0ld40"]
-[ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/player.gd" id="10_player"]
+[ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/人物/player.gd" id="10_player"]
 [ext_resource type="Script" uid="uid://bfb61dybj85il" path="res://scripts/day_night.gd" id="11_daynight"]
-[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/吸水区.gd" id="12_jscy8"]
-[ext_resource type="Script" uid="uid://ckcs27n5fcp7u" path="res://scripts/水面.gd" id="13_pm3ni"]
+[ext_resource type="Script" uid="uid://bfv5q1mmadjhq" path="res://scripts/水枪/吸水区.gd" id="12_jscy8"]
+[ext_resource type="Script" uid="uid://ckcs27n5fcp7u" path="res://scripts/水/水面.gd" id="13_pm3ni"]
 [ext_resource type="PackedScene" uid="uid://lfxle76y58ea" path="res://scenes/路灯.tscn" id="13_trceg"]
-[ext_resource type="Script" uid="uid://ciengu2qtaaec" path="res://scripts/水枪.gd" id="14_gun"]
+[ext_resource type="Script" uid="uid://ciengu2qtaaec" path="res://scripts/水枪/水枪.gd" id="14_gun"]
 [ext_resource type="PackedScene" path="res://scenes/水块.tscn" id="15_blob"]
-[ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水块容器.gd" id="16_field"]
+[ext_resource type="Script" uid="uid://o1wogbkcri5i" path="res://scripts/水枪/水块容器.gd" id="16_field"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
 [ext_resource type="PackedScene" uid="uid://cavm1650y8qe3" path="res://scenes/人物.tscn" id="22_2wyq8"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
-[ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/pool_ladder_exit.gd" id="23_pool_exit"]
-[ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水量灯.gd" id="24_waterlight"]
-[ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水量字幕.gd" id="25_zimu"]
+[ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/水/pool_ladder_exit.gd" id="23_pool_exit"]
+[ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水/水量灯.gd" id="24_waterlight"]
+[ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水/水量字幕.gd" id="25_zimu"]
 [ext_resource type="PackedScene" uid="uid://c66iqhguwlyqi" path="res://scenes/开始界面.tscn" id="26_menu"]
 [ext_resource type="PackedScene" uid="uid://cvl1o6t36qqu1" path="res://scenes/水枪升级.tscn" id="27_upgrade"]
 [ext_resource type="PackedScene" path="res://scenes/交互准星.tscn" id="28_cross"]
@@ -329,6 +329,12 @@ sink = NodePath("../吸水区")
 [node name="钟" parent="场景" unique_id=1054640637 instance=ExtResource("22_clock")]
 transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -4.3711385e-08, -4.7215667, 3.5920897, -5.114302)
 
+[node name="水枪升级" parent="场景" unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun", "field") instance=ExtResource("27_upgrade")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2.113616, 1.1768364, -7.6404314)
+wallet = NodePath("../../界面/Money/Money2")
+gun = NodePath("../../主人公/水枪发射器")
+field = NodePath("../../水块容器")
+
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
 camera = NodePath("../主人公/Camera3D")
@@ -397,16 +403,6 @@ transform = Transform3D(0.12222744, -0.011219006, -0.99243873, 0.2300314, 0.9730
 
 [node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1686800199]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
-
-[node name="水枪升级" parent="." unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun", "field", "crosshair", "player", "panel", "body") instance=ExtResource("27_upgrade")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1.9994831, 1.1682342, -7.836715)
-wallet = NodePath("../界面/Money/Money2")
-gun = NodePath("../主人公/水枪发射器")
-field = NodePath("../水块容器")
-crosshair = NodePath("../界面/交互准星")
-player = NodePath("../主人公")
-panel = NodePath("面板")
-body = NodePath("实体")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")

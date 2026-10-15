@@ -12,6 +12,10 @@ class_name Player
 ## 锁的是"玩家能不能动"，不是"脚本跑不跑"，所以重力、贴地照常工作。
 
 
+## 玩家组名。交互台没在检查器里显式指定主人公时，就按这个组把玩家捞出来 ——
+## 名字要和 scripts/交互框/交互台.gd 里的 GROUP_PLAYER 一致。
+const GROUP: StringName = &"player"
+
 ## 第一人称摄像机（挂在主人公眼睛位置上的子节点），W 表示朝视线前方走。
 ## 留空时会自动取当前场景的摄像机。
 @export var camera: Camera3D
@@ -51,6 +55,12 @@ var _look_locked: bool = false       # 临时锁：视角被限制在一个锥�
 var _lock_yaw: float = 0.0           # 视线锁的中心偏航角（弧度）
 var _lock_pitch: float = 0.0         # 视线锁的中心俯仰角（弧度）
 var _lock_range: float = 0.0         # 允许偏离中心多少（弧度）
+
+
+## 登记进「玩家」组。放在 _enter_tree 而不是 _ready：所有节点的 _enter_tree 都跑完了
+## 才会有第一个 _ready，所以交互台在自己的 _ready 里一定捞得到玩家。
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:

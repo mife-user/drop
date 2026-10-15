@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://8sdjqcj4fuik"]
 
-[ext_resource type="Script" uid="uid://c5chj31hkim31" path="res://scripts/milkegg.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://c5chj31hkim31" path="res://scripts/奶蛋/milkegg.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://cb2ufjcjsrb7j" path="res://resources/奶蛋/奶蛋.glb" id="2_model"]
 [ext_resource type="PackedScene" uid="uid://bne26ofgtrk43" path="res://resources/蝴蝶结.glb" id="3_ifsyj"]
 

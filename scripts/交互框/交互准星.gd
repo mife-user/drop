@@ -13,6 +13,10 @@ class_name InteractCrosshair
 ## 这是 HUD，必须挂在 CanvasLayer 下面（挂 3D 根节点上会跟着相机跑、还会被场景挡住）；
 ## 十字和那行字的位置都在场景里摆，脚本不挪它们。
 
+## 准星组名。交互台没在检查器里显式指定准星时，就按这个组把它捞出来 ——
+## 名字要和 scripts/交互框/交互台.gd 里的 GROUP_CROSSHAIR 一致。
+const GROUP: StringName = &"interact_crosshair"
+
 ## 准星下面那行字。
 @export var hint: Label
 ## 这行字淡入淡出的时长（秒）；填 0 就是硬切。
@@ -20,6 +24,12 @@ class_name InteractCrosshair
 
 var _hint_text: String = ""
 var _tween: Tween
+
+
+## 登记进「准星」组。放在 _enter_tree 而不是 _ready：所有节点的 _enter_tree 都跑完了
+## 才会有第一个 _ready，所以交互台在自己的 _ready 里一定捞得到准星。
+func _enter_tree() -> void:
+	add_to_group(GROUP)
 
 
 func _ready() -> void:

@@ -26,8 +26,8 @@ class_name InteractStation
 ## 「看着它」的判定：从摄像机中心朝前打一条射线，射线同时挂「可交互」层和「世界」层，
 ## 世界层是用来挡视线的 —— 隔着墙就不弹提示。物体自己要落在「可交互」层上（见 body）。
 ##
-## 想做一个新物体：复制 scenes/交互台.tscn，换个模型，根节点换成你的子类脚本，
-## 再把 crosshair / player / panel / body 四根线接上就行。
+## 想做一个新物体：复制 scenes/交互台.tscn，换个模型，根节点换成你的子类脚本就行 ——
+## 面板、碰撞体、主人公、准星都是它自己找的，**一根线都不用接**（见 _resolve_refs）。
 
 ## —— 通用话术。每个字都能在检查器里改，代码里不存第二份 ——
 @export_group("话术")
@@ -41,15 +41,13 @@ class_name InteractStation
 ## 成功时的默认文案。
 @export var text_success: String = "操作成功"
 
-@export_group("接线")
-## 屏幕中心的准星（HUD 里那份）。
-@export var crosshair: InteractCrosshair
-## 主人公。菜单打开时要锁住他的移动和视角。
-@export var player: Player
-## 本物体自己的菜单面板（本场景里的子节点）。
-@export var panel: InteractPanel
-## 自己的碰撞体：准星打到它 = 玩家正对着这个物体，才允许交互。
-@export var body: CollisionObject3D
+## —— 下面四个引用**都是自动找的，检查器里没有对应格子，也不用接线**（见 _resolve_refs）——
+## 结构跟模板不一样、自动找会找错时，在子类里重写 _resolve_refs()，
+## 先把要指定的填上再调 super() 就行（已经填了的不会被覆盖）。
+var panel: InteractPanel            # 菜单面板：自己下面第一个
+var body: CollisionObject3D         # 自己的碰撞体：自己下面第一个挂在「可交互」层上的
+var player: Player                  # 主人公：场景里「玩家」组（player.gd 自己登记）
+var crosshair: InteractCrosshair    # 准星：场景里「准星」组（交互准星.gd 自己登记）
 
 @export_group("交互")
 ## 隔多远还能交互（米）。射程之外不弹提示。
@@ -63,6 +61,15 @@ class_name InteractStation
 ## 菜单开着时视角能偏离面板方向多少度（上下左右同一个值）。填 0 = 完全锁死。
 @export_range(0.0, 90.0, 1.0) var look_range: float = 35.0
 
+## 「可交互」层（第 5 层）的值：碰撞体挂在这一层上，准星才打得到它。
+const INTERACT_LAYER: int = 1 << 4
+
+## 场景里唯一的玩家、准星会自己登记进这两个组（见 player.gd / 交互准星.gd 的 _enter_tree），
+## 台座按组把它们捞出来 —— 所以**新物体拖进主场景，一根线都不用接**。
+## 名字要和那两个脚本里的 GROUP 常量一致。
+const GROUP_PLAYER: StringName = &"player"
+const GROUP_CROSSHAIR: StringName = &"interact_crosshair"
+
 ## 按哪个键开菜单。
 const INTERACT_ACTION: StringName = &"interact"
 ## 用哪个动作确认。默认是鼠标左键 —— 和开火绑同一个键是正常的：
@@ -74,6 +81,7 @@ var _hit: int = InteractPanel.HIT_NONE    # 菜单里准星扫到的东西
 
 
 func _ready() -> void:
+	_resolve_refs()
 	if is_instance_valid(panel):
 		panel.close()   # 开机先把菜单收起来（场景里是亮着的，方便你在编辑器里摆）
 	refresh_rows()
@@ -270,3 +278,60 @@ func _far_from_player() -> bool:
 	if cam == null:
 		return false
 	return cam.global_position.distance_to(global_position) > close_distance
+
+
+## 把四个引用自动找齐。**有这一手，新物体拖进主场景就什么线都不用接。**
+##
+## 面板和碰撞体是自己下面的子节点；主人公和准星住在主场景里
+## （台座单独存成一个场景时它们根本不在场，检查器里想连也连不上），
+## 那两个脚本在 _enter_tree 里把自己登记进组，这里按组捞 ——
+## 所有节点的 _enter_tree 都跑完了才会有第一个 _ready，所以这里一定找得到。
+##
+## 结构跟模板不一样、自动找会找错时，**在子类里重写这个函数**：
+## 先把自己要指定的那几项填上，再调 super() 即可（已经填了的不会被覆盖）。
+## 例：
+##     func _resolve_refs() -> void:
+##         body = $外壳/碰撞体      # 这台机器的碰撞体藏在里面
+##         super()                  # 其余三项照旧自动找
+func _resolve_refs() -> void:
+	if not is_instance_valid(panel):
+		panel = _find_child_panel()
+	if not is_instance_valid(body):
+		body = _find_child_body()
+	if not is_instance_valid(player):
+		player = get_tree().get_first_node_in_group(GROUP_PLAYER) as Player
+	if not is_instance_valid(crosshair):
+		crosshair = get_tree().get_first_node_in_group(GROUP_CROSSHAIR) as InteractCrosshair
+	# 找不到就当场喊一声：这几项都是自动找的，不喊的话表现只是"没反应"，很难查
+	if not is_instance_valid(body):
+		push_warning("交互台（%s）：找不到碰撞体，准星打不到它 —— 把「实体」挂在根节点下，并勾上「可交互」层。" % name)
+	if not is_instance_valid(panel):
+		push_warning("交互台（%s）：找不到菜单面板，按 E 不会有反应 —— 把面板挂在根节点下。" % name)
+	if not is_instance_valid(player):
+		push_warning("交互台（%s）：场景里没有「%s」组，菜单打开时锁不住玩家（主人公挂了 player.gd 就会自动进这个组）。" % [name, GROUP_PLAYER])
+	if not is_instance_valid(crosshair):
+		push_warning("交互台（%s）：场景里没有「%s」组，屏幕上不会有提示（HUD 里的准星挂了 交互准星.gd 就会自动进这个组）。" % [name, GROUP_CROSSHAIR])
+
+
+## 自己下面第一个菜单面板。
+func _find_child_panel() -> InteractPanel:
+	for child: Node in get_children():
+		if child is InteractPanel:
+			return child as InteractPanel
+	return null
+
+
+## 自己下面第一个碰撞体 —— 就是那个又挡人、又被射线打的「实体」。
+## **优先挑挂在「可交互」层上的那个**：机器上可能还有别的碰撞体（模型自带的、装饰用的），
+## 只有勾了可交互层的那一个才是给准星打的。
+func _find_child_body() -> CollisionObject3D:
+	var fallback: CollisionObject3D = null
+	for child: Node in get_children():
+		if child is not CollisionObject3D:
+			continue
+		var collider: CollisionObject3D = child as CollisionObject3D
+		if (collider.collision_layer & INTERACT_LAYER) != 0:
+			return collider
+		if fallback == null:
+			fallback = collider
+	return fallback

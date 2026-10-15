@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/水块.gd" id="1_blob"]
+[ext_resource type="Script" uid="uid://ba74uodc5fpuy" path="res://scripts/水枪/水块.gd" id="1_blob"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_water"]
 transparency = 1
