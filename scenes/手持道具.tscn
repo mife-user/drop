@@ -1,0 +1,35 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/道具/手持道具.gd" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="positive_material"]
+albedo_color = Color(0.3, 0.8, 0.6, 1)
+
+[sub_resource type="BoxMesh" id="positive_mesh"]
+size = Vector3(0.14, 0.18, 0.14)
+material = SubResource("positive_material")
+
+[sub_resource type="StandardMaterial3D" id="negative_material"]
+albedo_color = Color(0.7, 0.35, 0.65, 1)
+
+[sub_resource type="BoxMesh" id="negative_mesh"]
+size = Vector3(0.14, 0.18, 0.14)
+material = SubResource("negative_material")
+
+[node name="手持道具" type="Node3D" node_paths=PackedStringArray("positive_model", "negative_model")]
+position = Vector3(0.26, -0.22, -0.55)
+script = ExtResource("1")
+positive_model = NodePath("正面道具模型位")
+negative_model = NodePath("负面道具模型位")
+
+[node name="正面道具模型位" type="Node3D" parent="."]
+visible = false
+
+[node name="占位模型" type="MeshInstance3D" parent="正面道具模型位"]
+mesh = SubResource("positive_mesh")
+
+[node name="负面道具模型位" type="Node3D" parent="."]
+visible = false
+
+[node name="占位模型" type="MeshInstance3D" parent="负面道具模型位"]
+mesh = SubResource("negative_mesh")
