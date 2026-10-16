@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bjep6vuhx7q58"
-path="res://.godot/imported/walk.fbx-810cc24ff07699c36ca04c58361a4c39.scn"
+uid="uid://cj4yatarsclh7"
+path="res://.godot/imported/仙瓶.glb-ebe5bcbbf5ecfe39c8a7b33072acb8ca.scn"
 
 [deps]
 
-source_file="res://resources/walk.fbx"
-dest_files=["res://.godot/imported/walk.fbx-810cc24ff07699c36ca04c58361a4c39.scn"]
+source_file="res://resources/仙瓶.glb"
+dest_files=["res://.godot/imported/仙瓶.glb-ebe5bcbbf5ecfe39c8a7b33072acb8ca.scn"]
 
 [params]
 
@@ -33,15 +33,26 @@ meshes/force_disable_compression=false
 skins/use_named_skins=true
 animation/import=true
 animation/fps=30
-animation/trimming=true
+animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
 import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
-fbx/importer=0
-fbx/allow_geometry_helper_nodes=false
-fbx/embedded_image_handling=1
-fbx/naming_version=2
+_subresources={
+"meshes": {
+"仙瓶_仙瓶": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://resources/道具/仙瓶_仙瓶.res",
+"save_to_file/path": "uid://bmaeack0rlxv7"
+}
+}
+}
+gltf/naming_version=2
+gltf/embedded_image_handling=1
+gltf/texture_map_mode=1

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="ArrayMesh" path="res://resources/道具/仙瓶_仙瓶.res" id="1_mesh"]
+
+[node name="仙瓶" type="Node3D"]
+
+[node name="网格" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_mesh")

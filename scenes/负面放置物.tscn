@@ -1,0 +1,39 @@
+[gd_scene format=3]
+[ext_resource type="Script" path="res://scripts/道具/负面放置物.gd" id="1"]
+[sub_resource type="StandardMaterial3D" id="mat"]
+albedo_color = Color(0.7, 0.35, 0.65, 1)
+[sub_resource type="BoxMesh" id="mesh"]
+material = SubResource("mat")
+size = Vector3(0.3, 0.3, 0.3)
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.3, 0.3, 0.3)
+[sub_resource type="StandardMaterial3D" id="ringmat"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.37, 0.83, 0.95, 0.75)
+[sub_resource type="TorusMesh" id="ring"]
+material = SubResource("ringmat")
+inner_radius = 0.22
+outer_radius = 0.3
+rings = 32
+ring_segments = 6
+[node name="负面放置物" type="Node3D" node_paths=PackedStringArray("model", "body", "shadow")]
+script = ExtResource("1")
+model = NodePath("模型位")
+body = NodePath("实体")
+shadow = NodePath("投影")
+can_fire = false
+forbid_mask = 0
+ground_probe = 20.0
+hint_carry = "左键放置负面道具"
+[node name="模型位" type="Node3D" parent="."]
+position = Vector3(0, 0.15, 0)
+[node name="占位模型" type="MeshInstance3D" parent="模型位"]
+mesh = SubResource("mesh")
+[node name="实体" type="StaticBody3D" parent="."]
+collision_layer = 1
+[node name="碰撞体" type="CollisionShape3D" parent="实体"]
+position = Vector3(0, 0.15, 0)
+shape = SubResource("shape")
+[node name="投影" type="MeshInstance3D" parent="."]
+mesh = SubResource("ring")

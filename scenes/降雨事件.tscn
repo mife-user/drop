@@ -1,0 +1,46 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/道具/降雨事件.gd" id="1"]
+
+[sub_resource type="StandardMaterial3D" id="rain_material"]
+shading_mode = 0
+albedo_color = Color(0.55, 0.75, 0.95, 1)
+
+[sub_resource type="BoxMesh" id="rain_mesh"]
+material = SubResource("rain_material")
+size = Vector3(0.012, 0.22, 0.012)
+
+[sub_resource type="ParticleProcessMaterial" id="rain_process"]
+emission_shape = 3
+emission_box_extents = Vector3(40, 0.1, 40)
+direction = Vector3(0, -1, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 16.0
+initial_velocity_max = 16.0
+collision_mode = 2
+
+[node name="降雨事件" type="Node3D" node_paths=PackedStringArray("rain")]
+script = ExtResource("1")
+rain = NodePath("雨滴")
+duration = 10.0
+water_per_second = 0.1
+
+[node name="雨滴" type="GPUParticles3D" parent="."]
+position = Vector3(3, 16, -7.5)
+visible = false
+emitting = false
+amount = 24000
+lifetime = 1.5
+preprocess = 1.5
+visibility_aabb = AABB(-41, -25, -41, 82, 27, 82)
+local_coords = false
+process_material = SubResource("rain_process")
+draw_pass_1 = SubResource("rain_mesh")
+collision_base_size = 0.05
+
+[node name="屋顶地面挡雨" type="GPUParticlesCollisionHeightField3D" parent="."]
+position = Vector3(3, 5, -7.5)
+size = Vector3(82, 32, 82)
+resolution = 3
+heightfield_mask = 1

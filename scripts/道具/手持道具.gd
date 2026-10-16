@@ -1,8 +1,20 @@
 extends Node3D
 class_name HeldItemController
 
-## 单格随身道具：Node3D 固定挂在摄像机下，模型位可在编辑器直接摆放。
+## 单格随身道具：Node3D 与水枪同级，由水枪下的 RemoteTransform3D 同步手持变换。
 ## 使用后发出效果信号；文字只作说明，不会自动产生增益或减益。
+##
+## **两个「模型位」上那个 152.89° 的旋转是算出来的，别当垃圾清零。**
+## 本节点的变换每物理帧被 `主人公/水枪/道具手持同步` 覆盖成水枪的变换，所以两个模型位是
+## **长在水枪那个坐标系里**的 —— 而水枪节点在 main.tscn 里的朝向让它的**局部 +Y 指向世界下方**
+## （水枪.glb 是这么建模的，节点又为了把枪口转向前方而摆成那样）。
+## 道具网格的瓶身朝自己的 +Y 长（商店里不转就站得住），照搬进这个坐标系正好倒过来。
+## 模型位上那个旋转就是把「世界向上」搬回水枪坐标系的结果，算完再搬回去正好是 (0, 1, 0)。
+## **以后改了 `主人公/水枪` 的朝向，这两个旋转要跟着重算** —— 算错了的表现是
+## 「道具躺着 / 倒过来」，不会有任何报错。只想临时掰一掰就别动模型位，去转里面的实例。
+##
+## 道具模型本身不在这儿：是 `scenes/道具/仙瓶.tscn` / `海绵.tscn` 两个纯外观场景，
+## 商店展示台和这里实例的是同一份，换模型只改那两个文件。
 signal inventory_changed
 signal item_used(item_id: StringName, effect_text: String)
 
@@ -12,9 +24,9 @@ signal item_used(item_id: StringName, effect_text: String)
 @export var gun_model: Node3D
 ## 玩家，用于判断交互台是否锁定操作。
 @export var player: Player
-## 正面道具手持模型容器。
+## 正面道具手持模型容器。**它上面的旋转是摆正用的，别清零**（理由见文件头）。
 @export var positive_model: Node3D
-## 负面道具手持模型容器。
+## 负面道具手持模型容器。同上。
 @export var negative_model: Node3D
 ## 道具使用键，默认物理 F 键。
 @export var use_key: Key = KEY_F
