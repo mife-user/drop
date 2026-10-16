@@ -105,12 +105,29 @@ func _on_area_entered(area: Area3D) -> void:
 	var cubic: float = blob.absorb()
 	if cubic <= 0.0:
 		return
+	add_water(cubic)
+
+
+## 通用注水入口：雨水等非水团来源也复用容量、水面和通知逻辑。
+func add_water(cubic: float) -> void:
+	if cubic <= 0.0 or not is_finite(cubic):
+		return
 	var full_before: bool = amount >= capacity
 	amount = minf(amount + cubic, capacity)
 	water_received.emit(cubic)
 	if not full_before and amount >= capacity:
 		filled.emit()
 	_update_surface()
+
+
+## 通用抽水入口：最多移除现有水量，更新水面，不发送入水奖励信号。
+func remove_water(cubic: float) -> float:
+	if cubic <= 0.0 or not is_finite(cubic):
+		return 0.0
+	var removed: float = minf(amount, cubic)
+	amount = maxf(amount - removed, 0.0)
+	_update_surface()
+	return removed
 
 
 ## 没手动指定碰撞盒时，取本节点下第一个 CollisionShape3D。

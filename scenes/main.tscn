@@ -39,6 +39,11 @@
 [ext_resource type="Script" uid="uid://b8eups7fapgnn" path="res://scripts/结局/结局黑幕.gd" id="35_ending"]
 [ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="36_lamp"]
 
+[ext_resource type="PackedScene" path="res://scenes/降雨事件.tscn" id="40_rain"]
+
+[ext_resource type="Script" path="res://scripts/道具/负面道具效果.gd" id="41_negative_effect"]
+[ext_resource type="PackedScene" path="res://scenes/负面放置物.tscn" id="42_negative_item"]
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
 
@@ -232,6 +237,18 @@ collision_mask = 0
 monitoring = false
 monitorable = false
 
+[node name="负面道具效果" type="Node" parent="场景/PoolExclusion" node_paths=PackedStringArray("inventory", "pool")]
+script = ExtResource("41_negative_effect")
+inventory = NodePath("../../../主人公/手持道具")
+pool = NodePath("../吸水区")
+placed_scene = ExtResource("42_negative_item")
+duration = 10.0
+drain_per_second = 0.1
+
+[node name="降雨事件" parent="场景/PoolExclusion" node_paths=PackedStringArray("inventory", "pool") instance=ExtResource("40_rain")]
+inventory = NodePath("../../../主人公/手持道具")
+pool = NodePath("../吸水区")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, -0.0011246204)
 shape = SubResource("BoxShape3D_pool_exclusion")
@@ -413,7 +430,7 @@ footer_format = "邮币 x %d"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9003297, 1.1199989, -7.961938)
 wallet = NodePath("../../界面/邮币/Money2")
 gun = NodePath("../../主人公/水枪/水枪发射器")
-inventory = NodePath("../../主人公/Camera3D/手持道具")
+inventory = NodePath("../../主人公/手持道具")
 text_inventory_full = "已有道具，请先使用（F）"
 positive_name = "正面道具"
 positive_effect_text = "正面"
@@ -570,16 +587,19 @@ shape = SubResource("CapsuleShape3D_person")
 transform = Transform3D(-0.99968183, -0.0030323046, 0.025040597, 0, 0.99274766, 0.1202173, -0.025223527, 0.12017906, -0.99243176, -0.01376915, 1.5170367, 0.25607967)
 current = true
 
-[node name="手持道具" parent="主人公/Camera3D" unique_id=1460842503 node_paths=PackedStringArray("gun", "gun_model", "player") instance=ExtResource("31_held_item")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.22, -0.55)
-gun = NodePath("../../水枪/水枪发射器")
-gun_model = NodePath("../../水枪")
-player = NodePath("../..")
+[node name="手持道具" parent="主人公" unique_id=1460842503 node_paths=PackedStringArray("gun", "gun_model", "player") instance=ExtResource("31_held_item")]
+transform = Transform3D(0.13618115, 0.06970905, 0.9882284, 0.455657, -0.89015526, 0, 0.87967676, 0.45029315, -0.1529858, -0.25980377, 0.71408236, 0.6062856)
+gun = NodePath("../水枪/水枪发射器")
+gun_model = NodePath("../水枪")
+player = NodePath("..")
 
 [node name="人物" parent="主人公" unique_id=2068944398 instance=ExtResource("22_2wyq8")]
 
 [node name="水枪" parent="主人公" unique_id=1937551107 instance=ExtResource("7_tipki")]
 transform = Transform3D(0.13618115, 0.06970905, 0.9882284, 0.455657, -0.89015526, 0, 0.87967676, 0.45029315, -0.1529858, -0.25980377, 0.71408236, 0.6062856)
+
+[node name="道具手持同步" type="RemoteTransform3D" parent="主人公/水枪"]
+remote_path = NodePath("../../手持道具")
 
 [node name="Muzzle" type="Marker3D" parent="主人公/水枪" unique_id=1686800199]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)

@@ -1,7 +1,7 @@
 extends Node3D
 class_name HeldItemController
 
-## 单格随身道具：Node3D 固定挂在摄像机下，模型位可在编辑器直接摆放。
+## 单格随身道具：Node3D 与水枪同级，由水枪下的 RemoteTransform3D 同步手持变换。
 ## 使用后发出效果信号；文字只作说明，不会自动产生增益或减益。
 signal inventory_changed
 signal item_used(item_id: StringName, effect_text: String)
