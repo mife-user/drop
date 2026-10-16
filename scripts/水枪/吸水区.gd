@@ -37,7 +37,7 @@ const GROUP_WATER_SINK: StringName = &"water_sink"
 ## 这是**绝对容积**，不跟着水枪走 —— 水枪升级（射出的水更大）后，
 ## 每发灌进来的水量真的变多，填满同样的容量需要的发数会自动变少。
 ## 吸满之后继续吸水：水团照样消失，只是水面不再上涨。
-@export_range(0.0001, 100.0, 0.0001) var capacity: float = 0.025
+@export_range(0.0001, 1000.0, 0.0001) var capacity: float = 0.025
 ## 表现水面的网格；水量为 0 时自动隐藏，第一次接到水才出现。
 @export var surface: MeshInstance3D
 ## 决定水面大小和升降范围的碰撞盒；留空时自动取本节点下第一个 CollisionShape3D。

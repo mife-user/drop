@@ -64,11 +64,12 @@ func spawn_flying(from: Vector3, direction: Vector3, size: float) -> WaterBlob:
 
 
 ## 直接在某处生成一团已经落地的水（两团水合并时用）。
-func spawn_landed(position: Vector3, size: float) -> WaterBlob:
+## 参数不能叫 position —— 那是 Node3D 自带的属性，重名会让 Godot 刷 SHADOWED_VARIABLE_BASE_CLASS。
+func spawn_landed(target: Vector3, size: float) -> WaterBlob:
 	var blob: WaterBlob = _make(size)
 	if blob == null:
 		return null
-	blob.settle_at(position)
+	blob.settle_at(target)
 	return blob
 
 

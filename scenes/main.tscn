@@ -31,8 +31,8 @@
 [ext_resource type="PackedScene" path="res://scenes/交互模板/交互准星.tscn" id="28_cross"]
 [ext_resource type="PackedScene" path="res://scenes/界面/世界属性面板.tscn" id="29_stats"]
 [ext_resource type="PackedScene" path="res://scenes/道具商店.tscn" id="30_item_shop"]
-
 [ext_resource type="PackedScene" path="res://scenes/手持道具.tscn" id="31_held_item"]
+[ext_resource type="Script" uid="uid://cc4aqsnv2nusu" path="res://scripts/人物/手臂俯仰.gd" id="32_armpitch"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
@@ -124,6 +124,12 @@ uv1_world_triplanar = true
 material = SubResource("StandardMaterial3D_qkpxi")
 size = Vector3(573.6849, 0.001, 472.0916)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_qkpxi"]
+size = Vector3(93.91089, 3.4888916, 0.044195313)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5q0nq"]
+size = Vector3(0.17572021, 3.517456, 97.70972)
+
 [sub_resource type="SystemFont" id="SystemFont_zimu"]
 font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
 subpixel_positioning = 0
@@ -179,7 +185,25 @@ transform = Transform3D(-0.5178407, 0, -0.8554772, 0, 1, 0, 0.8554772, 0, -0.517
 transform = Transform3D(0.67673266, 0, -0.7362288, 0, 1, 0, 0.7362288, 0, 0.67673266, 19.052406, 0, 19.585913)
 
 [node name="路灯4" parent="场景/路灯总" unique_id=757175327 instance=ExtResource("13_trceg")]
-transform = Transform3D(-0.814888, 0, 0.5796185, 0, 1, 0, -0.5796185, 0, -0.814888, -18.86766, 0, -19.644358)
+transform = Transform3D(-0.72813994, 0, -0.68542856, 0, 1, 0, 0.68542856, 0, -0.72813994, -19.069456, 0, -9.538818)
+
+[node name="路灯5" parent="场景/路灯总" unique_id=1374492867 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.77779025, -0.030615583, 0.6277778, -0.017296573, 0.99739194, 0.07007074, -0.6282858, -0.06535875, 0.7752322, 19.386812, -0.319394, -19.449081)
+
+[node name="路灯6" parent="场景/路灯总" unique_id=2084207485 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.77779025, -0.030615583, 0.6277778, -0.017296573, 0.99739194, 0.07007074, -0.6282858, -0.06535875, 0.7752322, -9.827017, -1.0947589, -17.5969)
+
+[node name="路灯7" parent="场景/路灯总" unique_id=533443614 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.77779025, -0.030615583, 0.6277778, -0.017296573, 0.99739194, 0.07007074, -0.6282858, -0.06535875, 0.7752322, -39.111927, 0.20463735, 40.786346)
+
+[node name="路灯8" parent="场景/路灯总" unique_id=1774609620 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.7604233, -0.030615583, -0.6487055, 0.065680265, 0.99739194, 0.029919676, 0.6460978, -0.06535875, 0.760451, -38.69663, 0.014511267, -39.974174)
+
+[node name="路灯9" parent="场景/路灯总" unique_id=114252330 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.77779025, -0.030615583, 0.6277778, -0.017296573, 0.99739194, 0.07007074, -0.6282858, -0.06535875, 0.7752322, -10.0624485, 0.0789749, 40.656742)
+
+[node name="路灯10" parent="场景/路灯总" unique_id=213610258 instance=ExtResource("13_trceg")]
+transform = Transform3D(0.792483, -0.030615576, -0.60912496, 0.064070776, 0.997392, 0.033226773, 0.6065192, -0.06535875, 0.79237777, 9.873, 0, 10.413)
 
 [node name="PoolExclusion" type="Area3D" parent="场景" unique_id=2033682868]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2.5)
@@ -199,7 +223,7 @@ collision_layer = 8
 collision_mask = 4
 monitorable = false
 script = ExtResource("12_jscy8")
-capacity = 2.8706
+capacity = 1000.0
 surface = NodePath("水面")
 shape_node = NodePath("CollisionShape3D")
 surface_kind = 1
@@ -218,6 +242,8 @@ flow_speed = Vector2(0.05, 0.02)
 [node name="水量读数" parent="场景/PoolExclusion/吸水区" unique_id=1573472212 node_paths=PackedStringArray("sink") instance=ExtResource("7_og1vs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5713575, 0)
 sink = NodePath("..")
+auto_decimals = false
+decimals = 3
 
 [node name="草堆" type="Node3D" parent="场景" unique_id=1872029055]
 
@@ -286,6 +312,7 @@ collision_layer = 8
 collision_mask = 4
 monitorable = false
 script = ExtResource("12_jscy8")
+capacity = 500.0
 surface = NodePath("水面")
 shape_node = NodePath("CollisionShape3D")
 top_y = 0.5
@@ -306,6 +333,8 @@ flow_speed = Vector2(0.05, 0.02)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.03675651, 0.1777165, 0)
 pixel_size = 0.0006
 sink = NodePath("..")
+auto_decimals = false
+decimals = 3
 
 [node name="出生点" type="Marker3D" parent="场景/木碗" unique_id=785528509]
 
@@ -321,17 +350,17 @@ transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, 
 [node name="水枪升级" parent="场景" unique_id=1745327698 node_paths=PackedStringArray("wallet", "gun") instance=ExtResource("27_upgrade")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2.113616, 1.1768364, -7.6404314)
 wallet = NodePath("../../界面/邮币/Money2")
-gun = NodePath("../../主人公/水枪发射器")
+gun = NodePath("../../主人公/水枪/水枪发射器")
 
 [node name="水炮" parent="场景" unique_id=891097886 node_paths=PackedStringArray("wallet", "field", "gun") instance=ExtResource("17_yq6so")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.60664314, 1.1199989, -7.961938)
 wallet = NodePath("../../界面/邮币/Money2")
 field = NodePath("../../水块容器")
-gun = NodePath("../../主人公/水枪发射器")
+gun = NodePath("../../主人公/水枪/水枪发射器")
 fire_interval = 2.0
 blob_size = 0.35
 capacity = 10.0
-max_turrets = 1
+max_turrets = 3
 buy_cost = 10
 buy_cost_step = 0
 buy_text = "购买炮台"
@@ -363,7 +392,9 @@ footer_format = "邮币 x %d"
 [node name="道具商店" parent="场景" unique_id=814584015 node_paths=PackedStringArray("wallet", "gun", "inventory") instance=ExtResource("30_item_shop")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9003297, 1.1199989, -7.961938)
 wallet = NodePath("../../界面/邮币/Money2")
-gun = NodePath("../../主人公/水枪发射器")
+gun = NodePath("../../主人公/水枪/水枪发射器")
+inventory = NodePath("../../主人公/Camera3D/手持道具")
+text_inventory_full = "已有道具，请先使用（F）"
 positive_name = "正面道具"
 positive_effect_text = "正面"
 positive_price = 10
@@ -374,18 +405,47 @@ item_text_format = "%s · %s"
 price_format = "%d 枚"
 footer_format = "邮币 x %d"
 purchase_message_format = "已购买%s：%s"
-inventory = NodePath("../../主人公/Camera3D/手持道具")
 
 [node name="消防栓群" type="Node3D" parent="场景" unique_id=1743672743]
 
 [node name="消防栓" parent="场景/消防栓群" unique_id=186927498 node_paths=PackedStringArray("wallet", "gun") instance=ExtResource("17_fv21b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.956634, 0.14000061, 5.236519)
 wallet = NodePath("../../../界面/邮币/Money2")
-gun = NodePath("../../../主人公/水枪发射器")
+gun = NodePath("../../../主人公/水枪/水枪发射器")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="场景" unique_id=1300612384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.7206507, 0)
 mesh = SubResource("BoxMesh_5q0nq")
+
+[node name="边界" type="Node3D" parent="场景" unique_id=1302696728]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="场景/边界" unique_id=529162182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13584971, 0, 48.507076)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/边界/StaticBody3D" unique_id=119467170]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20812964, 1.2444458, -0.026374817)
+shape = SubResource("BoxShape3D_qkpxi")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="场景/边界" unique_id=33608629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13584971, 0, -48.435337)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/边界/StaticBody3D2" unique_id=1374780863]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20812964, 1.2444458, -0.026374817)
+shape = SubResource("BoxShape3D_qkpxi")
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="场景/边界" unique_id=1884724562]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.961044, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/边界/StaticBody3D3" unique_id=1791674954]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03131485, 1.258728, -0.3292234)
+shape = SubResource("BoxShape3D_5q0nq")
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="场景/边界" unique_id=180075300]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.990208, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/边界/StaticBody3D4" unique_id=1801896087]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03131485, 1.258728, -0.3292234)
+shape = SubResource("BoxShape3D_5q0nq")
 
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
@@ -421,7 +481,7 @@ one_shot = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60.026043, 0, 0)
 shadow_enabled = true
 script = ExtResource("4_jyhfs")
-angular_speed = 11.6129
+angular_speed = 5.0
 
 [node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9597292, 0.28364658, -7.120233)
@@ -441,21 +501,31 @@ shape = SubResource("CapsuleShape3D_person")
 transform = Transform3D(-0.99968183, -0.0030323046, 0.025040597, 0, 0.99274766, 0.1202173, -0.025223527, 0.12017906, -0.99243176, -0.01376915, 1.5170367, 0.25607967)
 current = true
 
-[node name="手持道具" parent="主人公/Camera3D" node_paths=PackedStringArray("gun", "gun_model", "player") instance=ExtResource("31_held_item")]
-gun = NodePath("../../水枪发射器")
-gun_model = NodePath("../../人物/水枪")
+[node name="手持道具" parent="主人公/Camera3D" unique_id=1460842503 node_paths=PackedStringArray("gun", "gun_model", "player") instance=ExtResource("31_held_item")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26, -0.22, -0.55)
+gun = NodePath("../../水枪/水枪发射器")
+gun_model = NodePath("../../水枪")
 player = NodePath("../..")
 
-[node name="水枪发射器" type="Node3D" parent="主人公" unique_id=324127771 node_paths=PackedStringArray("field", "muzzle", "camera", "readout")]
+[node name="人物" parent="主人公" unique_id=2068944398 instance=ExtResource("22_2wyq8")]
+
+[node name="水枪" parent="主人公" unique_id=1937551107 instance=ExtResource("7_tipki")]
+transform = Transform3D(0.13618115, 0.06970905, 0.9882284, 0.455657, -0.89015526, 0, 0.87967676, 0.45029315, -0.1529858, -0.25980377, 0.71408236, 0.6062856)
+
+[node name="Muzzle" type="Marker3D" parent="主人公/水枪" unique_id=1686800199]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
+
+[node name="水枪发射器" type="Node3D" parent="主人公/水枪" unique_id=324127771 node_paths=PackedStringArray("field", "muzzle", "camera", "readout")]
+transform = Transform3D(0.13618116, 0.45565712, 0.879677, 0.06970907, -0.8901556, 0.45029333, 0.98822844, -7.450583e-09, -0.15298584, -0.8233323, 0.38074875, 0.3494985)
 script = ExtResource("14_gun")
-field = NodePath("../../水块容器")
-muzzle = NodePath("../人物/水枪/Muzzle")
-camera = NodePath("../Camera3D")
-fire_interval = 2.0
+field = NodePath("../../../水块容器")
+muzzle = NodePath("../Muzzle")
+camera = NodePath("../../Camera3D")
+fire_interval = 1.6
 blob_size = 0.1
 readout = NodePath("读数")
 
-[node name="读数" type="Label3D" parent="主人公/水枪发射器" unique_id=1634565393]
+[node name="读数" type="Label3D" parent="主人公/水枪/水枪发射器" unique_id=1634565393]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.24282432, 0.92070186, 0.72227967)
 pixel_size = 0.0006
 billboard = 1
@@ -463,13 +533,11 @@ no_depth_test = true
 text = "0.000 / 1.000 m³"
 font_size = 64
 
-[node name="人物" parent="主人公" unique_id=2068944398 instance=ExtResource("22_2wyq8")]
-
-[node name="水枪" parent="主人公/人物" unique_id=1937551107 instance=ExtResource("7_tipki")]
-transform = Transform3D(0.12222744, -0.011219006, -0.99243873, 0.2300314, 0.97302884, 0.017330775, 0.96547717, -0.23041037, 0.12151155, -0.26614034, 0.84343183, 0.56535447)
-
-[node name="Muzzle" type="Marker3D" parent="主人公/人物/水枪" unique_id=1686800199]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.281, 0.06, 0)
+[node name="手臂俯仰" type="Node" parent="主人公" unique_id=158151839 node_paths=PackedStringArray("skeleton", "held_item", "camera")]
+script = ExtResource("32_armpitch")
+skeleton = NodePath("../人物/骨架/Skeleton3D")
+held_item = NodePath("../水枪")
+camera = NodePath("../Camera3D")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1024865155 node_paths=PackedStringArray("sun")]
 environment = SubResource("Environment_0wfyh")
@@ -486,10 +554,12 @@ layout_mode = 3
 
 [node name="世界属性面板" parent="界面" unique_id=375762676 node_paths=PackedStringArray("gun", "sun") instance=ExtResource("29_stats")]
 layout_mode = 3
-gun = NodePath("../../主人公/水枪发射器")
+gun = NodePath("../../主人公/水枪/水枪发射器")
 sun = NodePath("../../DirectionalLight3D")
 
 [node name="开始界面" parent="." unique_id=1160799467 node_paths=PackedStringArray("player", "player_camera", "hud") instance=ExtResource("26_menu")]
 player = NodePath("../主人公")
 player_camera = NodePath("../主人公/Camera3D")
 hud = NodePath("../界面")
+
+[editable path="主人公/人物"]

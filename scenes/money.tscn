@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dl66c7d2qrwg3" path="res://scripts/money.gd" id="1_money"]
 [ext_resource type="Texture2D" uid="uid://dpy5foaipftkj" path="res://resources/绿钞玩偶.png" id="2_doll"]
-[ext_resource type="Script" path="res://scripts/水/水量换币.gd" id="3_reward"]
+[ext_resource type="Script" uid="uid://i0ahyeqp30u0" path="res://scripts/水/水量换币.gd" id="3_reward"]
 
 [node name="Money" type="HBoxContainer" unique_id=45251491]
 anchors_preset = 1
@@ -35,8 +35,9 @@ theme_override_font_sizes/font_size = 40
 text = "x 0"
 vertical_alignment = 1
 script = ExtResource("1_money")
-starting_money = 100
+starting_money = 10000
 
-[node name="水量换币" type="Node" parent="." node_paths=PackedStringArray("wallet")]
+[node name="水量换币" type="Node" parent="." unique_id=1043750658 node_paths=PackedStringArray("wallet")]
 script = ExtResource("3_reward")
 wallet = NodePath("../Money2")
+water_per_coin = 0.1

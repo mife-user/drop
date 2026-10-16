@@ -80,21 +80,24 @@ func _climb_rungs(progress: float, start: Vector3, end: Vector3, steps: int, sid
 	var phase: float = TAU * float(steps) * time
 	# 曲线导数始终大于零：提腿时慢一点，发力时快一点，没有电梯式倒退。
 	var pull: float = time - clampf(pull_strength, 0.0, 0.7) * sin(phase) / (TAU * float(steps))
-	var position: Vector3 = start.lerp(end, pull)
-	position += side * sin(phase * 0.5) * sin(PI * time) * clampf(body_sway, 0.0, 0.03)
-	_move_player(position)
+	var target: Vector3 = start.lerp(end, pull)
+	target += side * sin(phase * 0.5) * sin(PI * time) * clampf(body_sway, 0.0, 0.03)
+	_move_player(target)
 
 
 func _step_over(progress: float, start: Vector3, end: Vector3) -> void:
 	var time: float = smoothstep(0.0, 1.0, progress)
-	var position: Vector3 = start.lerp(end, time)
-	position.y += sin(PI * time) * maxf(step_lift, 0.0)
-	_move_player(position)
+	var target: Vector3 = start.lerp(end, time)
+	target.y += sin(PI * time) * maxf(step_lift, 0.0)
+	_move_player(target)
 
 
-func _move_player(position: Vector3) -> void:
+## 把角色直接挪到某个位置。
+## 参数**不能叫 position** —— 那是 Node3D 自带的属性，重名会让 Godot 刷
+## SHADOWED_VARIABLE_BASE_CLASS 警告（同名的局部变量也一样）。
+func _move_player(target: Vector3) -> void:
 	if is_instance_valid(player):
-		player.global_position = position
+		player.global_position = target
 
 
 func _finish_climb() -> void:

@@ -161,8 +161,9 @@ func launch(from: Vector3, muzzle_velocity: Vector3) -> void:
 
 
 ## 由「水块容器」调用：直接出现在指定位置并当场落地（合并生成时用，不经过飞行）。
-func settle_at(position: Vector3) -> void:
-	global_position = position
+## 参数不能叫 position —— 那是 Node3D 自带的属性，重名会让 Godot 刷 SHADOWED_VARIABLE_BASE_CLASS。
+func settle_at(target: Vector3) -> void:
+	global_position = target
 	_visual_boost = spawn_growth
 	_settle()
 
