@@ -1,0 +1,278 @@
+[gd_scene format=3 uid="uid://dv77trhkdqynp"]
+
+[ext_resource type="PackedScene" uid="uid://8sdjqcj4fuik" path="res://scenes/milkegg.tscn" id="1_jeyjf"]
+[ext_resource type="Texture2D" uid="uid://c718ravpaic3m" path="res://resources/奶蛋/奶蛋_奶蛋.png" id="1_kp3xp"]
+[ext_resource type="Script" path="res://scripts/结局/天堂开场.gd" id="4_kaimu"]
+[ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水/水量字幕.gd" id="5_zimu"]
+[ext_resource type="PackedScene" uid="uid://cavm1650y8qe3" path="res://scenes/人物.tscn" id="6_renwu"]
+[ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/人物/player.gd" id="7_player"]
+[ext_resource type="Script" path="res://scripts/结局/天堂奶蛋.gd" id="8_eggs"]
+[ext_resource type="Script" path="res://scripts/结局/天堂退出.gd" id="9_exit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ncp2"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="BoxMesh" id="BoxMesh_3dbyp"]
+size = Vector3(27.277908, 5.86438, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ma6dh"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="BoxMesh" id="BoxMesh_xa8wg"]
+size = Vector3(20.126278, 5.86438, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6mdom"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="BoxMesh" id="BoxMesh_vpd1k"]
+size = Vector3(20.14392, 1, 25.502686)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d2fjp"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p76pf"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aeyax"]
+albedo_texture = ExtResource("1_kp3xp")
+
+[sub_resource type="SphereMesh" id="SphereMesh_kp3xp"]
+
+[sub_resource type="Environment" id="Environment_4qfcq"]
+background_mode = 1
+background_color = Color(0.75, 0.84, 0.96, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.62, 0.66, 0.74, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qiang_chang"]
+size = Vector3(27.277908, 5.86438, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qiang_duan"]
+size = Vector3(20.126278, 5.86438, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dipan"]
+size = Vector3(20.14392, 1, 25.502686)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_person"]
+radius = 0.28
+height = 1.69
+
+[sub_resource type="SystemFont" id="SystemFont_tiantang"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_zhuti"]
+font = SubResource("SystemFont_tiantang")
+font_size = 120
+font_color = Color(1, 0.92, 0.62, 1)
+outline_size = 14
+outline_color = Color(0.28, 0.15, 0.02, 1)
+shadow_size = 8
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fubiaoti"]
+font = SubResource("SystemFont_tiantang")
+font_size = 48
+font_color = Color(1, 0.97, 0.88, 1)
+outline_size = 8
+outline_color = Color(0.28, 0.15, 0.02, 1)
+shadow_size = 6
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="LabelSettings" id="LabelSettings_tishi"]
+font = SubResource("SystemFont_tiantang")
+font_size = 28
+font_color = Color(0.96, 0.96, 0.96, 0.85)
+outline_size = 6
+outline_color = Color(0.2, 0.15, 0.1, 0.8)
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_offset = Vector2(0, 3)
+
+[node name="Node3D" type="Node3D" unique_id=504126291]
+
+[node name="房子" type="Node3D" parent="." unique_id=1020414962]
+
+[node name="侧墙4" type="MeshInstance3D" parent="房子" unique_id=759820919]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8.864491, 2.2220278, -0.4060293)
+material_override = SubResource("StandardMaterial3D_5ncp2")
+mesh = SubResource("BoxMesh_3dbyp")
+
+[node name="实体" type="StaticBody3D" parent="房子/侧墙4"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="房子/侧墙4/实体"]
+shape = SubResource("BoxShape3D_qiang_chang")
+
+[node name="侧墙3" type="MeshInstance3D" parent="房子" unique_id=171528205]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7252836, 2.1305614, 12.979874)
+material_override = SubResource("StandardMaterial3D_ma6dh")
+mesh = SubResource("BoxMesh_xa8wg")
+
+[node name="实体" type="StaticBody3D" parent="房子/侧墙3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="房子/侧墙3/实体"]
+shape = SubResource("BoxShape3D_qiang_duan")
+
+[node name="底盘" type="MeshInstance3D" parent="房子" unique_id=1390550334]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.711731, 0, -0.2755127)
+material_override = SubResource("StandardMaterial3D_6mdom")
+mesh = SubResource("BoxMesh_vpd1k")
+
+[node name="实体" type="StaticBody3D" parent="房子/底盘"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="房子/底盘/实体"]
+shape = SubResource("BoxShape3D_dipan")
+
+[node name="侧墙" type="MeshInstance3D" parent="房子" unique_id=1758015927]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.708189, 2.1340332, -13.536186)
+material_override = SubResource("StandardMaterial3D_d2fjp")
+mesh = SubResource("BoxMesh_xa8wg")
+
+[node name="实体" type="StaticBody3D" parent="房子/侧墙"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="房子/侧墙/实体"]
+shape = SubResource("BoxShape3D_qiang_duan")
+
+[node name="侧墙5" type="MeshInstance3D" parent="房子" unique_id=730126307]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -12.242046, 2.2220278, -0.40602836)
+material_override = SubResource("StandardMaterial3D_p76pf")
+mesh = SubResource("BoxMesh_3dbyp")
+
+[node name="实体" type="StaticBody3D" parent="房子/侧墙5"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="房子/侧墙5/实体"]
+shape = SubResource("BoxShape3D_qiang_chang")
+
+[node name="蛋" type="Node3D" parent="." unique_id=720492459 node_paths=PackedStringArray("bounds")]
+script = ExtResource("8_eggs")
+bounds = NodePath("../房子/底盘/实体/CollisionShape3D")
+
+[node name="奶蛋" parent="蛋" unique_id=2008178465 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.604422, 0.4729085, -8.14604)
+
+[node name="奶蛋2" parent="蛋" unique_id=579891363 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.604422, 0.4729085, 0.8566394)
+
+[node name="奶蛋3" parent="蛋" unique_id=1867731738 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8023617, 0.4729085, -8.14604)
+
+[node name="奶蛋4" parent="蛋" unique_id=1583171 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.255274, 0.4729085, -8.14604)
+
+[node name="奶蛋5" parent="蛋" unique_id=220185896 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4214163, 0.4729085, 1.3052216)
+
+[node name="奶蛋6" parent="蛋" unique_id=1732586172 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.604422, 0.4729085, 7.7749195)
+
+[node name="奶蛋7" parent="蛋" unique_id=28768374 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.81949806, 0.4729085, 7.6297894)
+
+[node name="奶蛋8" parent="蛋" unique_id=2065709440 instance=ExtResource("1_jeyjf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.267723, 0.4729085, 7.8479424)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1918349389]
+transform = Transform3D(9.11, 0, 0, 0, 12.369557, 0, 0, 0, 9.11, 0, 17.940607, 0)
+material_override = SubResource("StandardMaterial3D_aeyax")
+mesh = SubResource("SphereMesh_kp3xp")
+
+[node name="SunLight" type="DirectionalLight3D" parent="." unique_id=551030403]
+transform = Transform3D(0.819152, 0, 0.573576, 0.439385, 0.642788, -0.627507, -0.368687, 0.766044, 0.526541, 0, 0, 0)
+light_color = Color(1, 0.97, 0.9, 1)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1672510111]
+environment = SubResource("Environment_4qfcq")
+
+[node name="主人公" type="CharacterBody3D" parent="." node_paths=PackedStringArray("camera")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 0.6, -11)
+floor_stop_on_slope = false
+floor_block_on_wall = false
+floor_max_angle = 1.0471976
+floor_snap_length = 0.3
+script = ExtResource("7_player")
+camera = NodePath("Camera3D")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="主人公"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.845, 0)
+shape = SubResource("CapsuleShape3D_person")
+
+[node name="Camera3D" type="Camera3D" parent="主人公"]
+transform = Transform3D(-0.99968183, -0.0030323046, 0.025040597, 0, 0.99274766, 0.1202173, -0.025223527, 0.12017906, -0.99243176, -0.01376915, 1.5170367, 0.25607967)
+current = true
+
+[node name="人物" parent="主人公" instance=ExtResource("6_renwu")]
+
+[node name="界面" type="CanvasLayer" parent="." node_paths=PackedStringArray("curtain", "line_title", "line_subtitle", "line_hint")]
+script = ExtResource("4_kaimu")
+curtain = NodePath("黑幕")
+line_title = NodePath("标题")
+line_subtitle = NodePath("副标题")
+line_hint = NodePath("提示")
+
+[node name="黑幕" type="ColorRect" parent="界面"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="标题" type="Label" parent="界面"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 150.0
+offset_right = 500.0
+offset_bottom = 310.0
+grow_horizontal = 2
+text = "恭喜你"
+label_settings = SubResource("LabelSettings_zhuti")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_zimu")
+hold_time = 4.0
+fade_out = 1.0
+
+[node name="副标题" type="Label" parent="界面"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 330.0
+offset_right = 500.0
+offset_bottom = 410.0
+grow_horizontal = 2
+text = "来到了奶蛋天堂"
+label_settings = SubResource("LabelSettings_fubiaoti")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_zimu")
+hold_time = 5.4
+fade_out = 1.0
+
+[node name="提示" type="Label" parent="界面"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -90.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "按 Esc 回菜单"
+label_settings = SubResource("LabelSettings_tishi")
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_zimu")
+stay = true
+
+[node name="退出" type="Node" parent="." node_paths=PackedStringArray("curtain")]
+script = ExtResource("9_exit")
+curtain = NodePath("../界面/黑幕")

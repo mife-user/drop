@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://c4b5r735ib8rs" path="res://scenes/消防栓.tscn" id="17_fv21b"]
 [ext_resource type="PackedScene" uid="uid://d0vfoq3bpf5bm" path="res://scenes/炮台.tscn" id="17_yq6so"]
 [ext_resource type="PackedScene" uid="uid://dx63t2g53j0da" path="res://resources/盆栽花.glb" id="18_0ld40"]
+[ext_resource type="PackedScene" uid="uid://d3c444ug64vfn" path="res://resources/壁灯.fbx" id="19_j8jky"]
 [ext_resource type="PackedScene" uid="uid://cavm1650y8qe3" path="res://scenes/人物.tscn" id="22_2wyq8"]
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/水/pool_ladder_exit.gd" id="23_pool_exit"]
@@ -33,6 +34,10 @@
 [ext_resource type="PackedScene" path="res://scenes/道具商店.tscn" id="30_item_shop"]
 [ext_resource type="PackedScene" path="res://scenes/手持道具.tscn" id="31_held_item"]
 [ext_resource type="Script" uid="uid://cc4aqsnv2nusu" path="res://scripts/人物/手臂俯仰.gd" id="32_armpitch"]
+[ext_resource type="PackedScene" uid="uid://divhuta8yps3a" path="res://scenes/界面/新手教程.tscn" id="33_tutorial"]
+[ext_resource type="Script" uid="uid://can1qv7q17huw" path="res://scripts/结局/天堂之门.gd" id="34_door"]
+[ext_resource type="Script" uid="uid://b8eups7fapgnn" path="res://scripts/结局/结局黑幕.gd" id="35_ending"]
+[ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="36_lamp"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
 size = Vector3(6.0259156, 2.4327393, 5.9381275)
@@ -161,6 +166,21 @@ background_color = Color(0.28521326, 0.3049525, 0.32419378, 1)
 sky = SubResource("Sky_trceg")
 ambient_light_source = 2
 ambient_light_color = Color(0.3, 0.3, 0.3, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_doorbeam"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_color = Color(1, 0.92, 0.72, 0.28)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_doorbeam"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 29.842274
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_door"]
+height = 3.2504394
+radius = 1.0
 
 [node name="Node3D" type="Node3D" unique_id=889120220]
 
@@ -413,7 +433,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.956634, 0.14000061, 5.23651
 wallet = NodePath("../../../界面/邮币/Money2")
 gun = NodePath("../../../主人公/水枪/水枪发射器")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="场景" unique_id=1300612384]
+[node name="海洋" type="MeshInstance3D" parent="场景" unique_id=1300612384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.7206507, 0)
 mesh = SubResource("BoxMesh_5q0nq")
 
@@ -446,6 +466,55 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.990208, 0, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/边界/StaticBody3D4" unique_id=1801896087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03131485, 1.258728, -0.3292234)
 shape = SubResource("BoxShape3D_5q0nq")
+
+[node name="盆栽花2" parent="场景" unique_id=1798653111 instance=ExtResource("18_0ld40")]
+transform = Transform3D(-0.0032520674, 0, -0.9999947, 0, 1, 0, 0.9999947, 0, -0.0032520674, 19.232018, 0.13999988, -1.8236248)
+
+[node name="房间灯" type="Node3D" parent="场景" unique_id=1440231759]
+
+[node name="壁灯" parent="场景/房间灯" unique_id=1917275844 instance=ExtResource("19_j8jky")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4082267, 3.3806748, -8.248999)
+script = ExtResource("36_lamp")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="场景/房间灯/壁灯" unique_id=1236044144]
+transform = Transform3D(1, 0, 0, 0, -0.3806371, 0.9247245, 0, -0.9247245, -0.3806371, 0.2441554, 0.20607114, 0.17795372)
+spot_range = 6.09
+spot_attenuation = 0.87
+spot_angle = 31.35
+spot_angle_attenuation = 0.2973023
+
+[node name="壁灯2" parent="场景/房间灯" unique_id=1432687944 instance=ExtResource("19_j8jky")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5502815, 3.6310384, -8.249)
+script = ExtResource("36_lamp")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="场景/房间灯/壁灯2" unique_id=2031872603]
+transform = Transform3D(1, 0, 0, 0, -0.3806371, 0.9247245, 0, -0.9247245, -0.3806371, 0.2441554, 0.20607114, 0.17795372)
+spot_range = 6.09
+spot_attenuation = 0.87
+spot_angle = 31.35
+spot_angle_attenuation = 0.2973023
+
+[node name="壁灯3" parent="场景/房间灯" unique_id=1567544161 instance=ExtResource("19_j8jky")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3.4011343, 3.4979022, -2.0013425)
+script = ExtResource("36_lamp")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="场景/房间灯/壁灯3" unique_id=479056780]
+transform = Transform3D(1, 0, 0, 0, -0.3806371, 0.9247245, 0, -0.9247245, -0.3806371, 0.2441554, 0.20607114, 0.17795372)
+spot_range = 6.09
+spot_attenuation = 0.87
+spot_angle = 31.35
+spot_angle_attenuation = 0.2973023
+
+[node name="壁灯4" parent="场景/房间灯" unique_id=1545819177 instance=ExtResource("19_j8jky")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.1016302, 3.4429886, -1.9992008)
+script = ExtResource("36_lamp")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="场景/房间灯/壁灯4" unique_id=1592335538]
+transform = Transform3D(1, 0, 0, 0, -0.3806371, 0.9247245, 0, -0.9247245, -0.3806371, 0.2441554, 0.20607114, 0.17795372)
+spot_range = 6.09
+spot_attenuation = 0.87
+spot_angle = 31.35
+spot_angle_attenuation = 0.2973023
 
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
@@ -557,9 +626,60 @@ layout_mode = 3
 gun = NodePath("../../主人公/水枪/水枪发射器")
 sun = NodePath("../../DirectionalLight3D")
 
-[node name="开始界面" parent="." unique_id=1160799467 node_paths=PackedStringArray("player", "player_camera", "hud") instance=ExtResource("26_menu")]
+[node name="新手教程" parent="界面" unique_id=786912267 node_paths=PackedStringArray("gun") instance=ExtResource("33_tutorial")]
+gun = NodePath("../../主人公/水枪/水枪发射器")
+
+[node name="开始界面" parent="." unique_id=1160799467 node_paths=PackedStringArray("player", "player_camera", "hud", "tutorial") instance=ExtResource("26_menu")]
 player = NodePath("../主人公")
 player_camera = NodePath("../主人公/Camera3D")
 hud = NodePath("../界面")
+tutorial = NodePath("../界面/新手教程")
+
+[node name="盆栽花" parent="." unique_id=1151218505 instance=ExtResource("18_0ld40")]
+transform = Transform3D(0.97615075, 0, -0.21709377, 0, 1, 0, 0.21709377, 0, 0.97615075, 6.39392, -0.008599391, 23.147528)
+
+[node name="盆栽花2" parent="." unique_id=1194875988 instance=ExtResource("18_0ld40")]
+transform = Transform3D(0.6284062, 0, 0.7778853, 0, 1, 0, -0.7778853, 0, 0.6284062, 1.800212, -0.008601179, 7.0205994)
+
+[node name="天堂之门" type="Area3D" parent="." unique_id=595943218 node_paths=PackedStringArray("sink", "player", "beam", "beam_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.2, 4.65)
+collision_layer = 0
+monitorable = false
+script = ExtResource("34_door")
+sink = NodePath("../场景/PoolExclusion/吸水区")
+player = NodePath("../主人公")
+beam = NodePath("光柱")
+beam_light = NodePath("灯")
+
+[node name="光柱" type="MeshInstance3D" parent="天堂之门" unique_id=305919404]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.921137, 0)
+material_override = SubResource("StandardMaterial3D_doorbeam")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_doorbeam")
+
+[node name="灯" type="OmniLight3D" parent="天堂之门" unique_id=1912159217]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+light_color = Color(1, 0.9, 0.68, 1)
+omni_range = 8.0
+
+[node name="碰撞盒" type="CollisionShape3D" parent="天堂之门" unique_id=49940982]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6252197, 0)
+shape = SubResource("CylinderShape3D_door")
+
+[node name="结局" type="CanvasLayer" parent="." unique_id=645729224 node_paths=PackedStringArray("door", "curtain")]
+layer = 20
+script = ExtResource("35_ending")
+door = NodePath("../天堂之门")
+curtain = NodePath("黑幕")
+
+[node name="黑幕" type="ColorRect" parent="结局" unique_id=1833481132]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [editable path="主人公/人物"]

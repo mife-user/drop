@@ -297,10 +297,15 @@ func _on_turret_placed() -> void:
 	refresh_rows()
 
 
-## 炮台没了（水喷完自己消失）。**这里也是水枪的兜底** ——
+## 炮台没了（水喷完自己消失，或者被玩家看着按 P 拆了）。**这里也是水枪的兜底** ——
 ## 万一炮台不是正常放下的（被别处删掉），水枪也得还回来，不能让它一直关着。
+##
+## **但菜单正开着的时候不能还**：那会儿左键是「确认」，还回去就成了「点选项顺手滋出一发水」。
+## 等菜单收起时 on_menu_closed() 会还（_gun_muted 还记着，还原的是开菜单前的那个值），
+## 所以这里跳过一下不会漏。玩家站在商店里、场上的炮台正好在这会儿喷完水或被拆，就会撞上这条。
 func _on_turret_gone() -> void:
-	_unmute_gun()
+	if not (is_instance_valid(panel) and panel.is_open()):
+		_unmute_gun()
 	refresh_rows()
 
 

@@ -29,6 +29,12 @@ class_name WaterGun
 ## 另外本类现在只要求「有枪口」，**不再要求有摄像机**（炮台没有摄像机），也是为它开的。
 
 
+## 打空了：**不够再射一发、玩家还在按着左键**的那一下响一次；接上水重新武装，下一箱空了还会响。
+## capacity 填 0（不限制）时永远不响 —— 没有「打空」这回事。
+## 想接「没水了该去哪儿接水」这类提示的去连它（新手教程就是这么做的），
+## **别另外去轮询 amount 自己判断** —— 那等于把「什么算打空」抄成第二份口径，迟早对不上。
+signal tank_emptied
+
 ## 开火用的输入动作名；项目设置里没有这个名字时自动退回「鼠标左键」。
 const FIRE_ACTION: StringName = &"fire"
 
@@ -93,6 +99,7 @@ var amount: float = 0.0
 
 var _cooldown: float = 0.0
 var _readout_base_color: Color = Color.WHITE   # 读数节点在场景里本来的颜色，只在打空时临时盖掉
+var _empty_announced: bool = false   # 这一箱空水已经报过 tank_emptied 了吗（接上水就摘掉牌子）
 
 
 func _ready() -> void:
@@ -128,6 +135,7 @@ func _fire() -> void:
 		push_error("水枪：field 未指定，射不出水")
 		return
 	if not has_water():
+		_announce_empty()
 		return   # 水箱空了：不出水也不扣水，读数会变红提醒（见 _refresh_readout）
 	var cam: Camera3D = _camera()
 	if cam == null and not is_instance_valid(muzzle):
@@ -203,6 +211,17 @@ func has_water() -> bool:
 	return capacity <= 0.0 or amount >= shot_volume() - 0.000001
 
 
+## 打空了：报一次，然后闭嘴 —— 玩家会一直按着左键，每帧报一回就成了刷屏。
+## 重新接上水（fill()）时把牌子摘掉，所以下一箱空了还会再报一次。
+## 报的时机是「想射但射不出来」的那一下，不是「水量刚好归零」的那一下 ——
+## 这样玩家一定是先看见「按了没反应」，才收到提示，两件事对得上。
+func _announce_empty() -> void:
+	if _empty_announced:
+		return
+	_empty_announced = true
+	tank_emptied.emit()
+
+
 ## 往水箱里加水（立方米），返回**实际加进去多少** —— 加满之后就一滴不收，
 ## 接水的人靠这个返回值知道"满了没有、停了没有"。
 ## capacity 填 0（不限制）时永远返回 0：没有"加满"这回事。
@@ -213,6 +232,7 @@ func fill(cubic: float) -> float:
 	amount = minf(amount + cubic, capacity)
 	var gained: float = amount - before
 	if gained > 0.0:
+		_empty_announced = false   # 又有水了：下一箱打空还要再报一声
 		_refresh_readout()
 	return gained
 

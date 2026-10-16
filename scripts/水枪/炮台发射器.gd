@@ -19,6 +19,12 @@ class_name WaterTurret
 ## 或者落点压着「吸水区」（水池、木碗，第 4 层）都不许放 —— 投影变红、左键点了没反应。
 ## 放置**不能取消**：拿在手上就必须找个地方放下。
 ##
+## **放下之后，看着它按 P 就能拆掉**（下面「拆除」那组参数）：从摄像机中心打一条射线，
+## 打到的正是自己那个碰撞盒才算「看着」，屏幕中心下面弹一行「按 P 拆除炮台」。
+## 拆掉走的是**和水箱喷完完全相同**的那条路（收缩一下再 queue_free），
+## 收尾全交给商店 —— 炮台是它的子节点，`tree_exited` 一发它就把水枪还回来、菜单跟着刷新。
+## 这里**不认识邮币、也不退款**：拆了就是拆了，剩下的水白费。
+##
 ## 水和水枪走同一个「水块容器」，共用 muzzle_speed 和重力：别处把出水速度买上去，
 ## 炮台的落点照样不变（每发都按当前初速现解一次抛物线），只是弧线变平。
 ##
@@ -41,6 +47,12 @@ const GROUP_PLAYER: StringName = &"player"
 ## 「准星」组，携带时在屏幕中心那行字上报「能不能放」。
 ## 名字要和 scripts/交互框/交互准星.gd 里的 GROUP 一致。
 const GROUP_CROSSHAIR: StringName = &"interact_crosshair"
+
+## 拆除炮台用的输入动作名（默认绑 P 键，见 project.godot 的 [input] 里那一条）。
+## 项目设置里没有这个动作时退回直接认 P 键 —— 和 水枪.gd 的 FIRE_ACTION 是同一个写法。
+const REMOVE_ACTION: StringName = &"remove_turret"
+## 项目设置里没有 REMOVE_ACTION 时，直接认这个物理键位。
+const REMOVE_KEYCODE: int = KEY_P
 
 ## 放好了（左键落地那一刻发一次）。商店接它把玩家的水枪还回来、重算菜单。
 signal placed
@@ -92,6 +104,17 @@ signal placed
 ## 不能放时那行字。
 @export var hint_blocked: String = "这里不能放"
 
+@export_group("拆除")
+## 能不能按 P 把它拆了。取消勾选 = 这座炮台拆不掉（水箱喷完照样会自己消失）。
+@export var removable: bool = true
+## 隔多远还拆得动（米）。从摄像机中心朝前打一条射线，够不着就不弹提示、按 P 也不响应。
+@export_range(0.5, 10.0, 0.1) var remove_distance: float = 3.0
+## 瞄准射线查哪些层。默认第 1 层（世界）—— 炮台自己的「实体」就在这层上，
+## 顺带让墙和别的炮台也挡得住：隔着墙拆不掉，也不会拆错人。
+@export_flags_3d_physics var remove_mask: int = 1
+## 准星对着炮台时，屏幕中心下面那行字。留空 = 不提示（照样能按 P 拆）。
+@export var remove_hint: String = "按 P 拆除炮台"
+
 ## 现在是不是「拿在手上」（还没放下）。商店靠它判断还能不能再卖一座。
 var carrying: bool = false
 var _placement_yaw_offset: float = 0.0  # 滚轮相对视线累积的水平旋转角（弧度）
@@ -101,6 +124,7 @@ var _ground_found: bool = false        # 底下找着地面了吗
 var _shadow_valid: bool = false        # 这会儿能不能放（有地面、而且不压着水池）
 var _ground_point: Vector3 = Vector3.ZERO   # 落点（射线打到的那个地面点）
 var _drying: bool = false              # 正在收缩消失，别重复触发
+var _aimed_at_me: bool = false         # 准星这会儿正对着这座炮台吗（每帧算一次，按 P 时直接看它）
 var _body_layer: int = 1               # 实体在场景里配的碰撞层，只是借出去再还回来
 var _crosshair: InteractCrosshair
 var _preview_material: StandardMaterial3D
@@ -119,16 +143,17 @@ func _ready() -> void:
 		shadow.hide()   # 场景里它是亮着的（方便在编辑器里摆位置），运行时先收掉
 
 
-## 携带中每帧摆位置，其余时间只盯着水箱。
+## 携带中每帧摆位置，放下之后盯着水箱和准星。
 ##
 ## 和父类那条流程的区别就在这几行：**先看水箱见底没有**（见底 = 这座炮台的任务结束），
-## 再交给父类的「冷却 + 到点开火」。
+## 再交给父类的「冷却 + 到点开火」。中间夹的那句是「准星现在是不是对着我」（按 P 拆除要用）。
 func _physics_process(delta: float) -> void:
 	if carrying:
 		_update_carry(delta)
 		return
 	if _drying:
 		return
+	_update_remove_hint()
 	if not has_water():
 		_dry_up()
 		return
@@ -175,11 +200,33 @@ func place() -> void:
 	placed.emit()
 
 
-## 左键放下。用事件而不是每帧问 Input，是为了「按一下只算一次」，
-## 而且能把这一下**吃掉**，不让它再落到菜单或开火上。
-func _unhandled_input(event: InputEvent) -> void:
-	if not carrying:
+## 按 P 拆掉（由 _unhandled_input 调）。和「水箱喷完」走的是**同一条路**：收缩一下再 queue_free。
+##
+## 拆掉之后的收尾**全归商店**，这里不用去通知谁、也不用认识邮币：炮台是商店的子节点，
+## `tree_exited` 一发，商店就把玩家的水枪还回来、菜单上那行「场上已有炮台」跟着变回「购买炮台」。
+## **不退款**：拆了就是拆了，箱里剩的水白费（喷出去的水早就换成邮币了，退钱等于刷币）。
+func dismantle() -> void:
+	if carrying or _drying:
 		return
+	_dry_up()
+
+
+## 两条输入按状态分家：**拿在手上时**是「滚轮转向 / 左键放下」，**已经放下时**是「按 P 拆除」。
+## 两套都用事件而不是每帧问 Input，理由一样：按一下只算一次，而且能把这一下**吃掉**，
+## 不让它再落到开火或别处去。
+func _unhandled_input(event: InputEvent) -> void:
+	if carrying:
+		_handle_carry_input(event)
+		return
+	# 放下之后：准星正对着它、而且按下了拆除键，就拆掉。
+	# _aimed_at_me 是 _update_remove_hint() 上一物理帧算好的（射线打到的正是自己那个盒子）。
+	if _aimed_at_me and _is_remove_pressed(event):
+		get_viewport().set_input_as_handled()
+		dismantle()
+
+
+## 携带中（还没放下）的输入：滚轮绕竖直轴转朝向、左键落到投影点上。
+func _handle_carry_input(event: InputEvent) -> void:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return   # 光标被放出来了（按过 Esc）：这一下左键留给「点画面重新锁定鼠标」
 	var wheel: InputEventMouseButton = event as InputEventMouseButton
@@ -203,6 +250,15 @@ func _is_place_pressed(event: InputEvent) -> bool:
 		return event.is_action_pressed(PLACE_ACTION)
 	var click: InputEventMouseButton = event as InputEventMouseButton
 	return click != null and click.pressed and click.button_index == MOUSE_BUTTON_LEFT
+
+
+## 这一下事件是不是「按下拆除键」。项目设置里没有这个动作时退回直接认 P 键
+## —— 键位拿 physical_keycode 比，和 project.godot 里存的是同一个口径（换键盘布局也还是这个位置）。
+func _is_remove_pressed(event: InputEvent) -> bool:
+	if InputMap.has_action(REMOVE_ACTION):
+		return event.is_action_pressed(REMOVE_ACTION)
+	var key: InputEventKey = event as InputEventKey
+	return key != null and key.pressed and not key.echo and key.physical_keycode == REMOVE_KEYCODE
 
 
 ## 携带中每帧：跟着摄像机摆位置和朝向，再更新脚下的投影。
@@ -270,6 +326,49 @@ func _blocked_at(point: Vector3) -> bool:
 	return not get_world_3d().direct_space_state.intersect_shape(params, 1).is_empty()
 
 
+# —— 按 P 拆除（放下之后的那套）——
+
+
+## 每帧打一条瞄准射线：准星正对着自己时，在屏幕中心下面写「按 P 拆除炮台」，否则把这行字擦掉。
+##
+## 场景里可能有好几座炮台，**每座都在每帧问同一条射线、拿结果跟自己的 body 比**，
+## 所以同一时刻最多只有一座是真的「被瞄着」的 —— 和交互台判「准星对着的是不是我」是同一个写法。
+## 射线查「世界」层，炮台自己的碰撞盒就在这层，顺带让墙也挡得住：隔着墙拆不掉。
+##
+## **相机也没锁、人也没锁**：这是一键拆除，不是菜单，所以不做交互台那套「锁玩家 + 锁视角」。
+## 写空字符串时传了 self：这行字归谁由准星说了算（见 交互准星.gd 认主那段），
+## 不是主人的「擦掉」会被忽略 —— 所以每帧无脑写一次，也不会把旁边台座的提示抹掉。
+func _update_remove_hint() -> void:
+	# 有人正拿着炮台时（不管是不是我）这一套整个让位：不弹提示、也不认 P 键。
+	# 那会儿准星那行字归他（他每帧在写「左键放置炮台」），我跟着写就成了两句话来回拉锯。
+	# 和交互台里那道 GROUP_BLOCK_INTERACT 闸是同一个道理，只是这边连提示一起让。
+	# （max_turrets 填 1 时撞不上这条 —— 场上有一座就拿不到新的、手上拿着一座场上就没有。）
+	if get_tree().get_first_node_in_group(GROUP_BLOCK_INTERACT) != null:
+		_aimed_at_me = false
+		return
+	_aimed_at_me = removable and _is_aimed_at_me()
+	if not is_instance_valid(_crosshair):
+		return
+	if _aimed_at_me and not remove_hint.is_empty():
+		_crosshair.set_hint(remove_hint, self)
+	else:
+		_crosshair.set_hint("", self)
+
+
+## 准星这会儿是不是正对着这座炮台：从摄像机中心朝前打一条射线，打到的正是自己那个碰撞盒。
+func _is_aimed_at_me() -> bool:
+	if not is_instance_valid(body):
+		return false   # 携带中和消失中碰撞层是 0，本来就打不到，这里只是省一条射线
+	var cam: Camera3D = _camera()
+	if cam == null:
+		return false
+	var from: Vector3 = cam.global_position
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		from, from - cam.global_basis.z * remove_distance, remove_mask)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+	return not hit.is_empty() and hit.get("collider") == body
+
+
 # —— 自动发射（覆盖父类那三处）——
 
 
@@ -294,14 +393,20 @@ func _launch_direction(_cam: Camera3D, from: Vector3) -> Vector3:
 	return _ballistic_direction(from, target, field.muzzle_speed, field.gravity)
 
 
-## 水箱见底：这一座的任务结束了，收缩消失。
-## 先把碰撞和「别开菜单」两件事退掉 —— 消失过程中不该再挡路、也不该再拦着玩家按 E。
+## 这一座完了（水箱见底，或者被玩家按 P 拆了）：收缩消失。
+## **两条路共用这一个函数**，所以「喷完」和「拆掉」的表现完全一样，只有触发源不同。
+##
+## 先把碰撞、「别开菜单」和准星那行字退掉 —— 消失过程中不该再挡路、不该再拦着玩家按 E，
+## 也不该在屏幕中间留一句「按 P 拆除炮台」（这行字是认主的，主人走了别人擦起来要多等一拍）。
 func _dry_up() -> void:
 	if _drying:
 		return
 	_drying = true
+	_aimed_at_me = false
 	remove_from_group(GROUP_BLOCK_INTERACT)
 	_set_body_active(false)
+	if is_instance_valid(_crosshair):
+		_crosshair.set_hint("", self)
 	if is_instance_valid(shadow):
 		shadow.hide()
 	if is_instance_valid(readout):
@@ -312,6 +417,15 @@ func _dry_up() -> void:
 	var tween: Tween = create_tween()
 	tween.tween_property(self, "scale", Vector3.ZERO, dry_shrink_time)
 	tween.tween_callback(queue_free)
+
+
+## 离开场景树时把准星那行字擦掉。
+## 正常那两条路（被拆、水箱喷完）在 _dry_up() 里已经擦过了，**这里是兜底**：
+## 万一以后多出一条「说没就没」的路子（换场景、被别处删掉），也不会在屏幕正中间
+## 留下一句没人认领的「按 P 拆除炮台」。
+func _exit_tree() -> void:
+	if is_instance_valid(_crosshair):
+		_crosshair.set_hint("", self)
 
 
 # —— 自己的小工具 ——

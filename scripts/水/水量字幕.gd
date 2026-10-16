@@ -1,6 +1,8 @@
 extends Label
+class_name WaterCaption
 
 ## 水量字幕：容器装满的那一瞬间，在屏幕上弹出「恭喜解锁神兽：奶蛋」，停留若干秒后淡出。
+## （勾了 stay 的就是弹完不走，一直留在屏幕上 —— 结局那两句用的是这个模式。）
 ##
 ## 和「水量灯」（scripts/水量灯.gd）是一对：都只认 WaterSink 的 filled 信号，
 ## 不认识木碗、也不认识奶蛋。以后别的地方要弹字幕（填满水池、开门、捡到东西），
@@ -23,6 +25,10 @@ extends Label
 @export_range(0.0, 3.0, 0.05) var fade_out: float = 0.8
 ## 弹出时从多少倍大小缩回原尺寸，1 = 不缩放。略微大一点更有「蹦出来」的感觉。
 @export_range(1.0, 2.0, 0.01) var pop_scale: float = 1.08
+## 勾上 = 淡入之后**就留在屏幕上不走**（结局、通关那种要一直挂着的字）。
+## 不勾（默认）= 老规矩：停留 hold_time 秒后淡出、隐藏。
+## 勾上之后 hold_time 和 fade_out 就不起作用了，留着不删是为了随时能勾回来。
+@export var stay: bool = false
 
 var _tween: Tween
 
@@ -60,6 +66,10 @@ func show_message(new_text: String = "") -> void:
 	else:
 		modulate.a = 1.0
 		scale = Vector2.ONE
+	if stay:
+		# 常驻：淡入之后就停在这儿。tween 排到这儿没有下一段了，自己会结束，
+		# 所以不用特意去 kill 它 —— 下次 show_message() 会把它掐掉重排。
+		return
 	_tween.tween_interval(hold_time)
 	# tween_property 的时长必须大于 0，所以 fade_out 填 0 时给一个极小值，效果上就是「到点直接消失」
 	_tween.tween_property(self, "modulate:a", 0.0, maxf(fade_out, 0.01))

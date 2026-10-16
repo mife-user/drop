@@ -1,12 +1,17 @@
 extends Node
 
-## 开始界面：开局压在游戏世界上的一层幕布 + 菜单。
+## 开始界面：压在游戏世界上的一层幕布 + 菜单。开局摊开，游戏中**按 Esc 还会再摊开一次**。
 ##
 ## 背景不是录屏也不是复制品，就是正在跑的主场景本身——太阳照常公转、水面照常流动。
-## 本脚本只做三件事，其余全交给 scenes/开始界面.tscn 里看得见的节点：
-##   1) 进场：抢过镜头（上帝相机）、亮出光标、把主人公冻住（世界照常跑，只有玩家不动）；
-##   2) 「开始游戏」：把镜头还给主人公、解冻、锁光标，幕布淡出后整层隐藏；
-##   3) 「退出游戏」：直接退出程序。
+## 菜单摊开期间**游戏照常跑，只有玩家被冻住**（process_mode 关掉，和暂停不是一回事）。
+##
+## 本脚本只做四件事（外加第一次叫醒新手教程），其余全交给 scenes/开始界面.tscn 里看得见的节点：
+##   1) 摊开菜单：抢过镜头（上帝相机）、亮出光标、把主人公冻住；
+##   2) 「开始游戏」：把镜头还给主人公、解冻、锁光标，幕布淡出后整层隐藏 ——
+##      第一次的那一下顺带叫醒新手教程（见 tutorial）；之后从 Esc 回来不再重演；
+##   3) 按 Esc：把菜单重新摊开（reopen()），世界状态原样保留；
+##   4) 「退出游戏」：直接退出程序。
+##
 ## 幕布的浓淡、渐变色标、字体字号、按钮样式全部在检查器里调，这里一个数值都不写死。
 
 ## 俯视全城的相机（本场景内的子节点）。点「开始游戏」后把 current 交还给 player_camera。
@@ -26,6 +31,9 @@ extends Node
 @export var player_camera: Camera3D
 ## 菜单期间要藏起来的 HUD（main.tscn 的「界面」CanvasLayer）。
 @export var hud: CanvasLayer
+## 新手教程（main.tscn 的「界面/新手教程」）。点「开始游戏」那一刻叫它起床。
+## 留空 = 没有教程，一切照旧。
+@export var tutorial: Tutorial
 ## 「开始游戏」按钮，连信号用。
 @export var start_button: Button
 ## 「退出游戏」按钮，连信号用。
@@ -40,12 +48,44 @@ extends Node
 ## 入场时两个块从左边滑进来的距离（像素），填 0 就只淡入不滑动。
 @export_range(0.0, 200.0, 1.0) var slide_distance: float = 28.0
 
-var _started: bool = false   # 「开始游戏」只认第一次点击
+var _menu_open: bool = true           # 菜单现在是不是摊开的（也是「能不能再摊开一次」的闸）
+var _tutorial_started: bool = false   # 新手教程全场只叫醒一次
+var _anims: Array[Tween] = []         # 本层正在跑的动画（入场 / 退场），换场面前先全掐掉
 
 
 func _ready() -> void:
 	# 父节点的 _ready 晚于所有子节点（包括 main.tscn 里的主人公），
-	# 所以这里做的三件事一定是"最后生效"的那一次，不会和 player.gd 的鼠标捕获打架。
+	# 所以这里做的几件事一定是"最后生效"的那一次，不会和 player.gd 的鼠标捕获打架。
+	if is_instance_valid(start_button):
+		start_button.pressed.connect(_on_start_pressed)
+	if is_instance_valid(quit_button):
+		quit_button.pressed.connect(_on_quit_pressed)
+	_show_menu()   # 开局先摊开一次
+
+
+## 按 Esc（ui_cancel）：把菜单拉回来。**游戏照常跑**（太阳在转、水在流），只有玩家被冻住。
+##
+## 菜单已经摊开时再按 Esc 什么都不做 —— 回游戏请点菜单里的按钮，
+## 这样玩家一路狂按 Esc 也不会在「菜单 / 游戏」之间闪来闪去。
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		reopen()
+
+
+## 把菜单重新摊开 —— 玩家按 Esc 走的就是这条路。菜单已经开着时什么都不做。
+func reopen() -> void:
+	if _menu_open:
+		return
+	_show_menu()
+
+
+## 摊开菜单：抢过镜头、亮出光标、冻住玩家、收起 HUD、亮出这一层，再放一遍入场动画。
+##
+## **它不碰新手教程** —— 从 Esc 菜单回到游戏不该把教程再演一遍（见 _tutorial_started）。
+## 也不重新加载场景，所以世界状态原样保留：水还在池子里、邮币还在、炮台还在原地。
+func _show_menu() -> void:
+	_kill_anims()
+	_menu_open = true
 	if is_instance_valid(god_camera):
 		god_camera.current = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -53,12 +93,20 @@ func _ready() -> void:
 		player.process_mode = Node.PROCESS_MODE_DISABLED
 	if is_instance_valid(hud):
 		hud.visible = false
+	if is_instance_valid(ui_layer):
+		ui_layer.visible = true
 	if is_instance_valid(start_button):
-		start_button.pressed.connect(_on_start_pressed)
 		start_button.grab_focus()   # 键盘 Enter / ↑↓ 直接可用，不用先点一下
-	if is_instance_valid(quit_button):
-		quit_button.pressed.connect(_on_quit_pressed)
 	_play_enter()
+
+
+## 把本层正在跑的动画全掐掉。入场演到一半又按 Esc、或者退场演到一半又按开始游戏，
+## 不掐的话上一段会接着演完 —— 最难受的一种是退场演完顺手把刚摊开的菜单又收回去。
+func _kill_anims() -> void:
+	for tween in _anims:
+		if is_instance_valid(tween) and tween.is_valid():
+			tween.kill()
+	_anims.clear()
 
 
 ## 入场：幕布整体淡入，标题块与按钮组错开地从左边滑进来。
@@ -69,7 +117,9 @@ func _play_enter() -> void:
 			items.append(candidate)
 	if is_instance_valid(curtain):
 		curtain.modulate.a = 0.0
-		create_tween().tween_property(curtain, "modulate:a", 1.0, enter_time)
+		var curtain_tween: Tween = create_tween()
+		curtain_tween.tween_property(curtain, "modulate:a", 1.0, enter_time)
+		_anims.append(curtain_tween)
 	for i: int in items.size():
 		var item: Control = items[i]
 		var target: Vector2 = item.position
@@ -80,14 +130,23 @@ func _play_enter() -> void:
 		var delay: float = float(i) * stagger
 		tween.tween_property(item, "position", target, enter_time).set_delay(delay)
 		tween.tween_property(item, "modulate:a", 1.0, enter_time).set_delay(delay)
+		_anims.append(tween)
 
 
-## 开始游戏：先把控制权一次交还给玩家（镜头、解冻、锁光标同时完成，不出现"能走但没镜头"的中间态），
+## 开始（或继续）游戏：先把控制权一次交还给玩家（镜头、解冻、锁光标同时完成，不出现"能走但没镜头"的中间态），
 ## 再收幕布。切镜头不重新加载场景，所以世界状态原样保留。
 func _on_start_pressed() -> void:
-	if _started:
+	if not _menu_open:
 		return
-	_started = true
+	_kill_anims()
+	_menu_open = false
+	# 教程要在「控制权交还玩家」的同一瞬间把开局该收的按键收走，所以是在这儿叫它、
+	# 而不是等幕布淡完（那中间有 0.4 秒玩家已经能跑能跳了）。说话它会自己等幕布收干净。
+	# **只在第一次玩时叫一次**：从 Esc 菜单回来再练一遍 WASD 太烦，
+	# 而且教程会把按键重新收走，回来的人会觉得「怎么突然又走不动了」。
+	if not _tutorial_started and is_instance_valid(tutorial):
+		_tutorial_started = true
+		tutorial.begin()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if is_instance_valid(player):
 		player.process_mode = Node.PROCESS_MODE_INHERIT
@@ -103,6 +162,7 @@ func _on_start_pressed() -> void:
 		if is_instance_valid(item):
 			tween.tween_property(item, "modulate:a", 0.0, exit_time * 0.5)
 	tween.finished.connect(_on_exit_finished)
+	_anims.append(tween)
 
 
 ## 幕布收干净之后才隐藏整层：既不再挡鼠标，也不用每帧绘制。

@@ -31,6 +31,10 @@ class_name InteractStation
 ## **菜单里左键确认**，点右上角的 × 或再按一次 E 关闭 —— 特意不用 Esc：
 ## 那个键在 player.gd 里是「放开鼠标」，会把光标放出来打断操作。
 ##
+## **菜单里按住左键不放 = 连买**（默认开着，见下面的「连买」那组参数）：
+## 点一下仍然只买一个、一点延迟都没有（第一次购买走的是按下事件，和以前一模一样），
+## 按住超过 repeat_delay 之后才每隔 repeat_interval 再买一次，松手 / 准星移开 / 这一行买不了了自己停。
+##
 ## 「看着它」的判定：从摄像机中心朝前打一条射线，射线同时挂「可交互」层和「世界」层，
 ## 世界层是用来挡视线的 —— 隔着墙就不弹提示。物体自己要落在「可交互」层上（见 body）。
 ##
@@ -85,6 +89,18 @@ var crosshair: InteractCrosshair    # 准星：场景里「准星」组（交互
 ## 长按生效期间准星下面那行字（子类可以覆盖 hold_hint_text() 让它带进度）。
 @export var hold_text: String = "按住中…"
 
+@export_group("连买（菜单里按住左键）")
+## 勾上后**菜单里按住左键不放 = 一直买**。点一下仍然只买一个（和以前一样，没有延迟），
+## 按住超过 repeat_delay 之后才每隔 repeat_interval 再买一次。
+## 取消勾选就退回「一次按下 = 一次购买」，行为跟以前一模一样。
+@export var repeat_enabled: bool = true
+## 按住多久才开始连买（秒）。**这个值是留给「点一下」的窗口**：
+## 太短会把点一下误判成按住（想买一级却买了两级），太长则按住了半天没反应。
+@export_range(0.1, 2.0, 0.05) var repeat_delay: float = 0.4
+## 连买开始之后隔多久再买一次（秒）。0.1 秒 ≈ 每秒 10 级。
+## 太小会一按住就把钱花光、数字来不及看；太大又失去「按住扫货」的意义。
+@export_range(0.02, 1.0, 0.01) var repeat_interval: float = 0.1
+
 ## 「可交互」层（第 5 层）的值：碰撞体挂在这一层上，准星才打得到它。
 const INTERACT_LAYER: int = 1 << 4
 
@@ -111,6 +127,8 @@ var _hit: int = InteractPanel.HIT_NONE    # 菜单里准星扫到的东西
 var _pressing: bool = false               # E 按着还没松，也还没判定（等松手时才决定是点按还是长按）
 var _press_time: float = 0.0              # 这一按已经按了多久；准星一移开就归零
 var _holding: bool = false                # 长按已经生效，正在每帧调 on_hold()
+var _repeat_row: int = InteractPanel.HIT_NONE  # 正按着左键连买哪一行；< 0 = 没在连买
+var _repeat_elapsed: float = 0.0          # 这一按已经按了多久（连买计时，松手归零）
 var _body_layer: int = 0                  # 实体在场景里配的碰撞层，菜单开关时借出去、再还回来
 
 
@@ -134,11 +152,13 @@ func _physics_process(delta: float) -> void:
 		_update_hold(delta)
 	if is_instance_valid(panel) and panel.is_open():
 		_update_menu(collider)
+		_update_repeat(delta)   # 连买接着 _update_menu 后面：用的是刚算好的 _hit
 	else:
 		_update_prompt()
 
 
-## E 开关菜单，左键确认。用事件（_unhandled_input）而不是每帧问 Input，是为了「按一下只算一次」。
+## E 开关菜单，左键确认。**买的那一下用事件（_unhandled_input）处理**、而不是每帧问 Input，
+## 是为了「按一下只算一次」；只有「按住不放接着买」才每帧问 Input（见 _update_repeat()）。
 ##
 ## **这下 E 只在「菜单是我开的」或者「准星正对着我」的时候才吃掉**，其余一律放行给别的台座。
 ## 场景里可以摆好几台，而 Godot 是按场景树反序派发 _unhandled_input 的（树里靠后的节点先收到）——
@@ -184,12 +204,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(SELECT_ACTION) and is_instance_valid(panel) and panel.is_open():
 		get_viewport().set_input_as_handled()
 		_activate(_hit)
+		_start_repeat()   # 把这一按记在账上：松手之前都按住的话，接着买（见 _update_repeat）
 
 
 ## 展开菜单：先把行算好，再开面板、锁玩家。
 func open_menu() -> void:
 	if not is_instance_valid(panel) or panel.is_open():
 		return
+	_stop_repeat()   # 开菜单时左键可能还按着（上一轮留下的账），先清零，别一开就自己买
 	refresh_rows()
 	panel.open()
 	_hit = InteractPanel.HIT_NONE
@@ -203,6 +225,7 @@ func close_menu() -> void:
 	if not is_instance_valid(panel) or not panel.is_open():
 		return
 	panel.close()
+	_stop_repeat()   # 菜单没了就别再买了（炮台商店买完那座会自己走到这儿）
 	_hit = InteractPanel.HIT_NONE
 	_set_body_rayable(true)
 	_unlock_player()
@@ -370,6 +393,51 @@ func _activate(hit: int) -> void:
 		return
 	on_row_activated(hit)
 	refresh_rows()
+
+
+## 左键在菜单里按下：把「这一按归哪一行」记在账上，从现在开始计时。
+## **这一下该买的东西已经由 _activate() 当场买了**，这里只管第 2、3、4……次。
+## 扫到的是面板空白处（_hit < 0）或者扫到 × 时不记账 —— 那两种按法都不该连着买。
+func _start_repeat() -> void:
+	if not repeat_enabled or _hit < 0:
+		_stop_repeat()
+		return
+	_repeat_row = _hit
+	_repeat_elapsed = 0.0
+
+
+## 结束连买（松手 / 准星移开 / 菜单关了 / 这一行买不了了）。重复调用无副作用。
+func _stop_repeat() -> void:
+	_repeat_row = InteractPanel.HIT_NONE
+	_repeat_elapsed = 0.0
+
+
+## 连买：按住左键不放，够 repeat_delay 之后每隔 repeat_interval 再买一次。
+##
+## **认的是「按下时扫到的那一行」**：中途松手、准星扫到别处（或者扫出面板）、菜单被关掉
+## （炮台商店买完那座会自己收菜单），都立刻收工，想接着买得重新按住 ——
+## 这样「哪一行亮着就买哪一行」这条规则不用改，玩家始终看得到自己在买什么，
+## 也不会出现「手一抖、钱在别处花光了」。
+##
+## **买不了了（满级 / 钱不够）也收工**，但收工之前再 _activate() 一次：
+## 让子类弹它自己那句「已满级 / 条件不满足」给玩家一个交代。
+## 不然按住不放每 0.1 秒激活一次，那行提示被反复重启，会一直亮着不走、看着像卡住。
+func _update_repeat(delta: float) -> void:
+	if _repeat_row < 0:
+		return
+	if not Input.is_action_pressed(SELECT_ACTION) or _hit != _repeat_row:
+		_stop_repeat()
+		return
+	_repeat_elapsed += delta
+	if _repeat_elapsed < repeat_delay:
+		return
+	_repeat_elapsed -= repeat_interval   # 减而不是清零：掉一帧也能把欠的那次补上，节奏不飘
+	var row: int = _repeat_row           # 先拿在手上：_stop_repeat() 会把 _repeat_row 清掉
+	if row_state(row) != InteractOptionRow.State.OK:
+		_stop_repeat()
+		_activate(row)   # 最后激活一次，让子类弹它自己那句提示（就这一次）
+		return
+	_activate(row)
 
 
 ## 锁住玩家：不许走、不许跳，视角也只能在面板方向附近转。

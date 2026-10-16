@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://divhuta8yps3a"]
+
+[ext_resource type="Script" uid="uid://c6hlsacjq5rwr" path="res://scripts/界面/新手教程.gd" id="1_tutorial"]
+
+[sub_resource type="SystemFont" id="SystemFont_ui"]
+font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_tip"]
+font = SubResource("SystemFont_ui")
+font_size = 40
+font_color = Color(1, 0.85882354, 0.41960785, 0.5372549)
+outline_size = 8
+outline_color = Color(0.24, 0.13, 0.02, 0.5)
+shadow_size = 4
+shadow_color = Color(0, 0, 0, 0.22)
+shadow_offset = Vector2(0, 3)
+
+[node name="新手教程" type="Control" unique_id=594902575 node_paths=PackedStringArray("prompt_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_tutorial")
+prompt_label = NodePath("提示")
+
+[node name="提示" type="Label" parent="." unique_id=1056514493]
+layout_mode = 0
+anchor_top = 0.72
+anchor_right = 1.0
+anchor_bottom = 0.72
+offset_top = -60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "欢迎来到这个世界"
+label_settings = SubResource("LabelSettings_tip")
+horizontal_alignment = 1
+vertical_alignment = 1
