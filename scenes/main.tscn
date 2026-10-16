@@ -31,49 +31,17 @@
 [ext_resource type="PackedScene" uid="uid://cvl1o6t36qqu1" path="res://scenes/水枪升级.tscn" id="27_upgrade"]
 [ext_resource type="PackedScene" path="res://scenes/交互模板/交互准星.tscn" id="28_cross"]
 [ext_resource type="PackedScene" path="res://scenes/界面/世界属性面板.tscn" id="29_stats"]
-[ext_resource type="PackedScene" path="res://scenes/道具商店.tscn" id="30_item_shop"]
+[ext_resource type="PackedScene" uid="uid://b74o32xk4nspf" path="res://scenes/道具商店.tscn" id="30_item_shop"]
 [ext_resource type="PackedScene" path="res://scenes/手持道具.tscn" id="31_held_item"]
 [ext_resource type="Script" uid="uid://cc4aqsnv2nusu" path="res://scripts/人物/手臂俯仰.gd" id="32_armpitch"]
 [ext_resource type="PackedScene" uid="uid://divhuta8yps3a" path="res://scenes/界面/新手教程.tscn" id="33_tutorial"]
 [ext_resource type="Script" uid="uid://can1qv7q17huw" path="res://scripts/结局/天堂之门.gd" id="34_door"]
 [ext_resource type="Script" uid="uid://b8eups7fapgnn" path="res://scripts/结局/结局黑幕.gd" id="35_ending"]
 [ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="36_lamp"]
-
 [ext_resource type="PackedScene" path="res://scenes/降雨事件.tscn" id="40_rain"]
-
-[ext_resource type="Script" path="res://scripts/道具/负面道具效果.gd" id="41_negative_effect"]
+[ext_resource type="Script" uid="uid://b83bqldjvug8f" path="res://scripts/道具/负面道具效果.gd" id="41_negative_effect"]
+[ext_resource type="PackedScene" uid="uid://bc4uuogc4barq" path="res://resources/滑板.fbx" id="42_2cjbq"]
 [ext_resource type="PackedScene" path="res://scenes/负面放置物.tscn" id="42_negative_item"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
-size = Vector3(6.0259156, 2.4327393, 5.9381275)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_yc10j"]
-size = Vector3(5.815, 1.1323242, 5.498)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_3o8g1"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wx2l2"]
-noise = SubResource("FastNoiseLite_3o8g1")
-seamless = true
-as_normal_map = true
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s55e4"]
-transparency = 1
-depth_draw_mode = 1
-albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.8117647)
-roughness = 0.0
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_wx2l2")
-refraction_enabled = true
-refraction_texture = SubResource("NoiseTexture2D_wx2l2")
-uv1_scale = Vector3(0.25, 0.25, 0.25)
-uv1_triplanar = true
-uv1_triplanar_sharpness = 0.4756823
-uv1_world_triplanar = true
-
-[sub_resource type="BoxMesh" id="BoxMesh_s55e4"]
-material = SubResource("StandardMaterial3D_s55e4")
-size = Vector3(6.311968, 1, 5.5394897)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ladder_trigger"]
 size = Vector3(1, 1.7, 1.1)
@@ -139,6 +107,37 @@ size = Vector3(93.91089, 3.4888916, 0.044195313)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5q0nq"]
 size = Vector3(0.17572021, 3.517456, 97.70972)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pool_exclusion"]
+size = Vector3(6.0259156, 2.4327393, 5.9381275)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yc10j"]
+size = Vector3(5.815, 1.1323242, 5.498)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_3o8g1"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wx2l2"]
+noise = SubResource("FastNoiseLite_3o8g1")
+seamless = true
+as_normal_map = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s55e4"]
+transparency = 1
+depth_draw_mode = 1
+albedo_color = Color(0.05882353, 0.3137255, 0.49019608, 0.8117647)
+roughness = 0.0
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_wx2l2")
+refraction_enabled = true
+refraction_texture = SubResource("NoiseTexture2D_wx2l2")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+uv1_triplanar_sharpness = 0.4756823
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_s55e4"]
+material = SubResource("StandardMaterial3D_s55e4")
+size = Vector3(6.311968, 1, 5.5394897)
 
 [sub_resource type="SystemFont" id="SystemFont_zimu"]
 font_names = PackedStringArray("Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Heiti SC", "WenQuanYi Micro Hei")
@@ -229,58 +228,6 @@ transform = Transform3D(0.77779025, -0.030615583, 0.6277778, -0.017296573, 0.997
 
 [node name="路灯10" parent="场景/路灯总" unique_id=213610258 instance=ExtResource("13_trceg")]
 transform = Transform3D(0.792483, -0.030615576, -0.60912496, 0.064070776, 0.997392, 0.033226773, 0.6065192, -0.06535875, 0.79237777, 9.873, 0, 10.413)
-
-[node name="PoolExclusion" type="Area3D" parent="场景" unique_id=2033682868]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2.5)
-collision_layer = 0
-collision_mask = 0
-monitoring = false
-monitorable = false
-
-[node name="负面道具效果" type="Node" parent="场景/PoolExclusion" node_paths=PackedStringArray("inventory", "pool")]
-script = ExtResource("41_negative_effect")
-inventory = NodePath("../../../主人公/手持道具")
-pool = NodePath("../吸水区")
-placed_scene = ExtResource("42_negative_item")
-duration = 10.0
-drain_per_second = 0.1
-
-[node name="降雨事件" parent="场景/PoolExclusion" node_paths=PackedStringArray("inventory", "pool") instance=ExtResource("40_rain")]
-inventory = NodePath("../../../主人公/手持道具")
-pool = NodePath("../吸水区")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, -0.0011246204)
-shape = SubResource("BoxShape3D_pool_exclusion")
-debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
-
-[node name="吸水区" type="Area3D" parent="场景/PoolExclusion" unique_id=880080188 node_paths=PackedStringArray("surface", "shape_node")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
-collision_layer = 8
-collision_mask = 4
-monitorable = false
-script = ExtResource("12_jscy8")
-capacity = 1000.0
-surface = NodePath("水面")
-shape_node = NodePath("CollisionShape3D")
-surface_kind = 1
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion/吸水区" unique_id=214760503]
-transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.22990632, -0.71506155, 0.0294137)
-shape = SubResource("BoxShape3D_yc10j")
-debug_color = Color(0.18294686, 0.51271874, 1, 0.77254903)
-
-[node name="水面" type="MeshInstance3D" parent="场景/PoolExclusion/吸水区" unique_id=75791470]
-transform = Transform3D(0.991006, 0, 0, 0, 1.3226776, 0, 0, 0, 1.0021315, 0, -0.67972565, 0)
-mesh = SubResource("BoxMesh_s55e4")
-script = ExtResource("13_pm3ni")
-flow_speed = Vector2(0.05, 0.02)
-
-[node name="水量读数" parent="场景/PoolExclusion/吸水区" unique_id=1573472212 node_paths=PackedStringArray("sink") instance=ExtResource("7_og1vs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5713575, 0)
-sink = NodePath("..")
-auto_decimals = false
-decimals = 3
 
 [node name="草堆" type="Node3D" parent="场景" unique_id=1872029055]
 
@@ -431,17 +378,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9003297, 1.1199989, -7.9619
 wallet = NodePath("../../界面/邮币/Money2")
 gun = NodePath("../../主人公/水枪/水枪发射器")
 inventory = NodePath("../../主人公/手持道具")
-text_inventory_full = "已有道具，请先使用（F）"
-positive_name = "正面道具"
-positive_effect_text = "正面"
-positive_price = 10
-negative_name = "负面道具"
-negative_effect_text = "负面"
-negative_price = 10
-item_text_format = "%s · %s"
-price_format = "%d 枚"
-footer_format = "邮币 x %d"
-purchase_message_format = "已购买%s：%s"
 
 [node name="消防栓群" type="Node3D" parent="场景" unique_id=1743672743]
 
@@ -533,6 +469,59 @@ spot_attenuation = 0.87
 spot_angle = 31.35
 spot_angle_attenuation = 0.2973023
 
+[node name="滑板" parent="场景" unique_id=112669835 instance=ExtResource("42_2cjbq")]
+transform = Transform3D(0.55541396, 0.5928782, -0.5831045, -0.72978866, 0.6836729, 0, 0.39865273, 0.425543, 0.8123972, 3.5424879, 0.4475314, -7.7403383)
+
+[node name="PoolExclusion" type="Area3D" parent="场景" unique_id=2033682868]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 2.5)
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+
+[node name="负面道具效果" type="Node" parent="场景/PoolExclusion" unique_id=1678575264 node_paths=PackedStringArray("inventory", "pool")]
+script = ExtResource("41_negative_effect")
+inventory = NodePath("../../../主人公/手持道具")
+pool = NodePath("../吸水区")
+placed_scene = ExtResource("42_negative_item")
+
+[node name="降雨事件" parent="场景/PoolExclusion" unique_id=1526626133 node_paths=PackedStringArray("inventory", "pool") instance=ExtResource("40_rain")]
+inventory = NodePath("../../../主人公/手持道具")
+pool = NodePath("../吸水区")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, -0.0011246204)
+shape = SubResource("BoxShape3D_pool_exclusion")
+debug_color = Color(0.7390799, 4.813075e-08, 0.36650893, 0.41960785)
+
+[node name="吸水区" type="Area3D" parent="场景/PoolExclusion" unique_id=880080188 node_paths=PackedStringArray("surface", "shape_node")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1313355, -0.32407093, -0.011224985)
+collision_layer = 8
+collision_mask = 4
+monitorable = false
+script = ExtResource("12_jscy8")
+capacity = 1000.0
+surface = NodePath("水面")
+shape_node = NodePath("CollisionShape3D")
+surface_kind = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion/吸水区" unique_id=214760503]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -0.22990632, -0.71506155, 0.0294137)
+shape = SubResource("BoxShape3D_yc10j")
+debug_color = Color(0.18294686, 0.51271874, 1, 0.77254903)
+
+[node name="水面" type="MeshInstance3D" parent="场景/PoolExclusion/吸水区" unique_id=75791470]
+transform = Transform3D(0.991006, 0, 0, 0, 1.3226776, 0, 0, 0, 1.0021315, 0, -0.67972565, 0)
+mesh = SubResource("BoxMesh_s55e4")
+script = ExtResource("13_pm3ni")
+flow_speed = Vector2(0.05, 0.02)
+
+[node name="水量读数" parent="场景/PoolExclusion/吸水区" unique_id=1573472212 node_paths=PackedStringArray("sink") instance=ExtResource("7_og1vs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5713575, 0)
+sink = NodePath("..")
+auto_decimals = false
+decimals = 3
+
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
 camera = NodePath("../主人公/Camera3D")
@@ -569,7 +558,7 @@ shadow_enabled = true
 script = ExtResource("4_jyhfs")
 angular_speed = 5.0
 
-[node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera")]
+[node name="主人公" type="CharacterBody3D" parent="." unique_id=1733731217 node_paths=PackedStringArray("camera", "anim")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9597292, 0.28364658, -7.120233)
 floor_stop_on_slope = false
 floor_block_on_wall = false
@@ -578,6 +567,7 @@ floor_snap_length = 0.3
 script = ExtResource("10_player")
 camera = NodePath("Camera3D")
 capture_on_start = false
+anim = NodePath("人物/AnimationPlayer")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="主人公" unique_id=2016124640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.845, 0)
@@ -598,7 +588,7 @@ player = NodePath("..")
 [node name="水枪" parent="主人公" unique_id=1937551107 instance=ExtResource("7_tipki")]
 transform = Transform3D(0.13618115, 0.06970905, 0.9882284, 0.455657, -0.89015526, 0, 0.87967676, 0.45029315, -0.1529858, -0.25980377, 0.71408236, 0.6062856)
 
-[node name="道具手持同步" type="RemoteTransform3D" parent="主人公/水枪"]
+[node name="道具手持同步" type="RemoteTransform3D" parent="主人公/水枪" unique_id=2135316517]
 remote_path = NodePath("../../手持道具")
 
 [node name="Muzzle" type="Marker3D" parent="主人公/水枪" unique_id=1686800199]
@@ -662,7 +652,7 @@ transform = Transform3D(0.97615075, 0, -0.21709377, 0, 1, 0, 0.21709377, 0, 0.97
 transform = Transform3D(0.6284062, 0, 0.7778853, 0, 1, 0, -0.7778853, 0, 0.6284062, 1.800212, -0.008601179, 7.0205994)
 
 [node name="天堂之门" type="Area3D" parent="." unique_id=595943218 node_paths=PackedStringArray("sink", "player", "beam", "beam_light")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.2, 4.65)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9250238, -2.3421428, 3.3728437)
 collision_layer = 0
 monitorable = false
 script = ExtResource("34_door")

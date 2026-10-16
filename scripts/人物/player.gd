@@ -10,6 +10,10 @@ class_name Player
 ## 另外对外提供两个「临时锁」给交互菜单用（见 交互台.gd）：
 ## set_move_lock() 不许走也不许跳，lock_look() / unlock_look() 把视角限制在一个锥形里。
 ## 锁的是"玩家能不能动"，不是"脚本跑不跑"，所以重力、贴地照常工作。
+##
+## 它还顺手管着人物模型的动画（`人物.tscn` 里那个 AnimationPlayer），两个状态：站立 / 走。
+## 动画是**照着移动结果放的**，一点玩法都不影响 —— 反过来说，把 `anim` 留空整套动画逻辑就不工作，
+## 移动照常。判定用的全是本脚本自己已经算好的东西（velocity、is_on_floor），没有新数值。
 
 
 ## 玩家组名。交互台没在检查器里显式指定主人公时，就按这个组把玩家捞出来 ——
@@ -47,8 +51,37 @@ const GROUP: StringName = &"player"
 ## 跳跃缓冲（秒）：落地前按下的空格会被记住，落地瞬间补发；填 0 关闭。
 @export_range(0.0, 0.5, 0.01) var jump_buffer_time: float = 0.1
 
+@export_group("动画")
+
+## 人物模型上的动画播放器（`scenes/人物.tscn` 里的 AnimationPlayer）。
+## **留空 = 整套动画逻辑不工作，移动照常**，要临时关掉动画排查问题时把它清空即可。
+@export var anim: AnimationPlayer
+## 站着不动时播的动画。**库名前缀「人物/」不能省** —— 库里叫「站立」，代码里认的名字是「库名/动画名」。
+## 这两条填错不会崩，只会在输出里报一句「动画库里没有…」，照着改就行。
+@export var idle_anim: StringName = &"人物/站立"
+## 在地面上有速度时播的动画（循环）。它只动两条腿和另一侧那只自由手，**不碰端水枪的手臂**，
+## 所以和「手臂俯仰」不打架，可以放心混着用。
+@export var walk_anim: StringName = &"人物/走"
+## 走路动画是按「每秒几米」做出来的。填成 move_speed 表示：全速走时动画原速播。
+## 填大了动画偏慢（看着像滑步），填小了动画偏快（看着像原地蹬腿）。
+@export_range(0.1, 20.0, 0.1) var walk_ref_speed: float = 4.0
+## 走路动画的最慢倍率：速度掉到很低时，动画至少按这个倍率播，免得慢得像卡住。
+@export_range(0.05, 1.0, 0.05) var min_walk_scale: float = 0.4
+## 速度低于这个值（米/秒）就算「站住」，切回站立动画。
+## 留一点余量是为了贴着墙蹭、走下缓坡时不会在走/站之间来回抖。
+@export_range(0.01, 1.0, 0.01) var move_threshold: float = 0.15
+## 站立 ↔ 走 的交叉淡入时间（秒）；填 0 = 硬切。
+@export_range(0.0, 1.0, 0.01) var fade_time: float = 0.2
+
+# **这里没有「跳」动画是故意的，不是漏写**（2026-10-16 去掉的）。
+# `resources/人物/跳.res` 和 `resources/人物/jump.fbx` 都还在磁盘上，只是没挂进 `人物.tscn` 的动画库。
+# 当时卡住的两点：① 那条动画的根骨骼带着一条位移轨道，而摄像机和骨架是两棵独立的分支，
+# 跳起来模型会连带水枪相对镜头上下晃；② 它长 0.958 秒，对不上 0.633 秒的滞空时间。
+# 要加回来的话：在编辑器里给 AnimationPlayer 添一条库条目，再在这里补一个 jump_anim 和对应分支。
+
 var _coyote_left: float = 0.0        # 土狼时间剩余量
 var _jump_buffer_left: float = 0.0   # 跳跃缓冲剩余量
+var _current_anim: StringName = &""  # 正在播的动画名；用来避免每帧重复 play()（play 会把动画从头重放）
 var _pitch: float = 0.0              # 摄像机的俯仰角（弧度），负值表示低头
 var _move_locked: bool = false       # 临时锁：不许走也不许跳（交互菜单开着时为 true）
 var _look_locked: bool = false       # 临时锁：视角被限制在一个锥形里
@@ -122,6 +155,8 @@ func _physics_process(delta: float) -> void:
 	# 下一帧"前方"就被重新定义，形成正反馈——角色会原地疯狂打转。第一人称下身体只跟视线转。
 	# 实际位移与碰撞解算全部交给物理引擎
 	move_and_slide()
+	# 放在 move_and_slide() 之后：这才是本帧最终的 is_on_floor() 和 velocity，动画照它切
+	_update_animation()
 
 
 ## 第一人称视角：鼠标左右转身体（人物、水枪一起转），上下只抬摄像机，不碰碰撞体。
@@ -231,3 +266,37 @@ func _approach_velocity(target: Vector2, rate: float, delta: float) -> void:
 	var horizontal := Vector2(velocity.x, velocity.z).move_toward(target, rate * delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.y
+
+
+## 两个状态之间切换：走 / 站。
+## **空中什么都不做**（`not is_on_floor()` 直接返回），所以跳起来之后会一直保持起跳前那一条动画，
+## 落地再按当时还剩多少水平速度回到「走」或「站」。现在没有跳动画，这正是想要的效果。
+func _update_animation() -> void:
+	if not is_instance_valid(anim):
+		return
+	if not is_on_floor():
+		return
+	var speed: float = Vector2(velocity.x, velocity.z).length()
+	if speed < move_threshold:
+		_play_anim(idle_anim, fade_time)
+		return
+	# 走的倍率跟着实际速度走，加减速、以后改 move_speed 都不会"滑步"。
+	# 只卡下限不卡上限：真跑得比基准快时，动画就该放得比原速快，那才对得上脚。
+	var scale: float = maxf(speed / maxf(walk_ref_speed, 0.01), min_walk_scale)
+	_play_anim(walk_anim, fade_time, scale)
+
+
+## 切动画，顺带把播放倍率设好。
+## **已经在播这一条就什么都不做** —— play() 会把动画从头重放，走路这种循环每帧调一次会变成一帧一卡。
+func _play_anim(clip: StringName, fade: float, scale: float = 1.0) -> void:
+	if not is_instance_valid(anim) or clip == &"":
+		return
+	anim.speed_scale = scale
+	if clip == _current_anim:
+		return
+	_current_anim = clip     # 先记下来：名字填错时下面会报警告，这样不会每帧刷屏
+	if not anim.has_animation(clip):
+		# **这里故意只警告、不 return**：万一 has_animation() 对「库名/动画名」这种写法不认，
+		# 动画也照样能播（play() 是认的），顶多多一句警告，不至于整套动画一声不吭地哑掉。
+		push_warning("player.gd：动画库里没有「%s」，检查检查器里的 站立/走 两个名字（库名前缀「人物/」不能省）" % clip)
+	anim.play(clip, fade)

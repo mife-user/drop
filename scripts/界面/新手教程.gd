@@ -1,7 +1,7 @@
 extends Control
 class_name Tutorial
 
-## 新手教程：开局挨着弹七句提示，**该解锁的那几句，在它淡入的那一刻解锁**。
+## 新手教程：开局挨着弹八句提示，**该解锁的那几句，在它淡入的那一刻解锁**。
 ##
 ## 「进入游戏」的准确定义是**开始界面按下「开始游戏」那一下**：教程由它调 begin() 叫起来，
 ## 在同一瞬间把开局该收的按键全收走（晚一帧玩家就能先跑两步）。说话则要等幕布收干净
@@ -19,7 +19,7 @@ class_name Tutorial
 ## 没还的话那几个键会一直哑着，而且不报错 ——「按 W 没反应」是最难查的一类毛病。
 ## 同理，等 HUD 也不是无限等（hud_wait_limit 到点就开演）。
 ##
-## 屏幕上只有「提示」这一个 Label，台词在下面那八个 @export 字符串里；
+## 屏幕上只有「提示」这一个 Label，台词在下面那九个 @export 字符串里；
 ## 字号、颜色（现在是半透明的金黄色）、描边、阴影全在场景里那个 LabelSettings 上，
 ## 脚本一个色号都不写 —— 想改外观直接在检查器里拖那个 Label。
 ## 场景里 Label 的 Text 只是为了让你在编辑器里摆位置时看得见，运行时会被清掉。
@@ -43,7 +43,7 @@ const FIRE_ACTIONS: Array[StringName] = [&"fire"]
 @export var gun: WaterGun
 
 @export_group("开关")
-## 取消勾选 = 七句话不演、一个开局该收的键都不收（自己调试时用）。
+## 取消勾选 = 八句话不演、一个开局该收的键都不收（自己调试时用）。
 ## **「没水了」那句不受它管** —— 那句连的是水枪的信号，是个玩法提示，不是教程流程的一部分。
 @export var enabled: bool = true
 ## 等「界面」那层亮起来最多等几秒（见 _wait_for_hud）。填 0 = 不等，叫起来就开演。
@@ -64,7 +64,13 @@ const FIRE_ACTIONS: Array[StringName] = [&"fire"]
 ## 它讲的是左键在菜单里的另一个用途。商店要先按 E 才打得开，教程故意不专门讲 E：
 ## 准星对着台座的时候，下面本来就会自己弹出「按 E 交互」，玩家看得到。
 @export var line_buy: String = "鼠标左键购买商品"
-## 第七句，收尾的宣言。同样不解锁任何东西 —— 它演完，教程就结束了。
+## 第七句。同样**纯文字，不解锁任何东西** —— F 压根不走输入映射：手持道具.gd 直接认
+## 物理 F 键（use_key），所以没有"解锁"这一步可做。
+## 它紧跟在上一条「鼠标左键购买商品」后面，两句正好接成一条线：**先买，再按 F 用掉**。
+## 手里还多一个滚轮（按一次收起、再按一次拿出来），怕句子太长没写进去 —— 想提就把
+## 「滚轮收起」补在这句后面，检查器里改，不用碰代码。
+@export var line_use_item: String = "买到道具后，按 F 使用"
+## 第八句，收尾的宣言。同样不解锁任何东西 —— 它演完，教程就结束了。
 @export var line_finale: String = "最后，用水填满这个世界吧，天堂在迎接你"
 ## 水枪第一次打空时弹的那句（**全场只弹一次**，见 _on_tank_emptied）。
 @export var line_no_water: String = "没水了？也许可以找找附近是否有接水的地方"
@@ -79,7 +85,7 @@ const FIRE_ACTIONS: Array[StringName] = [&"fire"]
 ## 每句淡出多久（秒）。填 0 = 到点直接消失。
 @export_range(0.0, 3.0, 0.05) var fade_out: float = 0.55
 
-var _running: bool = false            # 七句话还在演
+var _running: bool = false            # 八句话还在演
 var _no_water_shown: bool = false     # 「没水了」那句弹过了吗（全场只弹一次）
 var _pending_no_water: bool = false   # 教程还在演的时候打空了：先记下，演完再弹，免得两句话叠在一起
 var _saved: Dictionary = {}           # 动作名 → 它原本绑了哪些按键（收走之前留的底）
@@ -98,7 +104,7 @@ func _ready() -> void:
 
 
 ## 由开始界面在「开始游戏」那一下调用。**立刻收按键**（那一下正是控制权交接的时刻），
-## 说话等幕布收干净再开始。重复调用无副作用；enabled 取消勾选时七句话不演、键也不收。
+## 说话等幕布收干净再开始。重复调用无副作用；enabled 取消勾选时八句话不演、键也不收。
 func begin() -> void:
 	if not enabled or _running:
 		return
@@ -110,7 +116,7 @@ func begin() -> void:
 	_play_all()
 
 
-# —— 七句话 ——
+# —— 八句话 ——
 
 
 ## 一路演下去。**解锁就发生在那一句淡入的同一刻**：玩家可以边看边试着按，不用等字消失。
@@ -126,9 +132,10 @@ func _play_all() -> void:
 	await _say(line_stats)
 	_unlock(FIRE_ACTIONS)
 	await _say(line_fire)
-	# 最后两句只管把话说完整，没有对应的 _unlock() —— 别以为漏写了：
-	# 左键在上一条就解锁完了，这两句只是说明和收尾。
+	# 最后三句只管把话说完整，没有对应的 _unlock() —— 别以为漏写了：
+	# 左键在上一条就解锁完了，这三句只是说明和收尾（F 不需要解锁，理由见 line_use_item）。
 	await _say(line_buy)
+	await _say(line_use_item)
 	await _say(line_finale)
 	_running = false
 	_flush_no_water()

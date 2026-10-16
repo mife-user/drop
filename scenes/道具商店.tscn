@@ -1,10 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b74o32xk4nspf"]
 
-[ext_resource type="PackedScene" path="res://scenes/交互模板/交互台.tscn" id="1_base"]
-[ext_resource type="Script" path="res://scripts/道具/道具商店.gd" id="2_shop"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_shop"]
-size = Vector3(0.76, 0.34, 0.4)
+[ext_resource type="PackedScene" uid="uid://dg1htavwp7tle" path="res://scenes/交互模板/交互台.tscn" id="1_base"]
+[ext_resource type="Script" uid="uid://c8753l5y1abkw" path="res://scripts/道具/道具商店.gd" id="2_shop"]
+[ext_resource type="PackedScene" path="res://scenes/道具/仙瓶.tscn" id="3_bottle"]
+[ext_resource type="PackedScene" path="res://scenes/道具/海绵.tscn" id="4_sponge"]
 
 [sub_resource type="StandardMaterial3D" id="Material_base"]
 albedo_color = Color(0.12, 0.17, 0.2, 1)
@@ -13,51 +12,49 @@ albedo_color = Color(0.12, 0.17, 0.2, 1)
 material = SubResource("Material_base")
 size = Vector3(0.72, 0.06, 0.36)
 
-[sub_resource type="StandardMaterial3D" id="Material_positive"]
-albedo_color = Color(0.3, 0.8, 0.6, 1)
+[sub_resource type="BoxShape3D" id="BoxShape3D_shop"]
+size = Vector3(0.76, 0.34, 0.4)
 
-[sub_resource type="BoxMesh" id="Mesh_positive"]
-material = SubResource("Material_positive")
-size = Vector3(0.2, 0.24, 0.2)
-
-[sub_resource type="StandardMaterial3D" id="Material_negative"]
-albedo_color = Color(0.7, 0.35, 0.65, 1)
-
-[sub_resource type="BoxMesh" id="Mesh_negative"]
-material = SubResource("Material_negative")
-size = Vector3(0.2, 0.24, 0.2)
-
-[node name="道具商店" instance=ExtResource("1_base")]
+[node name="道具商店" unique_id=687446584 instance=ExtResource("1_base")]
 script = ExtResource("2_shop")
+text_inventory_full = "已有道具，请先使用（F）"
+positive_name = "水仙瓶"
+positive_effect_text = "下雨"
+positive_price = 10
+negative_name = "海绵"
+negative_effect_text = "吸水"
+negative_price = 10
+item_text_format = "%s · %s"
+price_format = "%d 枚"
+footer_format = "邮币 x %d"
+purchase_message_format = "已购买%s：%s"
 title_text = "道具商店"
 prompt_text = "按 E 购买道具"
 text_blocked = "邮币不足，无法购买"
 text_success = "购买成功"
 
-[node name="展示底座" type="MeshInstance3D" parent="模型" index="0"]
-position = Vector3(0, 0.03, 0)
+[node name="展示底座" type="MeshInstance3D" parent="模型" parent_id_path=PackedInt32Array(1222929621) index="0" unique_id=1248403443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
 mesh = SubResource("Mesh_base")
 
-[node name="正面道具模型位" type="Node3D" parent="模型" index="1"]
-position = Vector3(-0.18, 0.06, 0)
+[node name="正面道具模型位" type="Node3D" parent="模型" parent_id_path=PackedInt32Array(1222929621) index="1" unique_id=1294644627]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.06, 0)
 
-[node name="占位模型" type="MeshInstance3D" parent="模型/正面道具模型位" index="0"]
-position = Vector3(0, 0.12, 0)
-mesh = SubResource("Mesh_positive")
+[node name="仙瓶" parent="模型/正面道具模型位" index="0" unique_id=972847133 instance=ExtResource("3_bottle")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.007868335, 0)
 
-[node name="负面道具模型位" type="Node3D" parent="模型" index="2"]
-position = Vector3(0.18, 0.06, 0)
+[node name="负面道具模型位" type="Node3D" parent="模型" parent_id_path=PackedInt32Array(1222929621) index="2" unique_id=1179367549]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.06, 0)
 
-[node name="占位模型" type="MeshInstance3D" parent="模型/负面道具模型位" index="0"]
-position = Vector3(0, 0.12, 0)
-mesh = SubResource("Mesh_negative")
+[node name="海绵" parent="模型/负面道具模型位" index="0" unique_id=1568407427 instance=ExtResource("4_sponge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
 
-[node name="CollisionShape3D" parent="实体" index="0"]
-position = Vector3(0, 0.17, 0)
+[node name="CollisionShape3D" parent="实体" parent_id_path=PackedInt32Array(41037221) index="0" unique_id=711439714]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)
 shape = SubResource("BoxShape3D_shop")
 
-[node name="面板" parent="." index="2"]
-position = Vector3(0, 0.6274389, 0.29017258)
+[node name="面板" parent="." index="2" unique_id=1744293324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6274389, 0.29017258)
 
 [node name="第三行" parent="面板" index="5"]
 visible = false

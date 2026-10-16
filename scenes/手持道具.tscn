@@ -1,20 +1,8 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/道具/手持道具.gd" id="1"]
-
-[sub_resource type="StandardMaterial3D" id="positive_material"]
-albedo_color = Color(0.3, 0.8, 0.6, 1)
-
-[sub_resource type="BoxMesh" id="positive_mesh"]
-size = Vector3(0.14, 0.18, 0.14)
-material = SubResource("positive_material")
-
-[sub_resource type="StandardMaterial3D" id="negative_material"]
-albedo_color = Color(0.7, 0.35, 0.65, 1)
-
-[sub_resource type="BoxMesh" id="negative_mesh"]
-size = Vector3(0.14, 0.18, 0.14)
-material = SubResource("negative_material")
+[ext_resource type="PackedScene" path="res://scenes/道具/仙瓶.tscn" id="2_bottle"]
+[ext_resource type="PackedScene" path="res://scenes/道具/海绵.tscn" id="3_sponge"]
 
 [node name="手持道具" type="Node3D" node_paths=PackedStringArray("positive_model", "negative_model")]
 script = ExtResource("1")
@@ -22,13 +10,13 @@ positive_model = NodePath("正面道具模型位")
 negative_model = NodePath("负面道具模型位")
 
 [node name="正面道具模型位" type="Node3D" parent="."]
+transform = Transform3D(0.955762, -0.069709, -0.285763, 0.069709, -0.890152, 0.450293, -0.285763, -0.450293, -0.845914, 0, 0, 0)
 visible = false
 
-[node name="占位模型" type="MeshInstance3D" parent="正面道具模型位"]
-mesh = SubResource("positive_mesh")
+[node name="仙瓶" parent="正面道具模型位" instance=ExtResource("2_bottle")]
 
 [node name="负面道具模型位" type="Node3D" parent="."]
+transform = Transform3D(0.955762, -0.069709, -0.285763, 0.069709, -0.890152, 0.450293, -0.285763, -0.450293, -0.845914, 0, 0, 0)
 visible = false
 
-[node name="占位模型" type="MeshInstance3D" parent="负面道具模型位"]
-mesh = SubResource("negative_mesh")
+[node name="海绵" parent="负面道具模型位" instance=ExtResource("3_sponge")]
