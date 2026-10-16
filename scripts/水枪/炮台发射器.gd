@@ -67,6 +67,8 @@ signal placed
 @export_range(0.8, 8.0, 0.1) var hold_distance: float = 2.5
 ## 拿在手上时比摄像机低多少米（压低一点，别正好糊在屏幕中心）。
 @export_range(0.0, 3.0, 0.05) var hold_drop: float = 0.6
+## 放置预览时滚轮每格旋转多少度；绕炮台自身中心的世界竖直轴旋转，放下后不再响应。
+@export_range(1.0, 90.0, 1.0) var placement_rotation_step: float = 15.0
 ## 往下打多远的射线找地面（米）。打不到就不许放。
 @export_range(0.5, 40.0, 0.5) var ground_probe: float = 10.0
 ## 找地面查哪些层。默认第 1 层（世界）。
@@ -86,12 +88,14 @@ signal placed
 
 @export_group("携带时的话术")
 ## 能放时准星下面那行字。
-@export var hint_carry: String = "左键放置炮台"
+@export var hint_carry: String = "滚轮旋转，左键放置炮台"
 ## 不能放时那行字。
 @export var hint_blocked: String = "这里不能放"
 
 ## 现在是不是「拿在手上」（还没放下）。商店靠它判断还能不能再卖一座。
 var carrying: bool = false
+var _placement_yaw_offset: float = 0.0  # 滚轮相对视线累积的水平旋转角（弧度）
+var _carry_view_yaw: float = 0.0        # 视线竖直时沿用上一次水平朝向
 
 var _ground_found: bool = false        # 底下找着地面了吗
 var _shadow_valid: bool = false        # 这会儿能不能放（有地面、而且不压着水池）
@@ -139,6 +143,8 @@ func begin_carry() -> void:
 	if carrying:
 		return
 	carrying = true
+	_placement_yaw_offset = 0.0
+	_carry_view_yaw = global_rotation.y
 	add_to_group(GROUP_BLOCK_INTERACT)   # 全场台座先别开菜单，理由见常量那段
 	_set_body_active(false)
 	_apply_preview(true)
@@ -157,7 +163,7 @@ func place() -> void:
 	carrying = false
 	remove_from_group(GROUP_BLOCK_INTERACT)
 	global_position = _ground_point
-	rotation = Vector3(0.0, rotation.y, 0.0)   # 只留水平朝向：落点在地面上，别把炮台拧歪
+	global_rotation = Vector3(0.0, global_rotation.y, 0.0)   # 保留预览朝向，始终绕世界竖直轴站立
 	_set_body_active(true)
 	_apply_preview(false)
 	if is_instance_valid(shadow):
@@ -176,6 +182,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return   # 光标被放出来了（按过 Esc）：这一下左键留给「点画面重新锁定鼠标」
+	var wheel: InputEventMouseButton = event as InputEventMouseButton
+	if wheel != null and wheel.pressed and wheel.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
+		var direction: float = 1.0 if wheel.button_index == MOUSE_BUTTON_WHEEL_UP else -1.0
+		var ticks: float = absf(wheel.factor) if not is_zero_approx(wheel.factor) else 1.0
+		var angle: float = deg_to_rad(placement_rotation_step) * direction * ticks
+		_placement_yaw_offset = wrapf(_placement_yaw_offset + angle, -PI, PI)
+		global_rotation = Vector3(0.0, _carry_view_yaw + _placement_yaw_offset, 0.0)
+		get_viewport().set_input_as_handled()
+		return
 	if not _is_place_pressed(event):
 		return
 	get_viewport().set_input_as_handled()
@@ -203,7 +218,9 @@ func _update_carry(_delta: float) -> void:
 	# 让节点的 -Z（炮台的前方）对准视线的水平方向；公式和 player.gd 的 lock_look 是同一个
 	var flat: Vector3 = Vector3(forward.x, 0.0, forward.z)
 	if flat.length_squared() > 0.0001:
-		rotation = Vector3(0.0, atan2(-flat.x, -flat.z), 0.0)
+		_carry_view_yaw = atan2(-flat.x, -flat.z)
+	# 滚轮只改变朝向，不挪动中心；每帧保留偏转，避免被跟随视线的逻辑覆盖。
+	global_rotation = Vector3(0.0, _carry_view_yaw + _placement_yaw_offset, 0.0)
 	_update_shadow()
 
 

@@ -63,6 +63,9 @@ const FIRE_ACTION: StringName = &"fire"
 ## 不关掉的话玩家按左键会顺手滋出一发水。平时保持勾选；取消勾选 = 这把枪彻底不喷水。
 @export var can_fire: bool = true
 
+## 手持装备单独阻止开火，避免与菜单暂时停火的恢复逻辑互相覆盖。
+var equipment_fire_blocked: bool = false
+
 @export_group("水箱")
 ## 水箱能装多少水（立方米）。**一发水耗掉的就是这一发水团的体积（blob_size³）**，
 ## 所以「一箱能射几发」= capacity ÷ blob_size³ —— 按当前 0.17 米的水块算，1.0 立方米约 203 发。
@@ -109,7 +112,7 @@ func _physics_process(delta: float) -> void:
 
 ## 按住开火键、鼠标处于锁定状态、且没被临时关掉，才算开火。
 func _is_firing() -> bool:
-	if not can_fire:
+	if equipment_fire_blocked or not can_fire:
 		return false
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
