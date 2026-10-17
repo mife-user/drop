@@ -47,7 +47,51 @@ corner_radius_bottom_left = 3
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 content_margin_left = 24.0
 
-[node name="开始界面" type="Node" unique_id=1165798844 node_paths=PackedStringArray("god_camera", "ui_layer", "curtain", "title_block", "button_block", "start_button", "quit_button")]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_music_focus"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_music_normal"]
+content_margin_left = 18.0
+content_margin_right = 18.0
+bg_color = Color(1, 1, 1, 0.04)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_music_hover"]
+content_margin_left = 18.0
+content_margin_right = 18.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.22)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_music_pressed"]
+content_margin_left = 18.0
+content_margin_right = 18.0
+bg_color = Color(0.372549, 0.827451, 0.952941, 0.16)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.372549, 0.827451, 0.952941, 0.45)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="开始界面" type="Node" unique_id=1165798844 node_paths=PackedStringArray("god_camera", "ui_layer", "curtain", "title_block", "button_block", "start_button", "quit_button", "music_button")]
 script = ExtResource("1_menu")
 god_camera = NodePath("上帝相机")
 ui_layer = NodePath("界面")
@@ -56,6 +100,7 @@ title_block = NodePath("界面/标题块")
 button_block = NodePath("界面/按钮组")
 start_button = NodePath("界面/按钮组/开始游戏")
 quit_button = NodePath("界面/按钮组/退出游戏")
+music_button = NodePath("界面/音乐按钮")
 
 [node name="上帝相机" type="Camera3D" parent="." unique_id=298528038]
 transform = Transform3D(-1, 0, 0, 0, 0.48215547, 0.876693, 0, 0.876693, -0.48215547, 11.421119, 34.63442, -17.695728)
@@ -130,6 +175,29 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.55)
 theme_override_fonts/font = SubResource("FontVariation_sub")
 theme_override_font_sizes/font_size = 18
 text = "DROP · 涌现"
+
+[node name="音乐按钮" type="Button" parent="界面" unique_id=1426730581]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -272.0
+offset_top = 44.0
+offset_right = -72.0
+offset_bottom = 92.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.62)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.372549, 0.827451, 0.952941, 1)
+theme_override_fonts/font = SubResource("SystemFont_ui")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_music_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_music_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_music_hover")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_music_focus")
+text = "音乐：开"
+tooltip_text = "开关背景音乐"
 
 [node name="按钮组" type="VBoxContainer" parent="界面" unique_id=1234143916]
 anchors_preset = 4

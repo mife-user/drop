@@ -200,6 +200,7 @@ resources/
   奶蛋/奶蛋.pmx              PMX 原始文件，Godot 4.8 无内置导入器，无 .import，不参与构建
   奶蛋/奶蛋_奶蛋.png         贴图
 scenes/main.tscn             主场景（run/main_scene）
+scenes/开始界面.tscn         开始菜单：标题 / 开始 / 退出 / 右上角音乐开关（scripts/开始界面.gd）
 scenes/水块.tscn             一团水（scripts/水枪/水块.gd）
 scenes/吸水区.tscn           吞吐水的通用区域（scripts/水枪/吸水区.gd）
 scenes/消防栓.tscn           消防栓：点按 E 升级装水速度 / 长按 E 给水枪接水
@@ -229,6 +230,7 @@ scripts/水枪/吸水区.gd       吸水区：水飘进来就收下
 scripts/界面/世界属性面板.gd 按 Tab 开关的世界属性面板：只读别处的数值，自己一个数都不算
 scripts/界面/属性行.gd       面板里的一行：对外只有 set_value()
 scripts/界面/新手教程.gd     新手教程：收按键 / 还按键，八句话挨着演（挂在 界面/新手教程）
+scripts/音频/背景音乐.gd     背景音乐：循环 / 淡入淡出 / 开关（挂在 背景音乐）
 ```
 
 ### 水的玩法（一套互相不认识的通用件）
@@ -429,6 +431,8 @@ scripts/界面/新手教程.gd     新手教程：收按键 / 还按键，八句
 - `Node3D` —— 场景根
 - `Camera3D` —— 主摄像机
 - `WorldEnvironment` —— 环境（Environment 子资源）
+- `背景音乐` —— 挂 `scripts/音频/背景音乐.gd`，Stream 指向 `resources/audio/drop.mp3`。
+  开局淡入、循环播放；菜单右上角的「音乐：开 / 关」按钮通过 `开始界面` 的 `music` 引用调它（见下面「背景音乐」）。
 - `场景` —— `resources/场景.fbx` 实例。内部层级：`GRP_City` / `GRP_Fence` / `GRP_House`（含室内家具 `Interior_*`）/ `GRP_Pool` / `GRP_Props` / `GRP_Vegetation` / `GRP_Yard`，每个 `GRP_` 下是若干 `MeshInstance3D`。
   **要单独操作某栋房子/家具时，用 `$场景/GRP_House/House_Roof` 这样的路径访问，但注意这些是导入资源的内部节点，改它们不会回写到 .fbx——需要改美术时找建模的同学重新导出。**
 - `奶蛋` —— `resources/奶蛋/奶蛋.glb` 实例，已挂 `scripts/奶蛋/milkegg.gd`，位置 `(0.99, 0.39, 2.29)`。内部是 `球体` / `球体_001` 两个 `MeshInstance3D`。
@@ -470,6 +474,21 @@ scripts/界面/新手教程.gd     新手教程：收按键 / 还按键，八句
   开局那八句提示 + 念到哪句解锁哪样操作，由 `开始界面` 点「开始游戏」时叫起来（见上面「新手教程」）。
   台词、快慢、开关、以及接哪把水枪的「打空了」信号，全在它的检查器里。
   它同样挂在 `界面` 这层下面，所以幕布还挡着的时候不会露出来。
+
+### 背景音乐
+
+`背景音乐`（`scenes/main.tscn` 根下，挂 `scripts/音频/背景音乐.gd`）**故意不放在开始界面里**：
+幕布收起后它照常播，从 Esc 回菜单也不会从头再来。Stream 指向 `resources/audio/drop.mp3`。
+
+- **开局淡入**（`fade_in_time`，默认 1.5 秒）。菜单右上角的「音乐：开 / 关」按钮调 `toggle()`：
+  关是淡出（`fade_out_time`，默认 0.8 秒）之后暂停、**保留播放位置**，再开会从原处淡回来。
+  「退出游戏」也会先等淡出走完再关窗口。最大音量是 `max_volume_db`（默认 -8 dB）。
+- **MP3 的 `.import` 里是 `loop=false`，循环是在 `_ready()` 里运行时打开的** ——
+  换曲子直接换 Stream 就行，不用去改 `.import` 的 loop 指望它生效。
+- 菜单按钮是 `scenes/开始界面.tscn` 的 `界面/音乐按钮`；`开始界面.gd` 通过实例上接的
+  `music`（`../背景音乐`）调它的 `toggle()`，文字刷新靠 `enabled_changed` 信号，
+  按钮上的两种文字是 `music_on_text` / `music_off_text`。接不上 `music` 时按钮会自己藏起来。
+- 渐入渐出的时长、静音分贝（`silent_db`）、是否开局自动播（`play_on_start`）都在 `背景音乐` 节点的检查器里。
 
 ---
 

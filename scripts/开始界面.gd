@@ -10,7 +10,7 @@ extends Node
 ##   2) 「开始游戏」：把镜头还给主人公、解冻、锁光标，幕布淡出后整层隐藏 ——
 ##      第一次的那一下顺带叫醒新手教程（见 tutorial）；之后从 Esc 回来不再重演；
 ##   3) 按 Esc：把菜单重新摊开（reopen()），世界状态原样保留；
-##   4) 「退出游戏」：直接退出程序。
+##   4) 「退出游戏」：先把背景音乐淡出，再退出程序。
 ##
 ## 幕布的浓淡、渐变色标、字体字号、按钮样式全部在检查器里调，这里一个数值都不写死。
 
@@ -34,10 +34,19 @@ extends Node
 ## 新手教程（main.tscn 的「界面/新手教程」）。点「开始游戏」那一刻叫它起床。
 ## 留空 = 没有教程，一切照旧。
 @export var tutorial: Tutorial
+## 背景音乐（main.tscn 的「背景音乐」）。菜单里的音乐按钮直接调它的开关。
+## 留空 = 菜单里的音乐按钮会藏起来。
+@export var music: BackgroundMusic
 ## 「开始游戏」按钮，连信号用。
 @export var start_button: Button
 ## 「退出游戏」按钮，连信号用。
 @export var quit_button: Button
+## 菜单右上角的音乐开关按钮，连信号、刷文字用。
+@export var music_button: Button
+## 音乐开着时按钮上的字（可以在检查器里改成别的说法）。
+@export var music_on_text: String = "音乐：开"
+## 音乐关着时按钮上的字。
+@export var music_off_text: String = "音乐：关"
 
 ## 入场时标题块与按钮组之间的间隔（秒），做「依次出现」的层次感。
 @export_range(0.0, 0.3, 0.01) var stagger: float = 0.07
@@ -50,6 +59,7 @@ extends Node
 
 var _menu_open: bool = true           # 菜单现在是不是摊开的（也是「能不能再摊开一次」的闸）
 var _tutorial_started: bool = false   # 新手教程全场只叫醒一次
+var _quitting: bool = false           # 退出只演一次，防止连点把音乐的淡出等两遍
 var _anims: Array[Tween] = []         # 本层正在跑的动画（入场 / 退场），换场面前先全掐掉
 
 
@@ -60,6 +70,12 @@ func _ready() -> void:
 		start_button.pressed.connect(_on_start_pressed)
 	if is_instance_valid(quit_button):
 		quit_button.pressed.connect(_on_quit_pressed)
+	if is_instance_valid(music_button):
+		music_button.pressed.connect(_on_music_pressed)
+	if is_instance_valid(music):
+		music.enabled_changed.connect(_on_music_enabled_changed)
+	else:
+		push_warning("开始界面：没接「背景音乐」，菜单里的音乐按钮没东西可开关。")
 	_show_menu()   # 开局先摊开一次
 
 
@@ -97,6 +113,7 @@ func _show_menu() -> void:
 		ui_layer.visible = true
 	if is_instance_valid(start_button):
 		start_button.grab_focus()   # 键盘 Enter / ↑↓ 直接可用，不用先点一下
+	_refresh_music_button()   # 从 Esc 回来时，按钮文字要跟上音乐的当前状态
 	_play_enter()
 
 
@@ -120,6 +137,12 @@ func _play_enter() -> void:
 		var curtain_tween: Tween = create_tween()
 		curtain_tween.tween_property(curtain, "modulate:a", 1.0, enter_time)
 		_anims.append(curtain_tween)
+	# 右上角的音乐按钮不做滑动，只跟着幕布一起淡进来
+	if is_instance_valid(music_button):
+		music_button.modulate.a = 0.0
+		var music_tween: Tween = create_tween()
+		music_tween.tween_property(music_button, "modulate:a", 1.0, enter_time)
+		_anims.append(music_tween)
 	for i: int in items.size():
 		var item: Control = items[i]
 		var target: Vector2 = item.position
@@ -158,7 +181,7 @@ func _on_start_pressed() -> void:
 	tween.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 	if is_instance_valid(curtain):
 		tween.tween_property(curtain, "modulate:a", 0.0, exit_time)
-	for item: Control in [title_block, button_block]:
+	for item: Control in [title_block, button_block, music_button]:
 		if is_instance_valid(item):
 			tween.tween_property(item, "modulate:a", 0.0, exit_time * 0.5)
 	tween.finished.connect(_on_exit_finished)
@@ -173,5 +196,36 @@ func _on_exit_finished() -> void:
 		ui_layer.visible = false
 
 
+## 音乐按钮：按一下切一次开关。文字刷新统一走 enabled_changed 信号，这里不自己改字。
+func _on_music_pressed() -> void:
+	if is_instance_valid(music):
+		music.toggle()
+
+
+## 音乐开关状态变了（按按钮、或者别处调 set_enabled 都算）：同步按钮上的字。
+func _on_music_enabled_changed(_enabled: bool) -> void:
+	_refresh_music_button()
+
+
+## 让按钮文字跟上音乐的真实状态；没接背景音乐时把按钮藏起来，不留一个按了没反应的死按钮。
+func _refresh_music_button() -> void:
+	if not is_instance_valid(music_button):
+		return
+	if not is_instance_valid(music):
+		music_button.visible = false
+		return
+	music_button.text = music_on_text if music.is_enabled() else music_off_text
+
+
+## 退出游戏：先把背景音乐淡出，再关窗口；音乐本来就关着就立刻退。
 func _on_quit_pressed() -> void:
+	if _quitting:
+		return
+	_quitting = true
+	# 等淡出的这段时间菜单还会被点到，先把三个按钮停掉，免得又开音乐 / 又点一次退出。
+	for button: Button in [start_button, quit_button, music_button]:
+		if is_instance_valid(button):
+			button.disabled = true
+	if is_instance_valid(music) and music.is_enabled():
+		await music.fade_out_and_stop()
 	get_tree().quit()
