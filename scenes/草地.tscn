@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/草/草地.gd" id="1_grass"]
+[ext_resource type="Shader" path="res://resources/草风.gdshader" id="2_wind"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grass"]
+shader = ExtResource("2_wind")
+shader_parameter/root_color = Color(0.1, 0.22, 0.06, 1)
+shader_parameter/tip_color = Color(0.42, 0.68, 0.26, 1)
+shader_parameter/wind_strength = 0.055
+shader_parameter/wind_speed = 1.6
+shader_parameter/gust_amount = 0.35
+shader_parameter/color_variation = 0.16
+shader_parameter/translucency = 0.15
+
+[node name="草地" type="MultiMeshInstance3D"]
+material_override = SubResource("ShaderMaterial_grass")
+cast_shadow = 0
+extra_cull_margin = 0.6
+script = ExtResource("1_grass")

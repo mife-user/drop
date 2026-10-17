@@ -3,15 +3,17 @@ class_name ItemRainEvent
 
 ## 正面道具触发的全地图降雨。水量按有效时间累计，不依赖粒子数量或帧率。
 ## 固定 GPU 雨滴与高度场碰撞节点写在场景中；雨滴碰到屋顶或地面即消失。
+## 降雨时长和每秒水量统一放在道具商店的「正面道具效果」里，这里只负责执行。
 @export var inventory: HeldItemController
 ## 接收雨水的水池，不影响木碗等其他容器。
 @export var pool: WaterSink
 ## 雨滴表现节点，可在场景中调整密度、范围、速度和材质。
 @export var rain: GPUParticles3D
-## 每件正面道具增加的降雨时长（秒）。连续使用延长时间，不叠加流量。
-@export_range(0.1, 600.0, 0.1) var duration: float = 10.0
-## 每秒进入水池的水量（立方米）。
-@export_range(0.0, 100.0, 0.001) var water_per_second: float = 0.1
+## 道具商店；使用时从这里读取降雨时长与每秒水量。
+@export var shop: ItemShop
+
+const DEFAULT_DURATION: float = 10.0  # 没接商店时退回的降雨时长
+const DEFAULT_WATER_PER_SECOND: float = 0.1  # 没接商店时退回的每秒水量
 
 var remaining: float = 0.0
 
@@ -26,10 +28,11 @@ func _on_item_used(item_id: StringName, _description: String) -> void:
 		start_rain()
 
 func start_rain() -> void:
-	if not is_instance_valid(pool) or duration <= 0.0:
+	var rain_duration: float = _configured_duration()
+	if not is_instance_valid(pool) or rain_duration <= 0.0:
 		return
 	var was_active: bool = remaining > 0.0
-	remaining += duration
+	remaining += rain_duration
 	if is_instance_valid(rain):
 		rain.show()
 		if not was_active:
@@ -42,7 +45,7 @@ func _process(delta: float) -> void:
 		return
 	var elapsed: float = minf(maxf(delta, 0.0), remaining)
 	if is_instance_valid(pool):
-		pool.add_water(maxf(water_per_second, 0.0) * elapsed)
+		pool.add_water(maxf(_configured_water_per_second(), 0.0) * elapsed)
 	remaining = maxf(remaining - elapsed, 0.0)
 	if remaining <= 0.000001:
 		_stop_rain()
@@ -52,3 +55,10 @@ func _stop_rain() -> void:
 	if is_instance_valid(rain):
 		rain.emitting = false
 		rain.hide()
+
+## 效果数值存在道具商店上；商店没接时用默认值，保证这个节点单独摆也能用。
+func _configured_duration() -> float:
+	return shop.positive_rain_duration if is_instance_valid(shop) else DEFAULT_DURATION
+
+func _configured_water_per_second() -> float:
+	return shop.positive_rain_water_per_second if is_instance_valid(shop) else DEFAULT_WATER_PER_SECOND

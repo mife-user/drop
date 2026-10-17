@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cavm1650y8qe3"]
 
 [ext_resource type="PackedScene" uid="uid://dn6dpnlf4absk" path="res://resources/人物/人物.fbx" id="1_isq7a"]
-[ext_resource type="Animation" uid="uid://c5av3j6boy0k3" path="res://resources/人物/走.res" id="2_t8uwl"]
+[ext_resource type="Animation" uid="uid://cicubjycoiul3" path="res://resources/人物/走.res" id="2_t8uwl"]
 
 [sub_resource type="Animation" id="Animation_7yhqn"]
 length = 0.001

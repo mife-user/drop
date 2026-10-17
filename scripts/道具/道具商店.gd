@@ -34,6 +34,23 @@ const NEGATIVE_ITEM: StringName = &"negative"
 ## 第二项商品每次购买的价格（邮币），不会随购买次数涨价。
 @export_range(0, 9999, 1) var negative_price: int = 10
 
+# 下面两组是道具真正生效的数值。效果节点会在使用时直接读这里，
+# 调道具强弱只改这两组，不用再去 PoolExclusion 下面找降雨 / 负面效果节点。
+
+@export_group("正面道具效果")
+## 每件正面道具增加的降雨时长（秒）；连续使用会累加时长。
+@export_range(0.1, 600.0, 0.1) var positive_rain_duration: float = 10.0
+## 降雨期间每秒进入水池的水量（立方米），连续使用不叠加流量。
+@export_range(0.0, 100.0, 0.001) var positive_rain_water_per_second: float = 0.1
+
+@export_group("负面道具效果")
+## 负面道具放下后的生效时长（秒）；携带预览期间不计时。
+@export_range(0.1, 600.0, 0.1) var negative_duration: float = 10.0
+## 负面道具每秒最多抽走的水量（立方米）；水池没水时只旋转。
+@export_range(0.0, 100.0, 0.001) var negative_drain_per_second: float = 0.1
+## 负面道具放置后每秒绕竖直轴自转的角度。
+@export var negative_spin_speed: float = 180.0
+
 @export_group("购买话术")
 ## 商品行的文字格式，依次填入名称和效果说明；说明留空时只显示名称。
 @export var item_text_format: String = "%s · %s"

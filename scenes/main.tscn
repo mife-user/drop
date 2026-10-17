@@ -26,16 +26,26 @@
 [ext_resource type="PackedScene" uid="uid://dq3n8vb2wk7ha" path="res://scenes/时钟.tscn" id="22_clock"]
 [ext_resource type="Script" uid="uid://bb2vil040p1on" path="res://scripts/水/pool_ladder_exit.gd" id="23_pool_exit"]
 [ext_resource type="Script" uid="uid://devaj24jf50ct" path="res://scripts/水/水量灯.gd" id="24_waterlight"]
+[ext_resource type="PackedScene" path="res://scenes/草地.tscn" id="25_chjal"]
 [ext_resource type="Script" uid="uid://c0k5vf0lwb4ii" path="res://scripts/水/水量字幕.gd" id="25_zimu"]
+[ext_resource type="MultiMesh" uid="uid://c4u1uva6anf54" path="res://resources/草地/场景_草地.res" id="26_bu4jf"]
 [ext_resource type="PackedScene" uid="uid://c66iqhguwlyqi" path="res://scenes/开始界面.tscn" id="26_menu"]
+[ext_resource type="MultiMesh" uid="uid://byxbyvjjv5jvd" path="res://resources/草地/场景_草地2.res" id="27_o7ddy"]
 [ext_resource type="PackedScene" uid="uid://cvl1o6t36qqu1" path="res://scenes/水枪升级.tscn" id="27_upgrade"]
+[ext_resource type="MultiMesh" uid="uid://dmu2hvgptx0w7" path="res://resources/草地/场景_草地3.res" id="28_0loja"]
 [ext_resource type="PackedScene" path="res://scenes/交互模板/交互准星.tscn" id="28_cross"]
+[ext_resource type="MultiMesh" uid="uid://bh5idw257f0mn" path="res://resources/草地/场景_草地4.res" id="29_ids8r"]
 [ext_resource type="PackedScene" path="res://scenes/界面/世界属性面板.tscn" id="29_stats"]
+[ext_resource type="MultiMesh" uid="uid://dkldapuwl4gel" path="res://resources/草地/场景_草地5.res" id="30_dnhof"]
 [ext_resource type="PackedScene" uid="uid://b74o32xk4nspf" path="res://scenes/道具商店.tscn" id="30_item_shop"]
+[ext_resource type="MultiMesh" uid="uid://cokba3rnvfp8f" path="res://resources/草地/场景_草地6.res" id="31_1v6qk"]
 [ext_resource type="PackedScene" path="res://scenes/手持道具.tscn" id="31_held_item"]
 [ext_resource type="Script" uid="uid://cc4aqsnv2nusu" path="res://scripts/人物/手臂俯仰.gd" id="32_armpitch"]
+[ext_resource type="MultiMesh" uid="uid://bci2pf1embg3m" path="res://resources/草地/场景_草地7.res" id="32_augu2"]
+[ext_resource type="MultiMesh" uid="uid://bpb2n4dtldh1b" path="res://resources/草地/场景_草地8.res" id="33_tm6hj"]
 [ext_resource type="PackedScene" uid="uid://divhuta8yps3a" path="res://scenes/界面/新手教程.tscn" id="33_tutorial"]
 [ext_resource type="Script" uid="uid://can1qv7q17huw" path="res://scripts/结局/天堂之门.gd" id="34_door"]
+[ext_resource type="MultiMesh" uid="uid://bk3ncj637g0wu" path="res://resources/草地/场景_草地9.res" id="34_kf5aa"]
 [ext_resource type="Script" uid="uid://b8eups7fapgnn" path="res://scripts/结局/结局黑幕.gd" id="35_ending"]
 [ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="36_lamp"]
 [ext_resource type="PackedScene" path="res://scenes/降雨事件.tscn" id="40_rain"]
@@ -378,6 +388,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9003297, 1.1199989, -7.9619
 wallet = NodePath("../../界面/邮币/Money2")
 gun = NodePath("../../主人公/水枪/水枪发射器")
 inventory = NodePath("../../主人公/手持道具")
+positive_price = 30
+negative_price = 1
+positive_rain_duration = 10.0
+positive_rain_water_per_second = 0.1
+negative_duration = 6.0
+negative_drain_per_second = 0.1
+negative_spin_speed = 180.0
 
 [node name="消防栓群" type="Node3D" parent="场景" unique_id=1743672743]
 
@@ -479,15 +496,17 @@ collision_mask = 0
 monitoring = false
 monitorable = false
 
-[node name="负面道具效果" type="Node" parent="场景/PoolExclusion" unique_id=1678575264 node_paths=PackedStringArray("inventory", "pool")]
+[node name="负面道具效果" type="Node" parent="场景/PoolExclusion" unique_id=1678575264 node_paths=PackedStringArray("inventory", "pool", "shop")]
 script = ExtResource("41_negative_effect")
 inventory = NodePath("../../../主人公/手持道具")
 pool = NodePath("../吸水区")
 placed_scene = ExtResource("42_negative_item")
+shop = NodePath("../../道具商店")
 
-[node name="降雨事件" parent="场景/PoolExclusion" unique_id=1526626133 node_paths=PackedStringArray("inventory", "pool") instance=ExtResource("40_rain")]
+[node name="降雨事件" parent="场景/PoolExclusion" unique_id=1526626133 node_paths=PackedStringArray("inventory", "pool", "shop") instance=ExtResource("40_rain")]
 inventory = NodePath("../../../主人公/手持道具")
 pool = NodePath("../吸水区")
+shop = NodePath("../../道具商店")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="场景/PoolExclusion" unique_id=1475715087]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.016693115, -0.44876575, -0.0011246204)
@@ -521,6 +540,67 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5713575, 0)
 sink = NodePath("..")
 auto_decimals = false
 decimals = 3
+
+[node name="草地" parent="场景" unique_id=974103498 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5339055, 0.10000028, 4.0611024)
+multimesh = ExtResource("26_bu4jf")
+blades_per_tuft = 5
+blade_height = 0.16
+blade_width = 0.015
+tuft_radius = 0.065
+patch_size = Vector2(5.895, 10.015)
+density = 6.199999999999999
+scale_min = 2.75
+scale_max = 0.1
+height_variation = 0.25
+
+[node name="草地2" parent="场景" unique_id=525097859 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.91794, 0.10000099, -0.3021555)
+multimesh = ExtResource("27_o7ddy")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地3" parent="场景" unique_id=1726239865 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.91794, 0.10000099, 29.234676)
+multimesh = ExtResource("28_0loja")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地4" parent="场景" unique_id=1140390640 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07218933, 0.10000099, 30.189947)
+multimesh = ExtResource("29_ids8r")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地5" parent="场景" unique_id=1392582518 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.026186, 0.10000099, -0.3021555)
+multimesh = ExtResource("30_dnhof")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地6" parent="场景" unique_id=1274027945 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.590134, 0.10000099, 29.93203)
+multimesh = ExtResource("31_1v6qk")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地7" parent="场景" unique_id=320996983 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.940414, 0.10000099, -30.484612)
+multimesh = ExtResource("32_augu2")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地8" parent="场景" unique_id=1509172316 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.825037, 0.10000099, -29.924042)
+multimesh = ExtResource("33_tm6hj")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
+
+[node name="草地9" parent="场景" unique_id=722547609 instance=ExtResource("25_chjal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15886497, 0.10000099, -30.043995)
+multimesh = ExtResource("34_kf5aa")
+patch_size = Vector2(15.125, 15.74)
+density = 2.1
 
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
@@ -600,7 +680,7 @@ script = ExtResource("14_gun")
 field = NodePath("../../../水块容器")
 muzzle = NodePath("../Muzzle")
 camera = NodePath("../../Camera3D")
-fire_interval = 1.6
+fire_interval = 1.0
 blob_size = 0.1
 readout = NodePath("读数")
 

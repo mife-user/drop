@@ -23,8 +23,6 @@ collision_mode = 2
 [node name="降雨事件" type="Node3D" node_paths=PackedStringArray("rain")]
 script = ExtResource("1")
 rain = NodePath("雨滴")
-duration = 10.0
-water_per_second = 0.1
 
 [node name="雨滴" type="GPUParticles3D" parent="."]
 position = Vector3(3, 16, -7.5)

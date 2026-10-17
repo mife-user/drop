@@ -35,7 +35,6 @@ theme_override_font_sizes/font_size = 40
 text = "x 0"
 vertical_alignment = 1
 script = ExtResource("1_money")
-starting_money = 10000
 
 [node name="水量换币" type="Node" parent="." unique_id=1043750658 node_paths=PackedStringArray("wallet")]
 script = ExtResource("3_reward")
