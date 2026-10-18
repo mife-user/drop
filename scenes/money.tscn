@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bk480175ewuco"]
 
 [ext_resource type="Script" uid="uid://dl66c7d2qrwg3" path="res://scripts/money.gd" id="1_money"]
-[ext_resource type="Texture2D" uid="uid://dpy5foaipftkj" path="res://resources/绿钞玩偶.png" id="2_doll"]
+[ext_resource type="Texture2D" uid="uid://dpy5foaipftkj" path="res://resources/道具/绿钞玩偶.png" id="2_doll"]
 [ext_resource type="Script" uid="uid://i0ahyeqp30u0" path="res://scripts/水/水量换币.gd" id="3_reward"]
 
 [node name="Money" type="HBoxContainer" unique_id=45251491]

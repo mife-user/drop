@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cvl1o6t36qqu1"]
 
 [ext_resource type="Script" uid="uid://b11hwahr5qr1x" path="res://scripts/水枪/水枪升级.gd" id="1_station"]
-[ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水枪.glb" id="2_gun"]
+[ext_resource type="PackedScene" uid="uid://cpfxu2ij0px5q" path="res://resources/水/水枪.glb" id="2_gun"]
 [ext_resource type="PackedScene" path="res://scenes/交互模板/交互面板.tscn" id="3_panel"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]

@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dq3n8vb2wk7ha"]
 
-[ext_resource type="PackedScene" uid="uid://dxppdno0xasp3" path="res://resources/时钟.glb" id="1_clock"]
-[ext_resource type="PackedScene" uid="uid://m863axmwy7lt" path="res://resources/时针.glb" id="2_hour"]
-[ext_resource type="PackedScene" uid="uid://bsx87m8ca4s1s" path="res://resources/分针.glb" id="3_minute"]
+[ext_resource type="PackedScene" uid="uid://dxppdno0xasp3" path="res://resources/时钟/时钟.glb" id="1_clock"]
+[ext_resource type="PackedScene" uid="uid://m863axmwy7lt" path="res://resources/时钟/时针.glb" id="2_hour"]
+[ext_resource type="PackedScene" uid="uid://bsx87m8ca4s1s" path="res://resources/时钟/分针.glb" id="3_minute"]
 [ext_resource type="Script" uid="uid://cq7m2xk9v4bn1" path="res://scripts/时钟.gd" id="4_script"]
 
 [node name="钟" type="Node3D" unique_id=1054640637 node_paths=PackedStringArray("hour_hand", "minute_hand")]

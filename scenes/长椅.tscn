@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://53ohu3ukny88"]
+
+[ext_resource type="PackedScene" uid="uid://xxtvek88gtfn" path="res://resources/场景/长椅.glb" id="1_bh0fb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_uhkvw"]
+size = Vector3(1.5172119, 0.5967407, 0.6757202)
+
+[node name="长椅" unique_id=1774800620 instance=ExtResource("1_bh0fb")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="24" unique_id=941115124]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=950984220]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0026245117, 0.6500031, -0.06454468)
+shape = SubResource("BoxShape3D_uhkvw")

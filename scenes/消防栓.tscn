@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c4b5r735ib8rs"]
 
-[ext_resource type="PackedScene" uid="uid://cpbj5ip2784yq" path="res://resources/消防栓.glb" id="1_rcicv"]
+[ext_resource type="PackedScene" uid="uid://cpbj5ip2784yq" path="res://resources/水/消防栓.glb" id="1_rcicv"]
 [ext_resource type="Script" path="res://scripts/水枪/消防栓.gd" id="2_hydrant"]
 [ext_resource type="PackedScene" path="res://scenes/交互模板/交互面板.tscn" id="3_panel"]
 

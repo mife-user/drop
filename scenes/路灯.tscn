@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://lfxle76y58ea"]
 
-[ext_resource type="PackedScene" uid="uid://bhvyx84apwmy7" path="res://resources/路灯.glb" id="1_3bslu"]
+[ext_resource type="PackedScene" uid="uid://bhvyx84apwmy7" path="res://resources/场景/路灯.glb" id="1_3bslu"]
 [ext_resource type="Script" uid="uid://b62kpqd3ia08n" path="res://scripts/路灯.gd" id="2_ni2ya"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ml62v"]

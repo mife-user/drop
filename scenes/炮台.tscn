@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://d0vfoq3bpf5bm"]
 
 [ext_resource type="PackedScene" uid="uid://dg1htavwp7tle" path="res://scenes/交互模板/交互台.tscn" id="1_d8k33"]
-[ext_resource type="PackedScene" uid="uid://dxj1jmo302bwp" path="res://resources/炮台.glb" id="2_d8k33"]
+[ext_resource type="PackedScene" uid="uid://dxj1jmo302bwp" path="res://resources/水/炮台.glb" id="2_d8k33"]
 [ext_resource type="Script" uid="uid://cuv3ueohdb6ls" path="res://scripts/水枪/炮台.gd" id="3_station"]
 [ext_resource type="PackedScene" path="res://scenes/炮台发射器.tscn" id="4_turret"]
 

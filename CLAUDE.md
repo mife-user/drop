@@ -195,10 +195,17 @@ func _process(delta: float) -> void:
 ```
 addons/markdown_previewer/   Markdown 预览插件（编辑器内读 .md，已在 project.godot 启用）
 resources/
-  场景.fbx                   House 场景模型（已导入为 PackedScene）
-  奶蛋/奶蛋.glb              「奶蛋」角色模型 —— 实际使用的资源
+  audio/                     音频（drop.mp3 背景音乐）
+  人物/                      主角与人物模型：人物.fbx / 人物_绑定.fbx / jump.fbx / walk.fbx / 高雅人士.glb
+  奶蛋/                      「奶蛋」角色：奶蛋.glb（实际使用的资源）、蝴蝶结.glb、奶蛋_奶蛋.png
   奶蛋/奶蛋.pmx              PMX 原始文件，Godot 4.8 无内置导入器，无 .import，不参与构建
-  奶蛋/奶蛋_奶蛋.png         贴图
+  蓝色小肥鱼/                蓝色小肥鱼.glb 与它的全部贴图（蓝色小肥鱼_*.png）
+  场景/                      House 场景与场景摆件：场景.fbx / 壁灯.fbx / 路灯.glb / 长椅.glb / 盆栽花.glb
+  时钟/                      时钟.glb / 时针.glb / 分针.glb
+  水/                        水相关道具与设施：水枪.glb / 水带.glb / 消防栓.glb / 炮台.glb
+  道具/                      可拾取/可交互物品：仙瓶.glb / 海绵.glb / 能量棒.glb / 折叠梯.glb /
+                             滑板.fbx / 炸药包.glb / 木碗.glb / 绿钞玩偶.png（邮币图标）
+  草地/                      草：草堆.glb / 草风.gdshader / 根_草地.res（MultiMesh）
 scenes/main.tscn             主场景（run/main_scene）
 scenes/开始界面.tscn         开始菜单：标题 / 开始 / 退出 / 右上角音乐开关（scripts/开始界面.gd）
 scenes/水块.tscn             一团水（scripts/水枪/水块.gd）
@@ -433,7 +440,7 @@ scripts/音频/背景音乐.gd     背景音乐：循环 / 淡入淡出 / 开关
 - `WorldEnvironment` —— 环境（Environment 子资源）
 - `背景音乐` —— 挂 `scripts/音频/背景音乐.gd`，Stream 指向 `resources/audio/drop.mp3`。
   开局淡入、循环播放；菜单右上角的「音乐：开 / 关」按钮通过 `开始界面` 的 `music` 引用调它（见下面「背景音乐」）。
-- `场景` —— `resources/场景.fbx` 实例。内部层级：`GRP_City` / `GRP_Fence` / `GRP_House`（含室内家具 `Interior_*`）/ `GRP_Pool` / `GRP_Props` / `GRP_Vegetation` / `GRP_Yard`，每个 `GRP_` 下是若干 `MeshInstance3D`。
+- `场景` —— `resources/场景/场景.fbx` 实例。内部层级：`GRP_City` / `GRP_Fence` / `GRP_House`（含室内家具 `Interior_*`）/ `GRP_Pool` / `GRP_Props` / `GRP_Vegetation` / `GRP_Yard`，每个 `GRP_` 下是若干 `MeshInstance3D`。
   **要单独操作某栋房子/家具时，用 `$场景/GRP_House/House_Roof` 这样的路径访问，但注意这些是导入资源的内部节点，改它们不会回写到 .fbx——需要改美术时找建模的同学重新导出。**
 - `奶蛋` —— `resources/奶蛋/奶蛋.glb` 实例，已挂 `scripts/奶蛋/milkegg.gd`，位置 `(0.99, 0.39, 2.29)`。内部是 `球体` / `球体_001` 两个 `MeshInstance3D`。
 - `DirectionalLight3D` —— 已挂 `scripts/sun.gd`，绕 Z 轴在 XY 平面公转模拟昼夜，参数（半径、角速度、初始角度）都在检查器里可调。
@@ -443,17 +450,17 @@ scripts/音频/背景音乐.gd     背景音乐：循环 / 淡入淡出 / 开关
   **位置就在它自己的 Transform 上** —— 在 3D 视图里拖、或在检查器里改 Position，脚本不碰它；
   字号改 `pixel_size`，格式改水枪的 `readout_format`。`no_depth_test` 勾着（否则会被枪模型挡掉一半）。
 - `主人公/人物/水枪/Muzzle` —— 出膛点 `Marker3D`。**位置是按 水枪.glb 包围盒估的，不是实测，觉得水不是从枪口出来就直接在编辑器里拖它。**
-- `场景/消防栓群/消防栓` —— `scenes/消防栓.tscn` 实例（`resources/消防栓.glb`）。
+- `场景/消防栓群/消防栓` —— `scenes/消防栓.tscn` 实例（`resources/水/消防栓.glb`）。
   **点按 E** 开升级台（一行「装水速度」），**长按 E** 给水枪接水 —— 两种按法都在 `scripts/交互框/交互台.gd` 里，
   消防栓自己只写「卖什么」和「按住时每秒灌多少」。装水速度存在消防栓自己身上（`fill_speed`），
   水枪不认识它。做新的可交互物体看 `docs/交互台.md`，升级数值怎么配看 `docs/升级台.md`。
-- `场景/水炮` —— `scenes/炮台.tscn` 实例（`resources/炮台.glb`，根节点挂着 `scripts/水枪/炮台.gd`）。
+- `场景/水炮` —— `scenes/炮台.tscn` 实例（`resources/水/炮台.glb`，根节点挂着 `scripts/水枪/炮台.gd`）。
   **点按 E 开菜单**：购买炮台 / 发射间隔 / 水块大小 / 水量容量。买完的炮台先拿在手上（左键放下），
   见上面「炮台」那一节。三根线都是检查器里接的：`wallet` → `界面/邮币/Money2`、
   `field` → `水块容器`、`gun` → `主人公/水枪发射器`（携带期间要把玩家的水枪关掉）。
   卖出去的炮台是它的**子节点**（运行时生成，远程场景树里叫「炮台1」），所以**别给这个节点加缩放**。
 - `场景/吸水区` —— `scenes/吸水区.tscn` 实例，摆在水池里，几何故意和 `场景/PoolExclusion` 对齐（但两者无关：那个是奶蛋禁区，只被 `milkegg_encounter.gd` 当数据读，不做物理检测）。
-- `场景/木碗` —— `scenes/木碗.tscn` 实例（`resources/木碗.glb`，缩放 3.965）。**碗本身没有碰撞体**（水才能穿过碗壁进到 `吸水区` 里），
+- `场景/木碗` —— `scenes/木碗.tscn` 实例（`resources/道具/木碗.glb`，缩放 3.965）。**碗本身没有碰撞体**（水才能穿过碗壁进到 `吸水区` 里），
   下面挂着 `吸水区`（装水用，容量 0.025 m³）、`出生点` Marker3D（奶蛋的出生点）和 `OmniLight3D`（挂 `scripts/水/水量灯.gd`，亮度跟着水量走）。
 - `奶神` —— 挂 `scripts/奶蛋/milkegg_encounter.gd`，奶蛋的出场调度与选路。主场景里它被木碗锁着（见上面「水的玩法」的奶蛋那条）。
 - `奶神/奶蛋/字幕层` —— `CanvasLayer`，里面一个 `解锁字幕` Label（挂 `scripts/水/水量字幕.gd`，木碗装满时弹金色字幕）。

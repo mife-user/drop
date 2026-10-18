@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/水枪/炮台发射器.gd" id="1_turret"]
-[ext_resource type="PackedScene" path="res://resources/炮台.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://resources/水/炮台.glb" id="2_model"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(0.44, 0.54, 0.62)

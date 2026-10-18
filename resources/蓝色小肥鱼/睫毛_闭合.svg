@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- 占位用的「单眼闭眼贴片」：一个肤色的眼眶椭圆 + 闭眼睫毛线。
+       左右两只眼睛各用一个 MeshInstance3D，各自在编辑器里调位置。
+       美术替换时保持眼眶椭圆居中即可。 -->
+  <defs>
+    <radialGradient id="skin" cx="50%" cy="42%" r="64%">
+      <stop offset="0%" stop-color="#f8e4dc"/>
+      <stop offset="80%" stop-color="#f8e4dc"/>
+      <stop offset="100%" stop-color="#f4d7cf"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="128" cy="128" rx="112" ry="128" fill="url(#skin)"/>
+
+  <!-- 眼下腮红 -->
+  <ellipse cx="128" cy="166" rx="68" ry="38" fill="#f3c7c1" opacity="0.35"/>
+
+  <!-- 闭眼睫毛线（两端各带一点外侧睫毛） -->
+  <g fill="none" stroke="#4a2a33" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 48 126 Q 128 160 208 126"/>
+    <path d="M 52 138 L 36 150"/>
+    <path d="M 204 138 L 220 150"/>
+  </g>
+</svg>

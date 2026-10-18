@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/蓝色小肥鱼.tscn" id="1_fish"]
+
+[sub_resource type="Environment" id="Environment_fish"]
+background_mode = 1
+background_color = Color(0.75, 0.84, 0.96, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.62, 0.66, 0.74, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.55, 0.68, 0.45, 1)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+material = SubResource("StandardMaterial3D_ground")
+size = Vector3(12, 0.2, 12)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(12, 0.2, 12)
+
+[node name="小肥鱼预览" type="Node3D"]
+
+[node name="环境" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_fish")
+
+[node name="灯光" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.5547, 0.0, -0.83205, -0.674882, 0.584898, -0.449921, 0.486664, 0.811107, 0.324443, 0, 3, 0)
+shadow_enabled = true
+
+[node name="地面" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="网格" type="MeshInstance3D" parent="地面"]
+mesh = SubResource("BoxMesh_ground")
+
+[node name="碰撞" type="CollisionShape3D" parent="地面"]
+shape = SubResource("BoxShape3D_ground")
+
+[node name="蓝色小肥鱼" parent="." instance=ExtResource("1_fish")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+roam_radius = 1.2
+idle_duration_min = 1.5
+idle_duration_max = 4.0
+
+[node name="相机" type="Camera3D" parent="."]
+transform = Transform3D(0.763386, 0.0, -0.645942, -0.112067, 0.984835, -0.132443, 0.636146, 0.173494, 0.751809, 2.2, 1.1, 2.6)
+current = true
+fov = 50.0

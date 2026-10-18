@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://cbfieue63456y"]
+
+[ext_resource type="PackedScene" uid="uid://b3f6idrat0s0b" path="res://resources/蓝色小肥鱼/蓝色小肥鱼.glb" id="1_a3obh"]
+[ext_resource type="Script" uid="uid://dr5ydncyxxjwe" path="res://scripts/蓝色小肥鱼/小肥鱼.gd" id="2_fish"]
+[ext_resource type="Script" uid="uid://dxbngtmgw8php" path="res://scripts/蓝色小肥鱼/饮水区.gd" id="3_sink"]
+[ext_resource type="Texture2D" uid="uid://bvhslvon6lo6u" path="res://resources/蓝色小肥鱼/嘴巴_张开.svg" id="4_mouth"]
+[ext_resource type="Texture2D" uid="uid://cpxg23tupes2w" path="res://resources/蓝色小肥鱼/睫毛_闭合.svg" id="5_lash"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a3obh"]
+radius = 0.26757813
+height = 0.96606445
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_water"]
+radius = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mouth"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+albedo_texture = ExtResource("4_mouth")
+
+[sub_resource type="QuadMesh" id="QuadMesh_mouth"]
+material = SubResource("StandardMaterial3D_mouth")
+size = Vector2(0.045, 0.034)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lash"]
+transparency = 1
+cull_mode = 2
+albedo_texture = ExtResource("5_lash")
+
+[sub_resource type="QuadMesh" id="QuadMesh_lash"]
+material = SubResource("StandardMaterial3D_lash")
+size = Vector2(0.1, 0.1)
+
+[node name="蓝色小肥鱼" type="CharacterBody3D" unique_id=432009693]
+script = ExtResource("2_fish")
+roam_radius = 3.0
+min_step_distance = 0.7
+
+[node name="模型" parent="." unique_id=319549072 instance=ExtResource("1_a3obh")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1189096481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07136953, 0.47277832, -0.08450836)
+shape = SubResource("CapsuleShape3D_a3obh")
+
+[node name="饮水区" type="Area3D" parent="." unique_id=306625168]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+script = ExtResource("3_sink")
+capacity = 0.006
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="饮水区" unique_id=349603852]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("SphereShape3D_water")
+
+[node name="嘴巴挂点" type="Marker3D" parent="." unique_id=926385112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.452, 0)
+
+[node name="嘴巴" type="MeshInstance3D" parent="嘴巴挂点" unique_id=1718132780]
+transform = Transform3D(1.8106313, 0, 0, 0, 1.1958244, -0.20823058, 0, 0.2545878, 0.9780798, 0, 0.032028437, 0.15433855)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_mouth")
+
+[node name="眼睫_左" type="MeshInstance3D" parent="嘴巴挂点" unique_id=185480377]
+transform = Transform3D(1.276472, 0.026115976, 0.23326771, -0.012957081, 0.94705826, -0.0763996, -0.3081778, 0.068354055, 0.96940666, 0.10316686, 0.11506276, 0.12360772)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_lash")
+
+[node name="眼睫_右" type="MeshInstance3D" parent="嘴巴挂点" unique_id=570854425]
+transform = Transform3D(1.1514206, 0, -0.26746017, 0, 0.96932554, 0, 0.31960258, 0, 0.963569, -0.099379405, 0.11682288, 0.12703848)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_lash")
