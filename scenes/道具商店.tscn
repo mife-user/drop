@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://dg1htavwp7tle" path="res://scenes/交互模板/交互台.tscn" id="1_base"]
 [ext_resource type="Script" uid="uid://c8753l5y1abkw" path="res://scripts/道具/道具商店.gd" id="2_shop"]
 [ext_resource type="PackedScene" path="res://scenes/道具/仙瓶.tscn" id="3_bottle"]
-[ext_resource type="PackedScene" path="res://scenes/道具/海绵.tscn" id="4_sponge"]
+[ext_resource type="PackedScene" uid="uid://dvfiddvpvrkx1" path="res://scenes/道具/海绵.tscn" id="4_sponge"]
 
 [sub_resource type="StandardMaterial3D" id="Material_base"]
 albedo_color = Color(0.12, 0.17, 0.2, 1)
@@ -24,6 +24,11 @@ positive_price = 10
 negative_name = "海绵"
 negative_effect_text = "吸水"
 negative_price = 10
+positive_rain_duration = 10.0
+positive_rain_water_per_second = 0.1
+negative_duration = 10.0
+negative_drain_per_second = 0.1
+negative_spin_speed = 180.0
 item_text_format = "%s · %s"
 price_format = "%d 枚"
 footer_format = "邮币 x %d"
@@ -47,7 +52,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.007868335, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.06, 0)
 
 [node name="海绵" parent="模型/负面道具模型位" index="0" unique_id=1568407427 instance=ExtResource("4_sponge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+transform = Transform3D(0.45875534, -0.58437884, 0.66936135, 0.7230078, 0.68340003, 0.10111258, -0.5165297, 0.43756765, 0.7360241, 0, 0.10333362, 0)
 
 [node name="CollisionShape3D" parent="实体" parent_id_path=PackedInt32Array(41037221) index="0" unique_id=711439714]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.17, 0)

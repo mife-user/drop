@@ -1,13 +1,9 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dvfiddvpvrkx1"]
 
-[sub_resource type="StandardMaterial3D" id="Material_sponge"]
-albedo_color = Color(0.53765744, 0.4330666, 0.092766054, 1)
+[ext_resource type="ArrayMesh" uid="uid://b5gjwpru12tck" path="res://resources/道具/海绵_海绵.res" id="1_2yuiu"]
 
-[sub_resource type="BoxMesh" id="Mesh_sponge"]
-material = SubResource("Material_sponge")
-size = Vector3(0.2, 0.24, 0.2)
+[node name="海绵" type="Node3D" unique_id=1621690248]
 
-[node name="海绵" type="Node3D"]
-
-[node name="网格" type="MeshInstance3D" parent="."]
-mesh = SubResource("Mesh_sponge")
+[node name="网格" type="MeshInstance3D" parent="." unique_id=1506497417]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+mesh = ExtResource("1_2yuiu")
