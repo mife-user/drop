@@ -343,6 +343,7 @@ transform = Transform3D(-4.3711385e-08, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, 
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -2.113616, 1.1768364, -7.6404314)
 wallet = NodePath("../../界面/邮币/Money2")
 gun = NodePath("../../主人公/水枪/水枪发射器")
+capacity_max = 50.0
 
 [node name="水炮" parent="场景" unique_id=891097886 node_paths=PackedStringArray("wallet", "field", "gun") instance=ExtResource("17_yq6so")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.60664314, 1.1199989, -7.961938)
@@ -353,8 +354,8 @@ fire_interval = 2.0
 blob_size = 0.35
 capacity = 10.0
 max_turrets = 3
-buy_cost = 10
-buy_cost_step = 0
+buy_cost = 25
+buy_cost_step = 2
 buy_text = "购买炮台"
 buy_full_text = "场上已有炮台"
 buy_full_price_text = "—"
@@ -400,6 +401,7 @@ negative_spin_speed = 180.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.956634, 0.14000061, 5.236519)
 wallet = NodePath("../../../界面/邮币/Money2")
 gun = NodePath("../../../主人公/水枪/水枪发射器")
+speed_max = 5.0
 
 [node name="海洋" type="MeshInstance3D" parent="场景" unique_id=1300612384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.7206507, 0)
@@ -596,6 +598,12 @@ transform = Transform3D(0.001310662, 0, -0.99999917, 0, 1, 0, 0.99999917, 0, 0.0
 [node name="长椅4" parent="场景/长椅堆" unique_id=656738097 instance=ExtResource("30_j2jfr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.203768, 0.1400049, 40.911854)
 
+[node name="盆栽花3" parent="场景" unique_id=1151218505 instance=ExtResource("18_0ld40")]
+transform = Transform3D(0.97615075, 0, -0.21709377, 0, 1, 0, 0.21709377, 0, 0.97615075, 6.279787, 2.7511269e-06, 23.343811)
+
+[node name="盆栽花4" parent="场景" unique_id=1194875988 instance=ExtResource("18_0ld40")]
+transform = Transform3D(0.6284062, 0, 0.7778853, 0, 1, 0, -0.7778853, 0, 0.6284062, 1.6860791, 9.629875e-07, 7.2168827)
+
 [node name="奶神" type="Node3D" parent="." unique_id=1045838224 node_paths=PackedStringArray("camera", "pool_exclusion", "gate_sink", "spawn_marker")]
 script = ExtResource("9_encounter")
 camera = NodePath("../主人公/Camera3D")
@@ -727,12 +735,6 @@ player_camera = NodePath("../主人公/Camera3D")
 hud = NodePath("../界面")
 tutorial = NodePath("../界面/新手教程")
 music = NodePath("../背景音乐")
-
-[node name="盆栽花" parent="." unique_id=1151218505 instance=ExtResource("18_0ld40")]
-transform = Transform3D(0.97615075, 0, -0.21709377, 0, 1, 0, 0.21709377, 0, 0.97615075, 6.39392, -0.008599391, 23.147528)
-
-[node name="盆栽花2" parent="." unique_id=1194875988 instance=ExtResource("18_0ld40")]
-transform = Transform3D(0.6284062, 0, 0.7778853, 0, 1, 0, -0.7778853, 0, 0.6284062, 1.800212, -0.008601179, 7.0205994)
 
 [node name="天堂之门" type="Area3D" parent="." unique_id=595943218 node_paths=PackedStringArray("sink", "player", "beam", "beam_light")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9250238, -2.3421428, 3.3728437)

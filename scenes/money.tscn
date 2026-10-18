@@ -39,4 +39,3 @@ script = ExtResource("1_money")
 [node name="水量换币" type="Node" parent="." unique_id=1043750658 node_paths=PackedStringArray("wallet")]
 script = ExtResource("3_reward")
 wallet = NodePath("../Money2")
-water_per_coin = 0.1

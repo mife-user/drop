@@ -282,16 +282,16 @@ func _update_animation() -> void:
 		return
 	# 走的倍率跟着实际速度走，加减速、以后改 move_speed 都不会"滑步"。
 	# 只卡下限不卡上限：真跑得比基准快时，动画就该放得比原速快，那才对得上脚。
-	var scale: float = maxf(speed / maxf(walk_ref_speed, 0.01), min_walk_scale)
-	_play_anim(walk_anim, fade_time, scale)
+	var anim_speed: float = maxf(speed / maxf(walk_ref_speed, 0.01), min_walk_scale)
+	_play_anim(walk_anim, fade_time, anim_speed)
 
 
 ## 切动画，顺带把播放倍率设好。
 ## **已经在播这一条就什么都不做** —— play() 会把动画从头重放，走路这种循环每帧调一次会变成一帧一卡。
-func _play_anim(clip: StringName, fade: float, scale: float = 1.0) -> void:
+func _play_anim(clip: StringName, fade: float, play_speed: float = 1.0) -> void:
 	if not is_instance_valid(anim) or clip == &"":
 		return
-	anim.speed_scale = scale
+	anim.speed_scale = play_speed
 	if clip == _current_anim:
 		return
 	_current_anim = clip     # 先记下来：名字填错时下面会报警告，这样不会每帧刷屏
