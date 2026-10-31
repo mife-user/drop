@@ -308,6 +308,15 @@ var _drink_capacity: float = 0.006
 ## 打开后会在状态变化、被水淋到等时刻打一行 print，方便排查。
 @export var debug_log: bool = false
 
+@export_group("被推动")
+
+## 玩家能不能把她推着走。关掉 = 回到「只挡住、推不动」的表现。
+@export var push_enabled: bool = true
+## 玩家离她多近才算「贴着」（米）。她的胶囊半径约 0.27，加上玩家自己的半径留一点余量。
+@export_range(0.3, 3.0, 0.05) var push_radius: float = 0.95
+## 推动速度的倍率：1 = 大致跟着玩家的速度走，调大推得更快。
+@export_range(0.2, 3.0, 0.05) var push_strength: float = 1.0
+
 
 ## 行为状态。SHY 会临时接管移动（捂脸后退）；SIT 是坐下休息；
 ## 喂水不占状态：只有收到水后的短暂窗口会停下来播动画，窗口一结束就恢复原本行为。
@@ -382,6 +391,13 @@ var _walk_phase: float = 0.0
 var _player: Node3D
 var _player_retry: float = 0.0
 var _player_eye := Vector3.ZERO
+## 玩家上一帧的位置：用它反推玩家速度，比直接读 velocity 可靠
+## （玩家被人推、被斜坡弹开时 velocity 不一定反映真实位移）。
+var _player_last_position := Vector3.ZERO
+var _player_has_last := false
+var _player_speed_now := Vector3.ZERO
+## 当前这一帧被推的速度大小，供 _animate 判断要不要迈腿。
+var _push_amount: float = 0.0
 var _player_distance_now: float = INF
 var _player_sensed: bool = false
 var _player_was_near: bool = false
@@ -679,6 +695,18 @@ func _update_player_reference(delta: float) -> void:
 		_player_distance_now = INF
 		return
 
+	# 用位置差反推玩家速度：不依赖玩家脚本怎么写，被推 / 被传送都能量到。
+	var player_position: Vector3 = (_player as Node3D).global_position
+	if _player_has_last:
+		_player_speed_now = (player_position - _player_last_position) / maxf(delta, 0.0001)
+		_player_speed_now.y = 0.0
+		if _player_speed_now.length() > 20.0:
+			_player_speed_now = _player_speed_now.normalized() * 20.0
+	else:
+		_player_speed_now = Vector3.ZERO
+		_player_has_last = true
+	_player_last_position = player_position
+
 	_player_eye = _player_eye_position()
 	_player_distance_now = global_position.distance_to(_player_eye)
 	_player_sensed = _player_distance_now <= notice_radius
@@ -819,6 +847,10 @@ func _move(delta: float) -> void:
 	else:
 		velocity.y -= gravity * delta
 
+	# 玩家贴着并朝她走来时，把玩家方向上的推力叠到目标速度上。
+	# 只影响速度，不改 _state、不改漫步逻辑；玩家一松手推力就归零。
+	desired += _player_push()
+
 	var smoothing: float = 1.0 - exp(-10.0 * delta)
 	velocity.x = lerpf(velocity.x, desired.x, smoothing)
 	velocity.z = lerpf(velocity.z, desired.z, smoothing)
@@ -835,6 +867,31 @@ func _move(delta: float) -> void:
 				_enter_idle()
 		else:
 			_stuck_time = 0.0
+
+
+## 玩家推她：玩家贴得够近、并且正在朝她这边移动时，返回一个「离开玩家」的速度。
+## 走路 / 害羞 / 坐下的原有逻辑一律不动 —— 这里只多给一个速度分量，
+## 由 _move 叠到 desired 上，再由原来的平滑和 move_and_slide 统一处理。
+## 玩家停下或走开，返回值立刻变回零，她自然减速停在原地。
+func _player_push() -> Vector3:
+	_push_amount = 0.0
+	if not push_enabled or not is_instance_valid(_player):
+		return Vector3.ZERO
+	var speed: float = _player_speed_now.length()
+	if speed < 0.05:
+		return Vector3.ZERO
+	var offset: Vector3 = global_position - (_player as Node3D).global_position
+	offset.y = 0.0
+	var distance: float = offset.length()
+	if distance < 0.0001 or distance > push_radius:
+		return Vector3.ZERO
+	var away: Vector3 = offset / distance                 # 玩家 → 她，就是推动方向
+	if _player_speed_now.normalized().dot(away) < 0.2:    # 玩家得是「朝她走来」才算推
+		return Vector3.ZERO
+	# 越贴近推得越明显，边缘处平滑归零，不会过了阈值突然弹一下
+	var closeness: float = 1.0 - distance / push_radius
+	_push_amount = clampf(speed * closeness * push_strength, 0.0, 4.0)
+	return away * _push_amount
 
 
 ## after_walk = true 表示「刚走到一个路点」，这时才有几率触发坐下休息。
@@ -1126,7 +1183,8 @@ func _animate(delta: float) -> void:
 	var speed_ratio := clampf(horizontal_speed / maxf(walk_speed, 0.001), 0.0, 1.0)
 	var walking: bool = _state == State.WALK and horizontal_speed > 0.05
 	# 害羞后退时也要迈腿，否则看起来像在冰面上滑行。
-	var stepping: bool = horizontal_speed > 0.05 and (_state == State.WALK or _state == State.SHY)
+	# 被玩家推着走时也迈腿，否则会像在冰面上滑行
+	var stepping: bool = horizontal_speed > 0.05 and (_state == State.WALK or _state == State.SHY or _push_amount > 0.05)
 	var feeding: bool = _is_feeding()
 	# 几个动作权重都做指数平滑：开始时一两帧内抬起来，结束时也不会突然弹回。
 	var blend_weight: float = 1.0 - exp(-10.0 * delta)

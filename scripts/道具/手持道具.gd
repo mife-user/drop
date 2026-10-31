@@ -17,6 +17,8 @@ class_name HeldItemController
 ## 商店展示台和这里实例的是同一份，换模型只改那两个文件。
 signal inventory_changed
 signal item_used(item_id: StringName, effect_text: String)
+## 拿着日记本时按 F：只发信号，翻页/面板由 scripts/道具/日记本.gd 负责。
+signal diary_read_requested
 
 ## 玩家水枪，装备道具时只设置独立的开火阻止标记，不覆盖菜单的 can_fire 状态。
 @export var gun: WaterGun
@@ -28,8 +30,21 @@ signal item_used(item_id: StringName, effect_text: String)
 @export var positive_model: Node3D
 ## 负面道具手持模型容器。同上。
 @export var negative_model: Node3D
+## 日记本手持模型容器。和前面两个模型位共用同一套摆正旋转（见文件头）。
+@export var diary_model: Node3D
 ## 道具使用键，默认物理 F 键。
 @export var use_key: Key = KEY_F
+## 切到水枪的键。
+@export var gun_key: Key = KEY_1
+## 切到日记本的键。
+@export var diary_key: Key = KEY_2
+
+## 当前手持槽：1 = 水枪，2 = 日记本。
+## 这是**唯一**写水枪显隐和射击开关的地方 —— 外面不要再有第二个脚本去改，
+## 之前就是在外面另开一套，两个脚本抢同一个字段，水枪直接被弄没了。
+var slot: int = 1
+## 有没有日记本（抽奖抽到 / 测试时白送）。
+var has_diary: bool = false
 
 var held_item: StringName = &""
 var effect_text: String = ""
@@ -66,6 +81,24 @@ func receive_item(id: StringName, description: String) -> bool:
 func controls_available() -> bool:
 	return not turret_active() and (not is_instance_valid(player) or not player._move_locked)
 
+## 切手持槽：1 = 水枪，2 = 日记本。没有日记时切到 2 会被忽略。
+func select_slot(target: int) -> void:
+	if target == 2 and not has_diary:
+		return
+	if target not in [1, 2]:
+		return
+	slot = target
+	_sync_equipment()
+
+
+## 拿到日记本时调这个（抽奖抽到 / 测试时白送）。拿到之后按 2 就能拿出来。
+func acquire_diary() -> void:
+	if has_diary:
+		return
+	has_diary = true
+	_sync_equipment()
+
+
 func switch_equipment() -> void:
 	if not has_item() or not controls_available():
 		return
@@ -94,20 +127,40 @@ func _unhandled_input(event: InputEvent) -> void:
 		switch_equipment()
 		get_viewport().set_input_as_handled()
 	var key: InputEventKey = event as InputEventKey
-	if key != null and key.pressed and not key.echo and key.physical_keycode == use_key and item_selected:
+	if key == null or not key.pressed or key.echo:
+		return
+	# 1 / 2 切手持槽。没有日记本时按 2 不响应，免得玩家以为坏了。
+	if key.physical_keycode == gun_key:
+		select_slot(1)
+		get_viewport().set_input_as_handled()
+		return
+	if key.physical_keycode == diary_key:
+		if has_diary:
+			select_slot(2)
+			get_viewport().set_input_as_handled()
+		return
+	# 拿着日记时 F 是「翻开」，不是「用道具」
+	if key.physical_keycode == use_key and slot == 2 and has_diary:
+		diary_read_requested.emit()
+		get_viewport().set_input_as_handled()
+		return
+	if key.physical_keycode == use_key and item_selected:
 		use_item()
 		get_viewport().set_input_as_handled()
 
 func _sync_equipment() -> void:
 	var carrying: bool = turret_active()
-	var show_item: bool = item_selected and has_item() and not carrying
+	var diary_out: bool = slot == 2 and has_diary and not carrying
+	var show_item: bool = item_selected and has_item() and not carrying and not diary_out
 	if is_instance_valid(positive_model):
 		positive_model.visible = show_item and held_item == &"positive"
 	if is_instance_valid(negative_model):
 		negative_model.visible = show_item and held_item == &"negative"
+	if is_instance_valid(diary_model):
+		diary_model.visible = diary_out
 	if is_instance_valid(gun_model):
-		gun_model.visible = not show_item and not carrying
+		gun_model.visible = not show_item and not diary_out and not carrying
 	if is_instance_valid(gun):
-		gun.equipment_fire_blocked = show_item or carrying
+		gun.equipment_fire_blocked = show_item or diary_out or carrying
 		if is_instance_valid(gun.readout):
 			gun.readout.visible = not show_item and not carrying

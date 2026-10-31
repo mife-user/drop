@@ -5,8 +5,15 @@ class_name ItemRainEvent
 ## 固定 GPU 雨滴与高度场碰撞节点写在场景中；雨滴碰到屋顶或地面即消失。
 ## 降雨时长和每秒水量统一放在道具商店的「正面道具效果」里，这里只负责执行。
 @export var inventory: HeldItemController
-## 接收雨水的水池，不影响木碗等其他容器。
+## 接收雨水的水池。
 @export var pool: WaterSink
+## 木碗（奶蛋的碗）。下雨时碗里也会积水 —— 留空则只给水池加（旧行为）。
+@export var bowl: WaterSink
+## 下多久雨能把碗灌满（秒）。0 = 不给碗加水，回到旧行为。
+## **按碗自己的容量算，不按水池的 m³/秒算**：木碗的 capacity 和泳池不在一个量级
+## （碗 500、泳池按立方米），套同一个流量的话碗永远是 0。这里只跟容量挂钩，
+## 所以以后换更大的容器也不用调。默认 12 秒 ≈ 一场 10 秒的雨能灌到八成多。
+@export_range(0.0, 120.0, 0.5) var bowl_fill_seconds: float = 12.0
 ## 雨滴表现节点，可在场景中调整密度、范围、速度和材质。
 @export var rain: GPUParticles3D
 ## 道具商店；使用时从这里读取降雨时长与每秒水量。
@@ -44,8 +51,11 @@ func _process(delta: float) -> void:
 	if remaining <= 0.0:
 		return
 	var elapsed: float = minf(maxf(delta, 0.0), remaining)
+	var per_second: float = maxf(_configured_water_per_second(), 0.0)
 	if is_instance_valid(pool):
-		pool.add_water(maxf(_configured_water_per_second(), 0.0) * elapsed)
+		pool.add_water(per_second * elapsed)
+	if is_instance_valid(bowl) and bowl_fill_seconds > 0.0:
+		bowl.add_water(bowl.capacity / bowl_fill_seconds * elapsed)
 	remaining = maxf(remaining - elapsed, 0.0)
 	if remaining <= 0.000001:
 		_stop_rain()

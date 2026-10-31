@@ -109,9 +109,11 @@ signal placed
 @export var removable: bool = true
 ## 隔多远还拆得动（米）。从摄像机中心朝前打一条射线，够不着就不弹提示、按 P 也不响应。
 @export_range(0.5, 10.0, 0.1) var remove_distance: float = 3.0
-## 瞄准射线查哪些层。默认第 1 层（世界）—— 炮台自己的「实体」就在这层上，
-## 顺带让墙和别的炮台也挡得住：隔着墙拆不掉，也不会拆错人。
-@export_flags_3d_physics var remove_mask: int = 1
+## 瞄准射线查哪些层。第 1 层是墙 / 地这些世界碰撞，第 2 层是炮台自己的「实体」。
+## 实体**故意不放在第 1 层**：玩家（掩码 1）能直接走过去，不会因为把炮台摆在门口把自己关死。
+## 所以这里要同时查 1 和 2 —— 只查 1 的话射线看不见炮台，就拆不掉了。
+## 隔着墙仍然拆不掉：墙在第 1 层，挡在中间。
+@export_flags_3d_physics var remove_mask: int = 3
 ## 准星对着炮台时，屏幕中心下面那行字。留空 = 不提示（照样能按 P 拆）。
 @export var remove_hint: String = "按 P 拆除炮台"
 

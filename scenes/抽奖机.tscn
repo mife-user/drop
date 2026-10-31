@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://resources/抽奖机/抽奖机.glb" id="1_model"]
+[ext_resource type="Script" path="res://scripts/道具/抽奖机.gd" id="2_script"]
+[ext_resource type="PackedScene" path="res://scenes/交互模板/交互面板.tscn" id="3_panel"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(1.0, 1.85, 0.75)
+
+[node name="抽奖机" type="Node3D"]
+script = ExtResource("2_script")
+title_text = "抽奖机"
+prompt_text = "按 E 抽奖 · 1000 枚"
+text_blocked = "邮币不足"
+text_success = "抽奖成功"
+lock_player = false
+result_label = NodePath("结果")
+inventory = NodePath("../../主人公/手持道具")
+
+[node name="模型" parent="." instance=ExtResource("1_model")]
+
+[node name="实体" type="StaticBody3D" parent="."]
+collision_layer = 17
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="实体"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.925, 0)
+shape = SubResource("BoxShape3D_body")
+
+[node name="结果" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.15, 0)
+pixel_size = 0.0012
+billboard = 1
+no_depth_test = true
+text = ""
+font_size = 64
+outline_size = 12
+
+[node name="面板" parent="." instance=ExtResource("3_panel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)

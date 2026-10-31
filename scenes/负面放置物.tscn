@@ -25,7 +25,7 @@ shadow = NodePath("投影")
 can_fire = false
 forbid_mask = 0
 ground_probe = 20.0
-hint_carry = "左键放置负面道具"
+hint_carry = "左键放置道具"
 [node name="模型位" type="Node3D" parent="."]
 position = Vector3(0, 0.15, 0)
 [node name="占位模型" type="MeshInstance3D" parent="模型位"]

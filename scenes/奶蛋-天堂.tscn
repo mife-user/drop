@@ -8,33 +8,34 @@
 [ext_resource type="Script" uid="uid://discn4sa6uiva" path="res://scripts/人物/player.gd" id="7_player"]
 [ext_resource type="Script" path="res://scripts/结局/天堂奶蛋.gd" id="8_eggs"]
 [ext_resource type="Script" path="res://scripts/结局/天堂退出.gd" id="9_exit"]
+[ext_resource type="Script" path="res://scripts/结局/天堂草地.gd" id="10_grass"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ncp2"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.96, 0.94, 0.9, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_3dbyp"]
 size = Vector3(27.277908, 5.86438, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ma6dh"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.96, 0.94, 0.9, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_xa8wg"]
 size = Vector3(20.126278, 5.86438, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6mdom"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.85, 0.76, 0.55, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_vpd1k"]
 size = Vector3(20.14392, 1, 25.502686)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d2fjp"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.96, 0.94, 0.9, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p76pf"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.96, 0.94, 0.9, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aeyax"]
-albedo_texture = ExtResource("1_kp3xp")
+albedo_color = Color(0.78, 0.87, 0.97, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_kp3xp"]
 
@@ -42,7 +43,8 @@ albedo_texture = ExtResource("1_kp3xp")
 background_mode = 1
 background_color = Color(0.75, 0.84, 0.96, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.62, 0.66, 0.74, 1)
+ambient_light_color = Color(0.88, 0.82, 0.72, 1)
+ambient_light_energy = 1.15
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qiang_chang"]
 size = Vector3(27.277908, 5.86438, 1)
@@ -276,3 +278,6 @@ stay = true
 [node name="退出" type="Node" parent="." node_paths=PackedStringArray("curtain")]
 script = ExtResource("9_exit")
 curtain = NodePath("../界面/黑幕")
+
+[node name="天堂草地" type="Node3D" parent="."]
+script = ExtResource("10_grass")

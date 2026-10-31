@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://scripts/道具/手持道具.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/道具/仙瓶.tscn" id="2_bottle"]
 [ext_resource type="PackedScene" path="res://scenes/道具/海绵.tscn" id="3_sponge"]
+[ext_resource type="PackedScene" path="res://resources/日记本/奶蛋日记.glb" id="4_diary"]
 
-[node name="手持道具" type="Node3D" node_paths=PackedStringArray("positive_model", "negative_model")]
+[node name="手持道具" type="Node3D" node_paths=PackedStringArray("positive_model", "negative_model", "diary_model")]
 script = ExtResource("1")
 positive_model = NodePath("正面道具模型位")
 negative_model = NodePath("负面道具模型位")
+diary_model = NodePath("日记本模型位")
 
 [node name="正面道具模型位" type="Node3D" parent="."]
 transform = Transform3D(0.955762, -0.069709, -0.285763, 0.069709, -0.890152, 0.450293, -0.285763, -0.450293, -0.845914, 0, 0, 0)
@@ -20,3 +22,9 @@ transform = Transform3D(0.955762, -0.069709, -0.285763, 0.069709, -0.890152, 0.4
 visible = false
 
 [node name="海绵" parent="负面道具模型位" instance=ExtResource("3_sponge")]
+
+[node name="日记本模型位" type="Node3D" parent="."]
+transform = Transform3D(0.955762, -0.069709, -0.285763, 0.069709, -0.890152, 0.450293, -0.285763, -0.450293, -0.845914, 0, 0, 0)
+visible = false
+
+[node name="奶蛋日记" parent="日记本模型位" instance=ExtResource("4_diary")]
